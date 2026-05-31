@@ -576,3 +576,45 @@ async function processAiForAsset(assetId: string) {
       .eq("id", assetId);
   }
 }
+
+// ===== Public: random hero background =====
+export const getRandomHeroBackground = createServerFn({ method: "GET" }).handler(
+  async () => {
+    try {
+      const { data: collection } = await supabaseAdmin
+        .from("media_collections")
+        .select("id")
+        .eq("scope", "master")
+        .ilike("name", "Backgrounds")
+        .maybeSingle();
+      if (!collection) return { url: null as string | null };
+
+      const { data: items } = await supabaseAdmin
+        .from("media_collection_items")
+        .select("asset_id, media_assets!inner(id, storage_bucket, storage_path, mime_type, upload_status, scope)")
+        .eq("collection_id", collection.id);
+      if (!items || items.length === 0) return { url: null };
+
+      const candidates = items
+        .map((i) => (i as any).media_assets)
+        .filter(
+          (a) =>
+            a &&
+            a.upload_status === "ready" &&
+            typeof a.mime_type === "string" &&
+            a.mime_type.startsWith("image/"),
+        );
+      if (candidates.length === 0) return { url: null };
+
+      const pick = candidates[Math.floor(Math.random() * candidates.length)];
+      const { data: signed, error: sErr } = await supabaseAdmin.storage
+        .from(pick.storage_bucket)
+        .createSignedUrl(pick.storage_path, 3600);
+      if (sErr || !signed) return { url: null };
+      return { url: signed.signedUrl, assetId: pick.id as string };
+    } catch (e) {
+      console.error("getRandomHeroBackground failed", e);
+      return { url: null as string | null };
+    }
+  },
+);
