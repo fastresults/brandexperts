@@ -653,7 +653,9 @@ export const getHeroBackgroundList = createServerFn({ method: "GET" }).handler(
       for (const a of candidates) {
         const { data: signed } = await supabaseAdmin.storage
           .from(a.storage_bucket)
-          .createSignedUrl(a.storage_path, 3600);
+          .createSignedUrl(a.storage_path, 3600, {
+            transform: { width: 1920, quality: 75, resize: "cover" },
+          });
         if (signed?.signedUrl) urls.push(signed.signedUrl);
       }
       return { urls, expiresAt: Date.now() + 55 * 60 * 1000 };
