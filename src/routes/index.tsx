@@ -7,7 +7,7 @@ import { FLOW_STAGES } from "@/lib/schedule-data";
 import { useEvent } from "@/lib/use-event";
 import { MapPin, Calendar, Users, ArrowRight, Award, Check, Clock, X, Hammer, Timer, AlertTriangle } from "lucide-react";
 import facilitatorPhoto from "@/assets/facilitator.jpg";
-import heroBg from "@/assets/hero-bg.png";
+
 import { getPublicSiteSettings } from "@/lib/site-settings.functions";
 import { HomeSelection } from "@/components/home/HomeSelection";
 import { ArtOfThePossible } from "@/components/home/ArtOfThePossible";
@@ -123,13 +123,15 @@ function Hero() {
     refetchOnMount: "always",
     refetchOnWindowFocus: false,
   });
-  const bgUrl = data?.url ?? heroBg;
+  const bgUrl = data?.url;
   return (
     <section className="relative overflow-hidden">
-      <div
-        className="absolute inset-0 bg-cover bg-center transition-opacity duration-500"
-        style={{ backgroundImage: `url(${bgUrl})` }}
-      />
+      {bgUrl ? (
+        <div
+          className="absolute inset-0 bg-cover bg-center transition-opacity duration-500"
+          style={{ backgroundImage: `url(${bgUrl})` }}
+        />
+      ) : null}
       <div className="absolute inset-0 bg-background/0" />
       <div className="relative mx-auto max-w-6xl px-6 py-16 md:py-24 lg:py-32">
         <p className="mb-5 text-xs uppercase tracking-[0.18em] text-white/80 md:mb-6 md:text-sm md:tracking-[0.2em]">
