@@ -616,6 +616,20 @@ export function MediaHub({ scope, ownerUserId, canAdminPush, title }: Props) {
               <Send className="mr-2 h-4 w-4" /> Push to users ({selectedIds.size})
             </Button>
           )}
+          {selectedIds.size > 0 && (
+            <Button
+              variant="destructive"
+              onClick={confirmAndBatchDelete}
+              disabled={batchDelete.isPending}
+            >
+              {batchDelete.isPending ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="mr-2 h-4 w-4" />
+              )}
+              Delete ({selectedIds.size})
+            </Button>
+          )}
         </div>
 
         {collectionId && (
