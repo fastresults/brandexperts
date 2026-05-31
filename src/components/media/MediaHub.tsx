@@ -799,7 +799,9 @@ export function MediaHub({ scope, ownerUserId, canAdminPush, title }: Props) {
             </div>
           </Card>
         )}
+        </div>
       </div>
+
 
       {/* Detail drawer */}
       <Sheet open={!!selectedAsset} onOpenChange={(o) => !o && setSelectedAsset(null)}>
