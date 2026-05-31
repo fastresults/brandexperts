@@ -1,6 +1,10 @@
 import * as React from 'react'
 import { render } from '@react-email/components'
-import { supabaseAdmin } from '@/integrations/supabase/client.server'
+import { supabaseAdmin as _supabaseAdmin } from '@/integrations/supabase/client.server'
+// Email tables (suppressed_emails, email_send_log, email_unsubscribe_tokens) and
+// the enqueue_email RPC are created by the email infrastructure setup tool.
+// Until that runs they're missing from the generated types; cast to any to unblock TS.
+const supabaseAdmin = _supabaseAdmin as any
 import { TEMPLATES } from '@/lib/email-templates/registry'
 
 const SITE_NAME = 'Atlanta Startup Sprint'
