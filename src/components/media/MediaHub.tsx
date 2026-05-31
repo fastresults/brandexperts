@@ -511,7 +511,7 @@ export function MediaHub({ scope, ownerUserId, canAdminPush, title }: Props) {
                   setFolderId(null);
                 }}
                 onDragOver={(e) => {
-                  if (!e.dataTransfer.types.includes(DRAG_MIME)) return;
+                  if (!e.dataTransfer.types.includes(DRAG_MIME) && !hasFiles(e)) return;
                   e.preventDefault();
                   setDropTargetKey(`coll:${c.id}`);
                 }}
