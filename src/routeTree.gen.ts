@@ -9,9 +9,11 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ScheduleRouteImport } from './routes/schedule'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as LoginRouteImport } from './routes/login'
@@ -19,6 +21,7 @@ import { Route as FacilitatorRouteImport } from './routes/facilitator'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as AuthenticatedWelcomeRouteImport } from './routes/_authenticated/welcome'
 import { Route as AuthenticatedPausedRouteImport } from './routes/_authenticated/paused'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -39,6 +42,7 @@ import { Route as AuthenticatedAdminAdminIndexRouteImport } from './routes/_auth
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
+import { Route as ApiPublicHooksPublishDueDeliverablesRouteImport } from './routes/api/public/hooks/publish-due-deliverables'
 import { Route as AuthenticatedDashboardWorkflowKeyRouteImport } from './routes/_authenticated/dashboard.workflow.$key'
 import { Route as AuthenticatedAdminAdminUsersRouteImport } from './routes/_authenticated/_admin/admin.users'
 import { Route as AuthenticatedAdminAdminSiteRouteImport } from './routes/_authenticated/_admin/admin.site'
@@ -58,6 +62,11 @@ import { Route as AuthenticatedAdminAdminAttendeesUserIdWorkflowRouteImport } fr
 import { Route as AuthenticatedAdminAdminAttendeesUserIdMediaRouteImport } from './routes/_authenticated/_admin/admin.attendees.$userId.media'
 import { Route as AuthenticatedAdminAdminAttendeesUserIdDeliverablesKeyRouteImport } from './routes/_authenticated/_admin/admin.attendees.$userId.deliverables.$key'
 
+const UnsubscribeRoute = UnsubscribeRouteImport.update({
+  id: '/unsubscribe',
+  path: '/unsubscribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
@@ -71,6 +80,11 @@ const SignupRoute = SignupRouteImport.update({
 const ScheduleRoute = ScheduleRouteImport.update({
   id: '/schedule',
   path: '/schedule',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RegisterRoute = RegisterRouteImport.update({
@@ -105,6 +119,11 @@ const AuthenticatedRoute = AuthenticatedRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
+  id: '/email/unsubscribe',
+  path: '/email/unsubscribe',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedWelcomeRoute = AuthenticatedWelcomeRouteImport.update({
@@ -219,6 +238,12 @@ const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
     id: '/lovable/email/queue/process',
     path: '/lovable/email/queue/process',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicHooksPublishDueDeliverablesRoute =
+  ApiPublicHooksPublishDueDeliverablesRouteImport.update({
+    id: '/api/public/hooks/publish-due-deliverables',
+    path: '/api/public/hooks/publish-due-deliverables',
     getParentRoute: () => rootRouteImport,
   } as any)
 const AuthenticatedDashboardWorkflowKeyRoute =
@@ -337,12 +362,15 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/schedule': typeof ScheduleRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/paused': typeof AuthenticatedPausedRoute
   '/welcome': typeof AuthenticatedWelcomeRoute
+  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/dashboard/brief': typeof AuthenticatedDashboardBriefRoute
   '/dashboard/day': typeof AuthenticatedDashboardDayRoute
   '/dashboard/deliverables': typeof AuthenticatedDashboardDeliverablesRoute
@@ -364,6 +392,7 @@ export interface FileRoutesByFullPath {
   '/admin/site': typeof AuthenticatedAdminAdminSiteRoute
   '/admin/users': typeof AuthenticatedAdminAdminUsersRoute
   '/dashboard/workflow/$key': typeof AuthenticatedDashboardWorkflowKeyRoute
+  '/api/public/hooks/publish-due-deliverables': typeof ApiPublicHooksPublishDueDeliverablesRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
@@ -385,11 +414,14 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/schedule': typeof ScheduleRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/paused': typeof AuthenticatedPausedRoute
   '/welcome': typeof AuthenticatedWelcomeRoute
+  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/dashboard/brief': typeof AuthenticatedDashboardBriefRoute
   '/dashboard/day': typeof AuthenticatedDashboardDayRoute
   '/dashboard/deliverables': typeof AuthenticatedDashboardDeliverablesRoute
@@ -411,6 +443,7 @@ export interface FileRoutesByTo {
   '/admin/site': typeof AuthenticatedAdminAdminSiteRoute
   '/admin/users': typeof AuthenticatedAdminAdminUsersRoute
   '/dashboard/workflow/$key': typeof AuthenticatedDashboardWorkflowKeyRoute
+  '/api/public/hooks/publish-due-deliverables': typeof ApiPublicHooksPublishDueDeliverablesRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
@@ -434,13 +467,16 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/schedule': typeof ScheduleRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/_authenticated/_admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/_authenticated/paused': typeof AuthenticatedPausedRoute
   '/_authenticated/welcome': typeof AuthenticatedWelcomeRoute
+  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/_authenticated/dashboard/brief': typeof AuthenticatedDashboardBriefRoute
   '/_authenticated/dashboard/day': typeof AuthenticatedDashboardDayRoute
   '/_authenticated/dashboard/deliverables': typeof AuthenticatedDashboardDeliverablesRoute
@@ -462,6 +498,7 @@ export interface FileRoutesById {
   '/_authenticated/_admin/admin/site': typeof AuthenticatedAdminAdminSiteRoute
   '/_authenticated/_admin/admin/users': typeof AuthenticatedAdminAdminUsersRoute
   '/_authenticated/dashboard/workflow/$key': typeof AuthenticatedDashboardWorkflowKeyRoute
+  '/api/public/hooks/publish-due-deliverables': typeof ApiPublicHooksPublishDueDeliverablesRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
@@ -485,12 +522,15 @@ export interface FileRouteTypes {
     | '/login'
     | '/privacy'
     | '/register'
+    | '/reset-password'
     | '/schedule'
     | '/signup'
     | '/terms'
+    | '/unsubscribe'
     | '/dashboard'
     | '/paused'
     | '/welcome'
+    | '/email/unsubscribe'
     | '/dashboard/brief'
     | '/dashboard/day'
     | '/dashboard/deliverables'
@@ -512,6 +552,7 @@ export interface FileRouteTypes {
     | '/admin/site'
     | '/admin/users'
     | '/dashboard/workflow/$key'
+    | '/api/public/hooks/publish-due-deliverables'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
@@ -533,11 +574,14 @@ export interface FileRouteTypes {
     | '/login'
     | '/privacy'
     | '/register'
+    | '/reset-password'
     | '/schedule'
     | '/signup'
     | '/terms'
+    | '/unsubscribe'
     | '/paused'
     | '/welcome'
+    | '/email/unsubscribe'
     | '/dashboard/brief'
     | '/dashboard/day'
     | '/dashboard/deliverables'
@@ -559,6 +603,7 @@ export interface FileRouteTypes {
     | '/admin/site'
     | '/admin/users'
     | '/dashboard/workflow/$key'
+    | '/api/public/hooks/publish-due-deliverables'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
@@ -581,13 +626,16 @@ export interface FileRouteTypes {
     | '/login'
     | '/privacy'
     | '/register'
+    | '/reset-password'
     | '/schedule'
     | '/signup'
     | '/terms'
+    | '/unsubscribe'
     | '/_authenticated/_admin'
     | '/_authenticated/dashboard'
     | '/_authenticated/paused'
     | '/_authenticated/welcome'
+    | '/email/unsubscribe'
     | '/_authenticated/dashboard/brief'
     | '/_authenticated/dashboard/day'
     | '/_authenticated/dashboard/deliverables'
@@ -609,6 +657,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_admin/admin/site'
     | '/_authenticated/_admin/admin/users'
     | '/_authenticated/dashboard/workflow/$key'
+    | '/api/public/hooks/publish-due-deliverables'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
@@ -632,10 +681,14 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   PrivacyRoute: typeof PrivacyRoute
   RegisterRoute: typeof RegisterRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   ScheduleRoute: typeof ScheduleRoute
   SignupRoute: typeof SignupRoute
   TermsRoute: typeof TermsRoute
+  UnsubscribeRoute: typeof UnsubscribeRoute
+  EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
+  ApiPublicHooksPublishDueDeliverablesRoute: typeof ApiPublicHooksPublishDueDeliverablesRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
   LovableEmailTransactionalSendRoute: typeof LovableEmailTransactionalSendRoute
@@ -643,6 +696,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/unsubscribe': {
+      id: '/unsubscribe'
+      path: '/unsubscribe'
+      fullPath: '/unsubscribe'
+      preLoaderRoute: typeof UnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/terms': {
       id: '/terms'
       path: '/terms'
@@ -662,6 +722,13 @@ declare module '@tanstack/react-router' {
       path: '/schedule'
       fullPath: '/schedule'
       preLoaderRoute: typeof ScheduleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/register': {
@@ -711,6 +778,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/email/unsubscribe': {
+      id: '/email/unsubscribe'
+      path: '/email/unsubscribe'
+      fullPath: '/email/unsubscribe'
+      preLoaderRoute: typeof EmailUnsubscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/welcome': {
@@ -851,6 +925,13 @@ declare module '@tanstack/react-router' {
       path: '/lovable/email/queue/process'
       fullPath: '/lovable/email/queue/process'
       preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/publish-due-deliverables': {
+      id: '/api/public/hooks/publish-due-deliverables'
+      path: '/api/public/hooks/publish-due-deliverables'
+      fullPath: '/api/public/hooks/publish-due-deliverables'
+      preLoaderRoute: typeof ApiPublicHooksPublishDueDeliverablesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/dashboard/workflow/$key': {
@@ -1140,10 +1221,15 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   PrivacyRoute: PrivacyRoute,
   RegisterRoute: RegisterRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   ScheduleRoute: ScheduleRoute,
   SignupRoute: SignupRoute,
   TermsRoute: TermsRoute,
+  UnsubscribeRoute: UnsubscribeRoute,
+  EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
+  ApiPublicHooksPublishDueDeliverablesRoute:
+    ApiPublicHooksPublishDueDeliverablesRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
   LovableEmailTransactionalSendRoute: LovableEmailTransactionalSendRoute,
