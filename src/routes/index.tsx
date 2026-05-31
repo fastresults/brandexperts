@@ -11,8 +11,9 @@ import facilitatorPhoto from "@/assets/facilitator.jpg";
 import { getPublicSiteSettings } from "@/lib/site-settings.functions";
 import { HomeSelection } from "@/components/home/HomeSelection";
 import { ArtOfThePossible } from "@/components/home/ArtOfThePossible";
-import { getRandomHeroBackground } from "@/lib/media.functions";
-import { useMemo } from "react";
+import { getHeroBackgroundList } from "@/lib/media.functions";
+import { loadCachedList, saveCachedList, warmImages, pickRandom } from "@/lib/hero-bg-cache";
+import { useMemo, useState } from "react";
 
 export const FACILITATOR_NAME = "Adam Anderson";
 export const FACILITATOR_TITLE =
@@ -113,24 +114,38 @@ function BannerChip({ icon, label }: { icon: React.ReactNode; label: string }) {
 
 function Hero() {
   const EVENT = useEvent();
-  const fetchBg = useServerFn(getRandomHeroBackground);
-  const mountKey = useMemo(() => Math.random().toString(36).slice(2), []);
-  const { data } = useQuery({
-    queryKey: ["heroBg", mountKey],
-    queryFn: () => fetchBg(),
-    staleTime: 0,
-    gcTime: 0,
-    refetchOnMount: "always",
+  const fetchList = useServerFn(getHeroBackgroundList);
+  const { data: list } = useQuery({
+    queryKey: ["heroBgList"],
+    queryFn: async () => {
+      const cached = loadCachedList();
+      if (cached) return cached;
+      const fresh = await fetchList();
+      if (fresh.urls.length) {
+        saveCachedList(fresh);
+        warmImages(fresh.urls);
+      }
+      return fresh;
+    },
+    staleTime: 50 * 60 * 1000,
+    gcTime: 60 * 60 * 1000,
+    refetchOnMount: false,
     refetchOnWindowFocus: false,
   });
-  const bgUrl = data?.url;
+  const bgUrl = useMemo(() => (list?.urls?.length ? pickRandom(list.urls) : null), [list]);
+  const [loaded, setLoaded] = useState(false);
   return (
-    <section className="relative overflow-hidden">
+    <section className="relative overflow-hidden bg-background">
       {bgUrl ? (
-        <div
-          className="absolute inset-0 bg-cover bg-center transition-opacity duration-500"
-          style={{ backgroundImage: `url(${bgUrl})` }}
-        />
+        <>
+          <img
+            src={bgUrl}
+            alt=""
+            aria-hidden="true"
+            onLoad={() => setLoaded(true)}
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${loaded ? "opacity-100" : "opacity-0"}`}
+          />
+        </>
       ) : null}
       <div className="absolute inset-0 bg-background/0" />
       <div className="relative mx-auto max-w-6xl px-6 py-16 md:py-24 lg:py-32">
