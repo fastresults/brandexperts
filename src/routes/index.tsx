@@ -12,15 +12,24 @@ import { getPublicSiteSettings } from "@/lib/site-settings.functions";
 import { HomeSelection } from "@/components/home/HomeSelection";
 import { ArtOfThePossible } from "@/components/home/ArtOfThePossible";
 import { getHeroBackgroundList } from "@/lib/media.functions";
-import { loadCachedList, saveCachedList, warmImages, pickRandom } from "@/lib/hero-bg-cache";
-import { useMemo, useState } from "react";
 
 export const FACILITATOR_NAME = "Adam Anderson";
 export const FACILITATOR_TITLE =
   "Serial entrepreneur · Co-Founder, OPEN Interactive · Has helped launch dozens of modern-economy businesses across tech, services, and Main Street.";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
+  loader: async ({ context }) => {
+    const list = await context.queryClient.ensureQueryData({
+      queryKey: ["heroBgList"],
+      queryFn: () => getHeroBackgroundList(),
+      staleTime: 50 * 60 * 1000,
+    });
+    const heroBgUrl = list?.urls?.length
+      ? list.urls[Math.floor(Math.random() * list.urls.length)]
+      : null;
+    return { heroBgUrl };
+  },
+  head: ({ loaderData }) => ({
     meta: [
       { title: "Atlanta Startup Workshop — Walk in with an idea. Walk out a business owner." },
       {
@@ -35,22 +44,26 @@ export const Route = createFileRoute("/")({
           "July 23, 2026 · IGNITE Center at Greater Atlanta Christian School, Norcross, GA. Seven hours, seven stages, one filing-ready business by 4:30 PM. Led by a 30-year startup operator.",
       },
     ],
+    links: loaderData?.heroBgUrl
+      ? [{ rel: "preload", as: "image", href: loaderData.heroBgUrl, fetchPriority: "high" } as any]
+      : [],
   }),
   component: HomePage,
 });
 
 function HomePage() {
+  const { heroBgUrl } = Route.useLoaderData();
   const fetchSettings = useServerFn(getPublicSiteSettings);
   const { data } = useQuery({
     queryKey: ["site-settings"],
     queryFn: () => fetchSettings(),
     staleTime: 60_000,
   });
-  if (data?.home_variant === "selection") return <HomeSelection />;
+  if (data?.home_variant === "selection") return <HomeSelection heroBgUrl={heroBgUrl} />;
   return (
     <div className="min-h-screen">
       <SiteHeader />
-      <Hero />
+      <Hero heroBgUrl={heroBgUrl} />
       <NotACourseBanner />
       <WalkInWalkOut />
       <ArtOfThePossible />
@@ -112,40 +125,19 @@ function BannerChip({ icon, label }: { icon: React.ReactNode; label: string }) {
   );
 }
 
-function Hero() {
+function Hero({ heroBgUrl }: { heroBgUrl: string | null }) {
   const EVENT = useEvent();
-  const fetchList = useServerFn(getHeroBackgroundList);
-  const { data: list } = useQuery({
-    queryKey: ["heroBgList"],
-    queryFn: async () => {
-      const cached = loadCachedList();
-      if (cached) return cached;
-      const fresh = await fetchList();
-      if (fresh.urls.length) {
-        saveCachedList(fresh);
-        warmImages(fresh.urls);
-      }
-      return fresh;
-    },
-    staleTime: 50 * 60 * 1000,
-    gcTime: 60 * 60 * 1000,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-  });
-  const bgUrl = useMemo(() => (list?.urls?.length ? pickRandom(list.urls) : null), [list]);
-  const [loaded, setLoaded] = useState(false);
   return (
-    <section className="relative overflow-hidden bg-background">
-      {bgUrl ? (
-        <>
-          <img
-            src={bgUrl}
-            alt=""
-            aria-hidden="true"
-            onLoad={() => setLoaded(true)}
-            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${loaded ? "opacity-100" : "opacity-0"}`}
-          />
-        </>
+    <section className="relative overflow-hidden bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900">
+      {heroBgUrl ? (
+        <img
+          src={heroBgUrl}
+          alt=""
+          aria-hidden="true"
+          fetchPriority="high"
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
       ) : null}
       <div className="absolute inset-0 bg-background/0" />
       <div className="relative mx-auto max-w-6xl px-6 py-16 md:py-24 lg:py-32">

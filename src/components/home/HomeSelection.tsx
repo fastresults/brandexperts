@@ -5,11 +5,6 @@ import { ValueGrid } from "@/components/value/ValueGrid";
 import { ArtOfThePossible } from "@/components/home/ArtOfThePossible";
 import facilitatorPhoto from "@/assets/facilitator.jpg";
 
-import { useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
-import { getHeroBackgroundList } from "@/lib/media.functions";
-import { loadCachedList, saveCachedList, warmImages, pickRandom } from "@/lib/hero-bg-cache";
 import {
   ArrowRight,
   Award,
@@ -34,11 +29,11 @@ const FINALIST_DISCOUNT_PCT = 40; // % off next Atlanta cohort
 const FINALIST_DISCOUNT_VALIDITY = "the next two scheduled Atlanta cohorts";
 const PIECEMEAL_VALUE = "$10,000";
 
-export function HomeSelection() {
+export function HomeSelection({ heroBgUrl }: { heroBgUrl?: string | null }) {
   return (
     <div className="min-h-screen">
       <SiteHeader />
-      <Hero />
+      <Hero heroBgUrl={heroBgUrl ?? null} />
       <WhyApplyingIsTheMove />
       <WhyDoingThis />
       <WhatYouWalkOut />
@@ -54,36 +49,17 @@ export function HomeSelection() {
   );
 }
 
-function Hero() {
-  const fetchList = useServerFn(getHeroBackgroundList);
-  const { data: list } = useQuery({
-    queryKey: ["heroBgList"],
-    queryFn: async () => {
-      const cached = loadCachedList();
-      if (cached) return cached;
-      const fresh = await fetchList();
-      if (fresh.urls.length) {
-        saveCachedList(fresh);
-        warmImages(fresh.urls);
-      }
-      return fresh;
-    },
-    staleTime: 50 * 60 * 1000,
-    gcTime: 60 * 60 * 1000,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-  });
-  const bgUrl = useMemo(() => (list?.urls?.length ? pickRandom(list.urls) : null), [list]);
-  const [loaded, setLoaded] = useState(false);
+function Hero({ heroBgUrl }: { heroBgUrl: string | null }) {
   return (
-    <section className="relative overflow-hidden bg-background">
-      {bgUrl ? (
+    <section className="relative overflow-hidden bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900">
+      {heroBgUrl ? (
         <img
-          src={bgUrl}
+          src={heroBgUrl}
           alt=""
           aria-hidden="true"
-          onLoad={() => setLoaded(true)}
-          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${loaded ? "opacity-100" : "opacity-0"}`}
+          fetchPriority="high"
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover"
         />
       ) : null}
       <div className="absolute inset-0 bg-background/0" />
