@@ -618,3 +618,48 @@ export const getRandomHeroBackground = createServerFn({ method: "GET" }).handler
     }
   },
 );
+
+// ===== Public: full list of hero background signed URLs =====
+export const getHeroBackgroundList = createServerFn({ method: "GET" }).handler(
+  async () => {
+    const empty = { urls: [] as string[], expiresAt: 0 };
+    try {
+      const { data: collection } = await supabaseAdmin
+        .from("media_collections")
+        .select("id")
+        .eq("scope", "master")
+        .ilike("name", "Backgrounds")
+        .maybeSingle();
+      if (!collection) return empty;
+
+      const { data: items } = await supabaseAdmin
+        .from("media_collection_items")
+        .select("asset_id, media_assets!inner(id, storage_bucket, storage_path, mime_type, upload_status, scope)")
+        .eq("collection_id", collection.id);
+      if (!items || items.length === 0) return empty;
+
+      const candidates = items
+        .map((i) => (i as any).media_assets)
+        .filter(
+          (a) =>
+            a &&
+            a.upload_status === "ready" &&
+            typeof a.mime_type === "string" &&
+            a.mime_type.startsWith("image/"),
+        );
+      if (candidates.length === 0) return empty;
+
+      const urls: string[] = [];
+      for (const a of candidates) {
+        const { data: signed } = await supabaseAdmin.storage
+          .from(a.storage_bucket)
+          .createSignedUrl(a.storage_path, 3600);
+        if (signed?.signedUrl) urls.push(signed.signedUrl);
+      }
+      return { urls, expiresAt: Date.now() + 55 * 60 * 1000 };
+    } catch (e) {
+      console.error("getHeroBackgroundList failed", e);
+      return empty;
+    }
+  },
+);
