@@ -411,6 +411,48 @@ export function MediaHub({ scope, ownerUserId, canAdminPush, title }: Props) {
     },
   });
 
+  const batchDelete = useMutation({
+    mutationFn: async (ids: string[]) => {
+      const results = await Promise.allSettled(
+        ids.map((id) => deleteFn({ data: { id } })),
+      );
+      const ok = results.filter((r) => r.status === "fulfilled").length;
+      const fail = results.length - ok;
+      return { ok, fail, ids };
+    },
+    onSuccess: ({ ok, fail, ids }) => {
+      if (ok > 0) toast.success(`Deleted ${ok} file${ok === 1 ? "" : "s"}`);
+      if (fail > 0) toast.error(`Failed to delete ${fail} file${fail === 1 ? "" : "s"}`);
+      if (selectedAsset && ids.includes(selectedAsset.id)) setSelectedAsset(null);
+      setSelectedIds(new Set());
+      setDropTargetKey(null);
+      setIsDragging(false);
+      invalidate();
+    },
+  });
+
+  function confirmAndBatchDelete() {
+    const ids = Array.from(selectedIds);
+    if (ids.length === 0 || batchDelete.isPending) return;
+    if (!confirm(`Delete ${ids.length} file${ids.length === 1 ? "" : "s"}? This cannot be undone.`)) return;
+    batchDelete.mutate(ids);
+  }
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key !== "Delete" && e.key !== "Backspace") return;
+      if (selectedIds.size === 0) return;
+      if (selectedAsset) return;
+      const t = e.target as HTMLElement | null;
+      if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+      e.preventDefault();
+      confirmAndBatchDelete();
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedIds, selectedAsset, batchDelete.isPending]);
+
   // ===== Sidebar drop target helpers =====
   const dropTargetClass = (key: string) =>
     `${dropTargetKey === key ? "ring-2 ring-primary bg-primary/10" : ""} ${
