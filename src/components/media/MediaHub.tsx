@@ -187,9 +187,17 @@ export function MediaHub({ scope, ownerUserId, canAdminPush, title }: Props) {
   const fileInput = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
 
-  async function handleFiles(files: FileList | null) {
-    if (!files || files.length === 0) return;
+  async function handleFiles(
+    files: FileList | File[] | null,
+    opts?: { folderIdOverride?: string | null },
+  ): Promise<string[]> {
+    if (!files || files.length === 0) return [];
     setUploading(true);
+    const uploadedIds: string[] = [];
+    const targetFolderId =
+      opts && Object.prototype.hasOwnProperty.call(opts, "folderIdOverride")
+        ? opts.folderIdOverride ?? null
+        : folderId;
     for (const file of Array.from(files)) {
       try {
         if (file.size > 100 * 1024 * 1024) {
@@ -200,7 +208,7 @@ export function MediaHub({ scope, ownerUserId, canAdminPush, title }: Props) {
           data: {
             scope,
             ownerUserId: ownerUserId ?? null,
-            folderId,
+            folderId: targetFolderId,
             filename: file.name,
             mimeType: file.type || "application/octet-stream",
             sizeBytes: file.size,
@@ -213,6 +221,7 @@ export function MediaHub({ scope, ownerUserId, canAdminPush, title }: Props) {
         });
         if (!putRes.ok) throw new Error(`Upload failed: ${putRes.status}`);
         await finalizeFn({ data: { assetId: asset.id } });
+        uploadedIds.push(asset.id);
         toast.success(`Uploaded ${file.name}`);
       } catch (e) {
         toast.error(`${file.name}: ${(e as Error).message}`);
@@ -220,6 +229,11 @@ export function MediaHub({ scope, ownerUserId, canAdminPush, title }: Props) {
     }
     setUploading(false);
     invalidate();
+    return uploadedIds;
+  }
+
+  function hasFiles(e: React.DragEvent) {
+    return Array.from(e.dataTransfer.types).includes("Files");
   }
 
   // ===== Folder / collection create =====
