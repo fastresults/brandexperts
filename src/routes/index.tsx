@@ -12,15 +12,24 @@ import { getPublicSiteSettings } from "@/lib/site-settings.functions";
 import { HomeSelection } from "@/components/home/HomeSelection";
 import { ArtOfThePossible } from "@/components/home/ArtOfThePossible";
 import { getHeroBackgroundList } from "@/lib/media.functions";
-import { loadCachedList, saveCachedList, warmImages, pickRandom } from "@/lib/hero-bg-cache";
-import { useMemo, useState } from "react";
 
 export const FACILITATOR_NAME = "Adam Anderson";
 export const FACILITATOR_TITLE =
   "Serial entrepreneur · Co-Founder, OPEN Interactive · Has helped launch dozens of modern-economy businesses across tech, services, and Main Street.";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
+  loader: async ({ context }) => {
+    const list = await context.queryClient.ensureQueryData({
+      queryKey: ["heroBgList"],
+      queryFn: () => getHeroBackgroundList(),
+      staleTime: 50 * 60 * 1000,
+    });
+    const heroBgUrl = list?.urls?.length
+      ? list.urls[Math.floor(Math.random() * list.urls.length)]
+      : null;
+    return { heroBgUrl };
+  },
+  head: ({ loaderData }) => ({
     meta: [
       { title: "Atlanta Startup Workshop — Walk in with an idea. Walk out a business owner." },
       {
@@ -35,6 +44,9 @@ export const Route = createFileRoute("/")({
           "July 23, 2026 · IGNITE Center at Greater Atlanta Christian School, Norcross, GA. Seven hours, seven stages, one filing-ready business by 4:30 PM. Led by a 30-year startup operator.",
       },
     ],
+    links: loaderData?.heroBgUrl
+      ? [{ rel: "preload", as: "image", href: loaderData.heroBgUrl, fetchPriority: "high" } as any]
+      : [],
   }),
   component: HomePage,
 });
