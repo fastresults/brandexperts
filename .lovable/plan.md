@@ -1,39 +1,28 @@
-# Random Hero Background from "Backgrounds" Collection
+## Why the old image keeps flashing
 
-## Goal
-On every visit to `/`, the hero section background is a random image pulled from the master media library's "Backgrounds" collection.
+In both `src/routes/index.tsx` and `src/components/home/HomeSelection.tsx` the Hero uses:
 
-## Approach
+```ts
+const bgUrl = data?.url ?? heroBg;
+```
 
-### 1. New public server function — `getRandomHeroBackground`
-Add to `src/lib/media.functions.ts`. **No auth middleware** (the hero is public).
+`heroBg` is the bundled `@/assets/hero-bg.png` import. Because the server function is fetched on mount (no SSR cache, `staleTime: 0`), `data` is `undefined` on the first render, so the browser paints `hero-bg.png` first — then swaps to the random signed URL when the query resolves. The PNG also gets bundled and preloaded by Vite as a static asset, adding download weight even when it's never the final image.
 
-- Look up the master-scope collection named `Backgrounds` (case-insensitive) in `media_collections`.
-- Join `media_collection_items` → `media_assets` filtered to `scope='master'`, `upload_status='ready'`, and `mime_type LIKE 'image/%'`.
-- Pick one row at random in SQL (`ORDER BY random() LIMIT 1`) via `supabaseAdmin`.
-- Create a 1-hour signed URL from the asset's `storage_bucket` / `storage_path`.
-- Return `{ url, width, height, assetId } | { url: null }` (null when collection missing or empty so the client falls back).
+## Plan
 
-Returning a single random pick (vs. a full list) keeps payload tiny, avoids leaking the whole library, and stays serializer-friendly.
+1. **`src/routes/index.tsx`**
+   - Remove `import heroBg from "@/assets/hero-bg.png"`.
+   - Change `const bgUrl = data?.url ?? heroBg;` to use only the fetched URL.
+   - Only render the background `<div>` when `data?.url` exists (no placeholder paint).
+   - Keep the existing 500ms opacity transition so the image fades in once loaded.
 
-### 2. Wire into the Hero
-In `src/routes/index.tsx` (`Hero()` function ~line 112) and the parallel `src/components/home/HomeSelection.tsx` (`Hero()` ~line 52):
+2. **`src/components/home/HomeSelection.tsx`**
+   - Same three changes as above.
 
-- Import `useServerFn` + `useQuery` and the new server fn.
-- `const { data } = useQuery({ queryKey: ['heroBg', mountKey], queryFn: () => getRandomHeroBgFn(), staleTime: 0, gcTime: 0, refetchOnMount: 'always', refetchOnWindowFocus: false })` where `mountKey = useMemo(() => Math.random(), [])` so each fresh mount gets a new random image even if the query cache survived.
-- `const bgUrl = data?.url ?? heroBg` (keep existing local `heroBg` import as the fallback for first paint / empty collection / fetch error).
-- Apply via the existing `style={{ backgroundImage: \`url(${bgUrl})\` }}` — no markup changes.
-- Optional polish: a tiny fade-in (`transition-opacity`, `opacity-0` → `opacity-100` once `data?.url` resolves) so the swap is not jarring. Keep the existing dark overlay untouched.
+3. **No deletion of `src/assets/hero-bg.png`** — leaving the file on disk is harmless and avoids breaking any other reference. Once the imports are removed, Vite won't bundle or preload it.
 
-### 3. No DB migration, no RLS changes
-The function uses `supabaseAdmin` so it bypasses RLS — safe because it only returns a single ephemeral signed URL for an asset the admin already curated into the public "Backgrounds" collection.
+4. **Out of scope**: changing the server function, caching strategy, overlay, or any other section.
 
-## Edge cases handled
-- No "Backgrounds" collection → return `{ url: null }`, hero falls back to bundled `heroBg`.
-- Empty collection → same fallback.
-- Signed URL error → caught, fallback.
-- Server fn error → React Query error swallowed, fallback applies.
+## Result
 
-## Out of scope
-- Preloading the next random image, image optimization/resize, no CMS UI for picking weights — the collection itself is the curation surface.
-- No changes to MediaHub, auth, or storage policies.
+On every visit the hero area stays transparent (page background only) for the brief moment the signed URL is being fetched, then the random background fades in. The old `hero-bg.png` never loads or paints.
