@@ -52,17 +52,18 @@ export const Route = createFileRoute("/")({
 });
 
 function HomePage() {
+  const { heroBgUrl } = Route.useLoaderData();
   const fetchSettings = useServerFn(getPublicSiteSettings);
   const { data } = useQuery({
     queryKey: ["site-settings"],
     queryFn: () => fetchSettings(),
     staleTime: 60_000,
   });
-  if (data?.home_variant === "selection") return <HomeSelection />;
+  if (data?.home_variant === "selection") return <HomeSelection heroBgUrl={heroBgUrl} />;
   return (
     <div className="min-h-screen">
       <SiteHeader />
-      <Hero />
+      <Hero heroBgUrl={heroBgUrl} />
       <NotACourseBanner />
       <WalkInWalkOut />
       <ArtOfThePossible />
@@ -124,40 +125,19 @@ function BannerChip({ icon, label }: { icon: React.ReactNode; label: string }) {
   );
 }
 
-function Hero() {
+function Hero({ heroBgUrl }: { heroBgUrl: string | null }) {
   const EVENT = useEvent();
-  const fetchList = useServerFn(getHeroBackgroundList);
-  const { data: list } = useQuery({
-    queryKey: ["heroBgList"],
-    queryFn: async () => {
-      const cached = loadCachedList();
-      if (cached) return cached;
-      const fresh = await fetchList();
-      if (fresh.urls.length) {
-        saveCachedList(fresh);
-        warmImages(fresh.urls);
-      }
-      return fresh;
-    },
-    staleTime: 50 * 60 * 1000,
-    gcTime: 60 * 60 * 1000,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-  });
-  const bgUrl = useMemo(() => (list?.urls?.length ? pickRandom(list.urls) : null), [list]);
-  const [loaded, setLoaded] = useState(false);
   return (
-    <section className="relative overflow-hidden bg-background">
-      {bgUrl ? (
-        <>
-          <img
-            src={bgUrl}
-            alt=""
-            aria-hidden="true"
-            onLoad={() => setLoaded(true)}
-            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${loaded ? "opacity-100" : "opacity-0"}`}
-          />
-        </>
+    <section className="relative overflow-hidden bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900">
+      {heroBgUrl ? (
+        <img
+          src={heroBgUrl}
+          alt=""
+          aria-hidden="true"
+          fetchPriority="high"
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
       ) : null}
       <div className="absolute inset-0 bg-background/0" />
       <div className="relative mx-auto max-w-6xl px-6 py-16 md:py-24 lg:py-32">
