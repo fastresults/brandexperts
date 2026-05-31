@@ -9,38 +9,703 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as SignupRouteImport } from './routes/signup'
+import { Route as ScheduleRouteImport } from './routes/schedule'
+import { Route as RegisterRouteImport } from './routes/register'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as FacilitatorRouteImport } from './routes/facilitator'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedWelcomeRouteImport } from './routes/_authenticated/welcome'
+import { Route as AuthenticatedPausedRouteImport } from './routes/_authenticated/paused'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/_admin'
+import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
+import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
+import { Route as AuthenticatedDashboardWorkflowRouteImport } from './routes/_authenticated/dashboard.workflow'
+import { Route as AuthenticatedDashboardProfileRouteImport } from './routes/_authenticated/dashboard.profile'
+import { Route as AuthenticatedDashboardMediaRouteImport } from './routes/_authenticated/dashboard.media'
+import { Route as AuthenticatedDashboardGoalsRouteImport } from './routes/_authenticated/dashboard.goals'
+import { Route as AuthenticatedDashboardFilingRouteImport } from './routes/_authenticated/dashboard.filing'
+import { Route as AuthenticatedDashboardFilesRouteImport } from './routes/_authenticated/dashboard.files'
+import { Route as AuthenticatedDashboardDocumentsRouteImport } from './routes/_authenticated/dashboard.documents'
+import { Route as AuthenticatedDashboardDeliverablesRouteImport } from './routes/_authenticated/dashboard.deliverables'
+import { Route as AuthenticatedDashboardDayRouteImport } from './routes/_authenticated/dashboard.day'
+import { Route as AuthenticatedDashboardBriefRouteImport } from './routes/_authenticated/dashboard.brief'
+import { Route as AuthenticatedAdminAdminIndexRouteImport } from './routes/_authenticated/_admin/admin.index'
+import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
+import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
+import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
+import { Route as AuthenticatedDashboardWorkflowKeyRouteImport } from './routes/_authenticated/dashboard.workflow.$key'
+import { Route as AuthenticatedAdminAdminUsersRouteImport } from './routes/_authenticated/_admin/admin.users'
+import { Route as AuthenticatedAdminAdminSiteRouteImport } from './routes/_authenticated/_admin/admin.site'
+import { Route as AuthenticatedAdminAdminReviewRouteImport } from './routes/_authenticated/_admin/admin.review'
+import { Route as AuthenticatedAdminAdminRegistrationsRouteImport } from './routes/_authenticated/_admin/admin.registrations'
+import { Route as AuthenticatedAdminAdminMembersRouteImport } from './routes/_authenticated/_admin/admin.members'
+import { Route as AuthenticatedAdminAdminMediaRouteImport } from './routes/_authenticated/_admin/admin.media'
+import { Route as AuthenticatedAdminAdminCohortsRouteImport } from './routes/_authenticated/_admin/admin.cohorts'
+import { Route as AuthenticatedAdminAdminAttendeesRouteImport } from './routes/_authenticated/_admin/admin.attendees'
+import { Route as AuthenticatedAdminAdminInquiriesIndexRouteImport } from './routes/_authenticated/_admin/admin.inquiries.index'
+import { Route as AuthenticatedAdminAdminApplicationsIndexRouteImport } from './routes/_authenticated/_admin/admin.applications.index'
+import { Route as AuthenticatedAdminAdminInquiriesIdRouteImport } from './routes/_authenticated/_admin/admin.inquiries.$id'
+import { Route as AuthenticatedAdminAdminCohortsTestRouteImport } from './routes/_authenticated/_admin/admin.cohorts.test'
+import { Route as AuthenticatedAdminAdminApplicationsIdRouteImport } from './routes/_authenticated/_admin/admin.applications.$id'
+import { Route as AuthenticatedAdminAdminAttendeesUserIdIndexRouteImport } from './routes/_authenticated/_admin/admin.attendees.$userId.index'
+import { Route as AuthenticatedAdminAdminAttendeesUserIdWorkflowRouteImport } from './routes/_authenticated/_admin/admin.attendees.$userId.workflow'
+import { Route as AuthenticatedAdminAdminAttendeesUserIdMediaRouteImport } from './routes/_authenticated/_admin/admin.attendees.$userId.media'
+import { Route as AuthenticatedAdminAdminAttendeesUserIdDeliverablesKeyRouteImport } from './routes/_authenticated/_admin/admin.attendees.$userId.deliverables.$key'
 
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ScheduleRoute = ScheduleRouteImport.update({
+  id: '/schedule',
+  path: '/schedule',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FacilitatorRoute = FacilitatorRouteImport.update({
+  id: '/facilitator',
+  path: '/facilitator',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedWelcomeRoute = AuthenticatedWelcomeRouteImport.update({
+  id: '/welcome',
+  path: '/welcome',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedPausedRoute = AuthenticatedPausedRouteImport.update({
+  id: '/paused',
+  path: '/paused',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/_admin',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedDashboardIndexRoute =
+  AuthenticatedDashboardIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
+  id: '/lovable/email/suppression',
+  path: '/lovable/email/suppression',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedDashboardWorkflowRoute =
+  AuthenticatedDashboardWorkflowRouteImport.update({
+    id: '/workflow',
+    path: '/workflow',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardProfileRoute =
+  AuthenticatedDashboardProfileRouteImport.update({
+    id: '/profile',
+    path: '/profile',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardMediaRoute =
+  AuthenticatedDashboardMediaRouteImport.update({
+    id: '/media',
+    path: '/media',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardGoalsRoute =
+  AuthenticatedDashboardGoalsRouteImport.update({
+    id: '/goals',
+    path: '/goals',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardFilingRoute =
+  AuthenticatedDashboardFilingRouteImport.update({
+    id: '/filing',
+    path: '/filing',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardFilesRoute =
+  AuthenticatedDashboardFilesRouteImport.update({
+    id: '/files',
+    path: '/files',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardDocumentsRoute =
+  AuthenticatedDashboardDocumentsRouteImport.update({
+    id: '/documents',
+    path: '/documents',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardDeliverablesRoute =
+  AuthenticatedDashboardDeliverablesRouteImport.update({
+    id: '/deliverables',
+    path: '/deliverables',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardDayRoute =
+  AuthenticatedDashboardDayRouteImport.update({
+    id: '/day',
+    path: '/day',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardBriefRoute =
+  AuthenticatedDashboardBriefRouteImport.update({
+    id: '/brief',
+    path: '/brief',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedAdminAdminIndexRoute =
+  AuthenticatedAdminAdminIndexRouteImport.update({
+    id: '/admin/',
+    path: '/admin/',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const LovableEmailTransactionalSendRoute =
+  LovableEmailTransactionalSendRouteImport.update({
+    id: '/lovable/email/transactional/send',
+    path: '/lovable/email/transactional/send',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const LovableEmailTransactionalPreviewRoute =
+  LovableEmailTransactionalPreviewRouteImport.update({
+    id: '/lovable/email/transactional/preview',
+    path: '/lovable/email/transactional/preview',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const LovableEmailQueueProcessRoute =
+  LovableEmailQueueProcessRouteImport.update({
+    id: '/lovable/email/queue/process',
+    path: '/lovable/email/queue/process',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedDashboardWorkflowKeyRoute =
+  AuthenticatedDashboardWorkflowKeyRouteImport.update({
+    id: '/$key',
+    path: '/$key',
+    getParentRoute: () => AuthenticatedDashboardWorkflowRoute,
+  } as any)
+const AuthenticatedAdminAdminUsersRoute =
+  AuthenticatedAdminAdminUsersRouteImport.update({
+    id: '/admin/users',
+    path: '/admin/users',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminAdminSiteRoute =
+  AuthenticatedAdminAdminSiteRouteImport.update({
+    id: '/admin/site',
+    path: '/admin/site',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminAdminReviewRoute =
+  AuthenticatedAdminAdminReviewRouteImport.update({
+    id: '/admin/review',
+    path: '/admin/review',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminAdminRegistrationsRoute =
+  AuthenticatedAdminAdminRegistrationsRouteImport.update({
+    id: '/admin/registrations',
+    path: '/admin/registrations',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminAdminMembersRoute =
+  AuthenticatedAdminAdminMembersRouteImport.update({
+    id: '/admin/members',
+    path: '/admin/members',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminAdminMediaRoute =
+  AuthenticatedAdminAdminMediaRouteImport.update({
+    id: '/admin/media',
+    path: '/admin/media',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminAdminCohortsRoute =
+  AuthenticatedAdminAdminCohortsRouteImport.update({
+    id: '/admin/cohorts',
+    path: '/admin/cohorts',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminAdminAttendeesRoute =
+  AuthenticatedAdminAdminAttendeesRouteImport.update({
+    id: '/admin/attendees',
+    path: '/admin/attendees',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminAdminInquiriesIndexRoute =
+  AuthenticatedAdminAdminInquiriesIndexRouteImport.update({
+    id: '/admin/inquiries/',
+    path: '/admin/inquiries/',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminAdminApplicationsIndexRoute =
+  AuthenticatedAdminAdminApplicationsIndexRouteImport.update({
+    id: '/admin/applications/',
+    path: '/admin/applications/',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminAdminInquiriesIdRoute =
+  AuthenticatedAdminAdminInquiriesIdRouteImport.update({
+    id: '/admin/inquiries/$id',
+    path: '/admin/inquiries/$id',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminAdminCohortsTestRoute =
+  AuthenticatedAdminAdminCohortsTestRouteImport.update({
+    id: '/test',
+    path: '/test',
+    getParentRoute: () => AuthenticatedAdminAdminCohortsRoute,
+  } as any)
+const AuthenticatedAdminAdminApplicationsIdRoute =
+  AuthenticatedAdminAdminApplicationsIdRouteImport.update({
+    id: '/admin/applications/$id',
+    path: '/admin/applications/$id',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminAdminAttendeesUserIdIndexRoute =
+  AuthenticatedAdminAdminAttendeesUserIdIndexRouteImport.update({
+    id: '/$userId/',
+    path: '/$userId/',
+    getParentRoute: () => AuthenticatedAdminAdminAttendeesRoute,
+  } as any)
+const AuthenticatedAdminAdminAttendeesUserIdWorkflowRoute =
+  AuthenticatedAdminAdminAttendeesUserIdWorkflowRouteImport.update({
+    id: '/$userId/workflow',
+    path: '/$userId/workflow',
+    getParentRoute: () => AuthenticatedAdminAdminAttendeesRoute,
+  } as any)
+const AuthenticatedAdminAdminAttendeesUserIdMediaRoute =
+  AuthenticatedAdminAdminAttendeesUserIdMediaRouteImport.update({
+    id: '/$userId/media',
+    path: '/$userId/media',
+    getParentRoute: () => AuthenticatedAdminAdminAttendeesRoute,
+  } as any)
+const AuthenticatedAdminAdminAttendeesUserIdDeliverablesKeyRoute =
+  AuthenticatedAdminAdminAttendeesUserIdDeliverablesKeyRouteImport.update({
+    id: '/$userId/deliverables/$key',
+    path: '/$userId/deliverables/$key',
+    getParentRoute: () => AuthenticatedAdminAdminAttendeesRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/contact': typeof ContactRoute
+  '/facilitator': typeof FacilitatorRoute
+  '/login': typeof LoginRoute
+  '/privacy': typeof PrivacyRoute
+  '/register': typeof RegisterRoute
+  '/schedule': typeof ScheduleRoute
+  '/signup': typeof SignupRoute
+  '/terms': typeof TermsRoute
+  '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
+  '/paused': typeof AuthenticatedPausedRoute
+  '/welcome': typeof AuthenticatedWelcomeRoute
+  '/dashboard/brief': typeof AuthenticatedDashboardBriefRoute
+  '/dashboard/day': typeof AuthenticatedDashboardDayRoute
+  '/dashboard/deliverables': typeof AuthenticatedDashboardDeliverablesRoute
+  '/dashboard/documents': typeof AuthenticatedDashboardDocumentsRoute
+  '/dashboard/files': typeof AuthenticatedDashboardFilesRoute
+  '/dashboard/filing': typeof AuthenticatedDashboardFilingRoute
+  '/dashboard/goals': typeof AuthenticatedDashboardGoalsRoute
+  '/dashboard/media': typeof AuthenticatedDashboardMediaRoute
+  '/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
+  '/dashboard/workflow': typeof AuthenticatedDashboardWorkflowRouteWithChildren
+  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/dashboard/': typeof AuthenticatedDashboardIndexRoute
+  '/admin/attendees': typeof AuthenticatedAdminAdminAttendeesRouteWithChildren
+  '/admin/cohorts': typeof AuthenticatedAdminAdminCohortsRouteWithChildren
+  '/admin/media': typeof AuthenticatedAdminAdminMediaRoute
+  '/admin/members': typeof AuthenticatedAdminAdminMembersRoute
+  '/admin/registrations': typeof AuthenticatedAdminAdminRegistrationsRoute
+  '/admin/review': typeof AuthenticatedAdminAdminReviewRoute
+  '/admin/site': typeof AuthenticatedAdminAdminSiteRoute
+  '/admin/users': typeof AuthenticatedAdminAdminUsersRoute
+  '/dashboard/workflow/$key': typeof AuthenticatedDashboardWorkflowKeyRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
+  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
+  '/admin/': typeof AuthenticatedAdminAdminIndexRoute
+  '/admin/applications/$id': typeof AuthenticatedAdminAdminApplicationsIdRoute
+  '/admin/cohorts/test': typeof AuthenticatedAdminAdminCohortsTestRoute
+  '/admin/inquiries/$id': typeof AuthenticatedAdminAdminInquiriesIdRoute
+  '/admin/applications/': typeof AuthenticatedAdminAdminApplicationsIndexRoute
+  '/admin/inquiries/': typeof AuthenticatedAdminAdminInquiriesIndexRoute
+  '/admin/attendees/$userId/media': typeof AuthenticatedAdminAdminAttendeesUserIdMediaRoute
+  '/admin/attendees/$userId/workflow': typeof AuthenticatedAdminAdminAttendeesUserIdWorkflowRoute
+  '/admin/attendees/$userId/': typeof AuthenticatedAdminAdminAttendeesUserIdIndexRoute
+  '/admin/attendees/$userId/deliverables/$key': typeof AuthenticatedAdminAdminAttendeesUserIdDeliverablesKeyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/contact': typeof ContactRoute
+  '/facilitator': typeof FacilitatorRoute
+  '/login': typeof LoginRoute
+  '/privacy': typeof PrivacyRoute
+  '/register': typeof RegisterRoute
+  '/schedule': typeof ScheduleRoute
+  '/signup': typeof SignupRoute
+  '/terms': typeof TermsRoute
+  '/paused': typeof AuthenticatedPausedRoute
+  '/welcome': typeof AuthenticatedWelcomeRoute
+  '/dashboard/brief': typeof AuthenticatedDashboardBriefRoute
+  '/dashboard/day': typeof AuthenticatedDashboardDayRoute
+  '/dashboard/deliverables': typeof AuthenticatedDashboardDeliverablesRoute
+  '/dashboard/documents': typeof AuthenticatedDashboardDocumentsRoute
+  '/dashboard/files': typeof AuthenticatedDashboardFilesRoute
+  '/dashboard/filing': typeof AuthenticatedDashboardFilingRoute
+  '/dashboard/goals': typeof AuthenticatedDashboardGoalsRoute
+  '/dashboard/media': typeof AuthenticatedDashboardMediaRoute
+  '/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
+  '/dashboard/workflow': typeof AuthenticatedDashboardWorkflowRouteWithChildren
+  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/dashboard': typeof AuthenticatedDashboardIndexRoute
+  '/admin/attendees': typeof AuthenticatedAdminAdminAttendeesRouteWithChildren
+  '/admin/cohorts': typeof AuthenticatedAdminAdminCohortsRouteWithChildren
+  '/admin/media': typeof AuthenticatedAdminAdminMediaRoute
+  '/admin/members': typeof AuthenticatedAdminAdminMembersRoute
+  '/admin/registrations': typeof AuthenticatedAdminAdminRegistrationsRoute
+  '/admin/review': typeof AuthenticatedAdminAdminReviewRoute
+  '/admin/site': typeof AuthenticatedAdminAdminSiteRoute
+  '/admin/users': typeof AuthenticatedAdminAdminUsersRoute
+  '/dashboard/workflow/$key': typeof AuthenticatedDashboardWorkflowKeyRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
+  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
+  '/admin': typeof AuthenticatedAdminAdminIndexRoute
+  '/admin/applications/$id': typeof AuthenticatedAdminAdminApplicationsIdRoute
+  '/admin/cohorts/test': typeof AuthenticatedAdminAdminCohortsTestRoute
+  '/admin/inquiries/$id': typeof AuthenticatedAdminAdminInquiriesIdRoute
+  '/admin/applications': typeof AuthenticatedAdminAdminApplicationsIndexRoute
+  '/admin/inquiries': typeof AuthenticatedAdminAdminInquiriesIndexRoute
+  '/admin/attendees/$userId/media': typeof AuthenticatedAdminAdminAttendeesUserIdMediaRoute
+  '/admin/attendees/$userId/workflow': typeof AuthenticatedAdminAdminAttendeesUserIdWorkflowRoute
+  '/admin/attendees/$userId': typeof AuthenticatedAdminAdminAttendeesUserIdIndexRoute
+  '/admin/attendees/$userId/deliverables/$key': typeof AuthenticatedAdminAdminAttendeesUserIdDeliverablesKeyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/contact': typeof ContactRoute
+  '/facilitator': typeof FacilitatorRoute
+  '/login': typeof LoginRoute
+  '/privacy': typeof PrivacyRoute
+  '/register': typeof RegisterRoute
+  '/schedule': typeof ScheduleRoute
+  '/signup': typeof SignupRoute
+  '/terms': typeof TermsRoute
+  '/_authenticated/_admin': typeof AuthenticatedAdminRouteWithChildren
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
+  '/_authenticated/paused': typeof AuthenticatedPausedRoute
+  '/_authenticated/welcome': typeof AuthenticatedWelcomeRoute
+  '/_authenticated/dashboard/brief': typeof AuthenticatedDashboardBriefRoute
+  '/_authenticated/dashboard/day': typeof AuthenticatedDashboardDayRoute
+  '/_authenticated/dashboard/deliverables': typeof AuthenticatedDashboardDeliverablesRoute
+  '/_authenticated/dashboard/documents': typeof AuthenticatedDashboardDocumentsRoute
+  '/_authenticated/dashboard/files': typeof AuthenticatedDashboardFilesRoute
+  '/_authenticated/dashboard/filing': typeof AuthenticatedDashboardFilingRoute
+  '/_authenticated/dashboard/goals': typeof AuthenticatedDashboardGoalsRoute
+  '/_authenticated/dashboard/media': typeof AuthenticatedDashboardMediaRoute
+  '/_authenticated/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
+  '/_authenticated/dashboard/workflow': typeof AuthenticatedDashboardWorkflowRouteWithChildren
+  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
+  '/_authenticated/_admin/admin/attendees': typeof AuthenticatedAdminAdminAttendeesRouteWithChildren
+  '/_authenticated/_admin/admin/cohorts': typeof AuthenticatedAdminAdminCohortsRouteWithChildren
+  '/_authenticated/_admin/admin/media': typeof AuthenticatedAdminAdminMediaRoute
+  '/_authenticated/_admin/admin/members': typeof AuthenticatedAdminAdminMembersRoute
+  '/_authenticated/_admin/admin/registrations': typeof AuthenticatedAdminAdminRegistrationsRoute
+  '/_authenticated/_admin/admin/review': typeof AuthenticatedAdminAdminReviewRoute
+  '/_authenticated/_admin/admin/site': typeof AuthenticatedAdminAdminSiteRoute
+  '/_authenticated/_admin/admin/users': typeof AuthenticatedAdminAdminUsersRoute
+  '/_authenticated/dashboard/workflow/$key': typeof AuthenticatedDashboardWorkflowKeyRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
+  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
+  '/_authenticated/_admin/admin/': typeof AuthenticatedAdminAdminIndexRoute
+  '/_authenticated/_admin/admin/applications/$id': typeof AuthenticatedAdminAdminApplicationsIdRoute
+  '/_authenticated/_admin/admin/cohorts/test': typeof AuthenticatedAdminAdminCohortsTestRoute
+  '/_authenticated/_admin/admin/inquiries/$id': typeof AuthenticatedAdminAdminInquiriesIdRoute
+  '/_authenticated/_admin/admin/applications/': typeof AuthenticatedAdminAdminApplicationsIndexRoute
+  '/_authenticated/_admin/admin/inquiries/': typeof AuthenticatedAdminAdminInquiriesIndexRoute
+  '/_authenticated/_admin/admin/attendees/$userId/media': typeof AuthenticatedAdminAdminAttendeesUserIdMediaRoute
+  '/_authenticated/_admin/admin/attendees/$userId/workflow': typeof AuthenticatedAdminAdminAttendeesUserIdWorkflowRoute
+  '/_authenticated/_admin/admin/attendees/$userId/': typeof AuthenticatedAdminAdminAttendeesUserIdIndexRoute
+  '/_authenticated/_admin/admin/attendees/$userId/deliverables/$key': typeof AuthenticatedAdminAdminAttendeesUserIdDeliverablesKeyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/contact'
+    | '/facilitator'
+    | '/login'
+    | '/privacy'
+    | '/register'
+    | '/schedule'
+    | '/signup'
+    | '/terms'
+    | '/dashboard'
+    | '/paused'
+    | '/welcome'
+    | '/dashboard/brief'
+    | '/dashboard/day'
+    | '/dashboard/deliverables'
+    | '/dashboard/documents'
+    | '/dashboard/files'
+    | '/dashboard/filing'
+    | '/dashboard/goals'
+    | '/dashboard/media'
+    | '/dashboard/profile'
+    | '/dashboard/workflow'
+    | '/lovable/email/suppression'
+    | '/dashboard/'
+    | '/admin/attendees'
+    | '/admin/cohorts'
+    | '/admin/media'
+    | '/admin/members'
+    | '/admin/registrations'
+    | '/admin/review'
+    | '/admin/site'
+    | '/admin/users'
+    | '/dashboard/workflow/$key'
+    | '/lovable/email/queue/process'
+    | '/lovable/email/transactional/preview'
+    | '/lovable/email/transactional/send'
+    | '/admin/'
+    | '/admin/applications/$id'
+    | '/admin/cohorts/test'
+    | '/admin/inquiries/$id'
+    | '/admin/applications/'
+    | '/admin/inquiries/'
+    | '/admin/attendees/$userId/media'
+    | '/admin/attendees/$userId/workflow'
+    | '/admin/attendees/$userId/'
+    | '/admin/attendees/$userId/deliverables/$key'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/contact'
+    | '/facilitator'
+    | '/login'
+    | '/privacy'
+    | '/register'
+    | '/schedule'
+    | '/signup'
+    | '/terms'
+    | '/paused'
+    | '/welcome'
+    | '/dashboard/brief'
+    | '/dashboard/day'
+    | '/dashboard/deliverables'
+    | '/dashboard/documents'
+    | '/dashboard/files'
+    | '/dashboard/filing'
+    | '/dashboard/goals'
+    | '/dashboard/media'
+    | '/dashboard/profile'
+    | '/dashboard/workflow'
+    | '/lovable/email/suppression'
+    | '/dashboard'
+    | '/admin/attendees'
+    | '/admin/cohorts'
+    | '/admin/media'
+    | '/admin/members'
+    | '/admin/registrations'
+    | '/admin/review'
+    | '/admin/site'
+    | '/admin/users'
+    | '/dashboard/workflow/$key'
+    | '/lovable/email/queue/process'
+    | '/lovable/email/transactional/preview'
+    | '/lovable/email/transactional/send'
+    | '/admin'
+    | '/admin/applications/$id'
+    | '/admin/cohorts/test'
+    | '/admin/inquiries/$id'
+    | '/admin/applications'
+    | '/admin/inquiries'
+    | '/admin/attendees/$userId/media'
+    | '/admin/attendees/$userId/workflow'
+    | '/admin/attendees/$userId'
+    | '/admin/attendees/$userId/deliverables/$key'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/contact'
+    | '/facilitator'
+    | '/login'
+    | '/privacy'
+    | '/register'
+    | '/schedule'
+    | '/signup'
+    | '/terms'
+    | '/_authenticated/_admin'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/paused'
+    | '/_authenticated/welcome'
+    | '/_authenticated/dashboard/brief'
+    | '/_authenticated/dashboard/day'
+    | '/_authenticated/dashboard/deliverables'
+    | '/_authenticated/dashboard/documents'
+    | '/_authenticated/dashboard/files'
+    | '/_authenticated/dashboard/filing'
+    | '/_authenticated/dashboard/goals'
+    | '/_authenticated/dashboard/media'
+    | '/_authenticated/dashboard/profile'
+    | '/_authenticated/dashboard/workflow'
+    | '/lovable/email/suppression'
+    | '/_authenticated/dashboard/'
+    | '/_authenticated/_admin/admin/attendees'
+    | '/_authenticated/_admin/admin/cohorts'
+    | '/_authenticated/_admin/admin/media'
+    | '/_authenticated/_admin/admin/members'
+    | '/_authenticated/_admin/admin/registrations'
+    | '/_authenticated/_admin/admin/review'
+    | '/_authenticated/_admin/admin/site'
+    | '/_authenticated/_admin/admin/users'
+    | '/_authenticated/dashboard/workflow/$key'
+    | '/lovable/email/queue/process'
+    | '/lovable/email/transactional/preview'
+    | '/lovable/email/transactional/send'
+    | '/_authenticated/_admin/admin/'
+    | '/_authenticated/_admin/admin/applications/$id'
+    | '/_authenticated/_admin/admin/cohorts/test'
+    | '/_authenticated/_admin/admin/inquiries/$id'
+    | '/_authenticated/_admin/admin/applications/'
+    | '/_authenticated/_admin/admin/inquiries/'
+    | '/_authenticated/_admin/admin/attendees/$userId/media'
+    | '/_authenticated/_admin/admin/attendees/$userId/workflow'
+    | '/_authenticated/_admin/admin/attendees/$userId/'
+    | '/_authenticated/_admin/admin/attendees/$userId/deliverables/$key'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  ContactRoute: typeof ContactRoute
+  FacilitatorRoute: typeof FacilitatorRoute
+  LoginRoute: typeof LoginRoute
+  PrivacyRoute: typeof PrivacyRoute
+  RegisterRoute: typeof RegisterRoute
+  ScheduleRoute: typeof ScheduleRoute
+  SignupRoute: typeof SignupRoute
+  TermsRoute: typeof TermsRoute
+  LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
+  LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
+  LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
+  LovableEmailTransactionalSendRoute: typeof LovableEmailTransactionalSendRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/schedule': {
+      id: '/schedule'
+      path: '/schedule'
+      fullPath: '/schedule'
+      preLoaderRoute: typeof ScheduleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/facilitator': {
+      id: '/facilitator'
+      path: '/facilitator'
+      fullPath: '/facilitator'
+      preLoaderRoute: typeof FacilitatorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,12 +713,451 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/welcome': {
+      id: '/_authenticated/welcome'
+      path: '/welcome'
+      fullPath: '/welcome'
+      preLoaderRoute: typeof AuthenticatedWelcomeRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/paused': {
+      id: '/_authenticated/paused'
+      path: '/paused'
+      fullPath: '/paused'
+      preLoaderRoute: typeof AuthenticatedPausedRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/_admin': {
+      id: '/_authenticated/_admin'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/dashboard/': {
+      id: '/_authenticated/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof AuthenticatedDashboardIndexRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/lovable/email/suppression': {
+      id: '/lovable/email/suppression'
+      path: '/lovable/email/suppression'
+      fullPath: '/lovable/email/suppression'
+      preLoaderRoute: typeof LovableEmailSuppressionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/dashboard/workflow': {
+      id: '/_authenticated/dashboard/workflow'
+      path: '/workflow'
+      fullPath: '/dashboard/workflow'
+      preLoaderRoute: typeof AuthenticatedDashboardWorkflowRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/profile': {
+      id: '/_authenticated/dashboard/profile'
+      path: '/profile'
+      fullPath: '/dashboard/profile'
+      preLoaderRoute: typeof AuthenticatedDashboardProfileRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/media': {
+      id: '/_authenticated/dashboard/media'
+      path: '/media'
+      fullPath: '/dashboard/media'
+      preLoaderRoute: typeof AuthenticatedDashboardMediaRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/goals': {
+      id: '/_authenticated/dashboard/goals'
+      path: '/goals'
+      fullPath: '/dashboard/goals'
+      preLoaderRoute: typeof AuthenticatedDashboardGoalsRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/filing': {
+      id: '/_authenticated/dashboard/filing'
+      path: '/filing'
+      fullPath: '/dashboard/filing'
+      preLoaderRoute: typeof AuthenticatedDashboardFilingRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/files': {
+      id: '/_authenticated/dashboard/files'
+      path: '/files'
+      fullPath: '/dashboard/files'
+      preLoaderRoute: typeof AuthenticatedDashboardFilesRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/documents': {
+      id: '/_authenticated/dashboard/documents'
+      path: '/documents'
+      fullPath: '/dashboard/documents'
+      preLoaderRoute: typeof AuthenticatedDashboardDocumentsRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/deliverables': {
+      id: '/_authenticated/dashboard/deliverables'
+      path: '/deliverables'
+      fullPath: '/dashboard/deliverables'
+      preLoaderRoute: typeof AuthenticatedDashboardDeliverablesRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/day': {
+      id: '/_authenticated/dashboard/day'
+      path: '/day'
+      fullPath: '/dashboard/day'
+      preLoaderRoute: typeof AuthenticatedDashboardDayRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/brief': {
+      id: '/_authenticated/dashboard/brief'
+      path: '/brief'
+      fullPath: '/dashboard/brief'
+      preLoaderRoute: typeof AuthenticatedDashboardBriefRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/_admin/admin/': {
+      id: '/_authenticated/_admin/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/lovable/email/transactional/send': {
+      id: '/lovable/email/transactional/send'
+      path: '/lovable/email/transactional/send'
+      fullPath: '/lovable/email/transactional/send'
+      preLoaderRoute: typeof LovableEmailTransactionalSendRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/transactional/preview': {
+      id: '/lovable/email/transactional/preview'
+      path: '/lovable/email/transactional/preview'
+      fullPath: '/lovable/email/transactional/preview'
+      preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/queue/process': {
+      id: '/lovable/email/queue/process'
+      path: '/lovable/email/queue/process'
+      fullPath: '/lovable/email/queue/process'
+      preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/dashboard/workflow/$key': {
+      id: '/_authenticated/dashboard/workflow/$key'
+      path: '/$key'
+      fullPath: '/dashboard/workflow/$key'
+      preLoaderRoute: typeof AuthenticatedDashboardWorkflowKeyRouteImport
+      parentRoute: typeof AuthenticatedDashboardWorkflowRoute
+    }
+    '/_authenticated/_admin/admin/users': {
+      id: '/_authenticated/_admin/admin/users'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AuthenticatedAdminAdminUsersRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/_admin/admin/site': {
+      id: '/_authenticated/_admin/admin/site'
+      path: '/admin/site'
+      fullPath: '/admin/site'
+      preLoaderRoute: typeof AuthenticatedAdminAdminSiteRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/_admin/admin/review': {
+      id: '/_authenticated/_admin/admin/review'
+      path: '/admin/review'
+      fullPath: '/admin/review'
+      preLoaderRoute: typeof AuthenticatedAdminAdminReviewRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/_admin/admin/registrations': {
+      id: '/_authenticated/_admin/admin/registrations'
+      path: '/admin/registrations'
+      fullPath: '/admin/registrations'
+      preLoaderRoute: typeof AuthenticatedAdminAdminRegistrationsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/_admin/admin/members': {
+      id: '/_authenticated/_admin/admin/members'
+      path: '/admin/members'
+      fullPath: '/admin/members'
+      preLoaderRoute: typeof AuthenticatedAdminAdminMembersRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/_admin/admin/media': {
+      id: '/_authenticated/_admin/admin/media'
+      path: '/admin/media'
+      fullPath: '/admin/media'
+      preLoaderRoute: typeof AuthenticatedAdminAdminMediaRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/_admin/admin/cohorts': {
+      id: '/_authenticated/_admin/admin/cohorts'
+      path: '/admin/cohorts'
+      fullPath: '/admin/cohorts'
+      preLoaderRoute: typeof AuthenticatedAdminAdminCohortsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/_admin/admin/attendees': {
+      id: '/_authenticated/_admin/admin/attendees'
+      path: '/admin/attendees'
+      fullPath: '/admin/attendees'
+      preLoaderRoute: typeof AuthenticatedAdminAdminAttendeesRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/_admin/admin/inquiries/': {
+      id: '/_authenticated/_admin/admin/inquiries/'
+      path: '/admin/inquiries'
+      fullPath: '/admin/inquiries/'
+      preLoaderRoute: typeof AuthenticatedAdminAdminInquiriesIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/_admin/admin/applications/': {
+      id: '/_authenticated/_admin/admin/applications/'
+      path: '/admin/applications'
+      fullPath: '/admin/applications/'
+      preLoaderRoute: typeof AuthenticatedAdminAdminApplicationsIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/_admin/admin/inquiries/$id': {
+      id: '/_authenticated/_admin/admin/inquiries/$id'
+      path: '/admin/inquiries/$id'
+      fullPath: '/admin/inquiries/$id'
+      preLoaderRoute: typeof AuthenticatedAdminAdminInquiriesIdRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/_admin/admin/cohorts/test': {
+      id: '/_authenticated/_admin/admin/cohorts/test'
+      path: '/test'
+      fullPath: '/admin/cohorts/test'
+      preLoaderRoute: typeof AuthenticatedAdminAdminCohortsTestRouteImport
+      parentRoute: typeof AuthenticatedAdminAdminCohortsRoute
+    }
+    '/_authenticated/_admin/admin/applications/$id': {
+      id: '/_authenticated/_admin/admin/applications/$id'
+      path: '/admin/applications/$id'
+      fullPath: '/admin/applications/$id'
+      preLoaderRoute: typeof AuthenticatedAdminAdminApplicationsIdRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/_admin/admin/attendees/$userId/': {
+      id: '/_authenticated/_admin/admin/attendees/$userId/'
+      path: '/$userId'
+      fullPath: '/admin/attendees/$userId/'
+      preLoaderRoute: typeof AuthenticatedAdminAdminAttendeesUserIdIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminAdminAttendeesRoute
+    }
+    '/_authenticated/_admin/admin/attendees/$userId/workflow': {
+      id: '/_authenticated/_admin/admin/attendees/$userId/workflow'
+      path: '/$userId/workflow'
+      fullPath: '/admin/attendees/$userId/workflow'
+      preLoaderRoute: typeof AuthenticatedAdminAdminAttendeesUserIdWorkflowRouteImport
+      parentRoute: typeof AuthenticatedAdminAdminAttendeesRoute
+    }
+    '/_authenticated/_admin/admin/attendees/$userId/media': {
+      id: '/_authenticated/_admin/admin/attendees/$userId/media'
+      path: '/$userId/media'
+      fullPath: '/admin/attendees/$userId/media'
+      preLoaderRoute: typeof AuthenticatedAdminAdminAttendeesUserIdMediaRouteImport
+      parentRoute: typeof AuthenticatedAdminAdminAttendeesRoute
+    }
+    '/_authenticated/_admin/admin/attendees/$userId/deliverables/$key': {
+      id: '/_authenticated/_admin/admin/attendees/$userId/deliverables/$key'
+      path: '/$userId/deliverables/$key'
+      fullPath: '/admin/attendees/$userId/deliverables/$key'
+      preLoaderRoute: typeof AuthenticatedAdminAdminAttendeesUserIdDeliverablesKeyRouteImport
+      parentRoute: typeof AuthenticatedAdminAdminAttendeesRoute
+    }
   }
 }
 
+interface AuthenticatedAdminAdminAttendeesRouteChildren {
+  AuthenticatedAdminAdminAttendeesUserIdMediaRoute: typeof AuthenticatedAdminAdminAttendeesUserIdMediaRoute
+  AuthenticatedAdminAdminAttendeesUserIdWorkflowRoute: typeof AuthenticatedAdminAdminAttendeesUserIdWorkflowRoute
+  AuthenticatedAdminAdminAttendeesUserIdIndexRoute: typeof AuthenticatedAdminAdminAttendeesUserIdIndexRoute
+  AuthenticatedAdminAdminAttendeesUserIdDeliverablesKeyRoute: typeof AuthenticatedAdminAdminAttendeesUserIdDeliverablesKeyRoute
+}
+
+const AuthenticatedAdminAdminAttendeesRouteChildren: AuthenticatedAdminAdminAttendeesRouteChildren =
+  {
+    AuthenticatedAdminAdminAttendeesUserIdMediaRoute:
+      AuthenticatedAdminAdminAttendeesUserIdMediaRoute,
+    AuthenticatedAdminAdminAttendeesUserIdWorkflowRoute:
+      AuthenticatedAdminAdminAttendeesUserIdWorkflowRoute,
+    AuthenticatedAdminAdminAttendeesUserIdIndexRoute:
+      AuthenticatedAdminAdminAttendeesUserIdIndexRoute,
+    AuthenticatedAdminAdminAttendeesUserIdDeliverablesKeyRoute:
+      AuthenticatedAdminAdminAttendeesUserIdDeliverablesKeyRoute,
+  }
+
+const AuthenticatedAdminAdminAttendeesRouteWithChildren =
+  AuthenticatedAdminAdminAttendeesRoute._addFileChildren(
+    AuthenticatedAdminAdminAttendeesRouteChildren,
+  )
+
+interface AuthenticatedAdminAdminCohortsRouteChildren {
+  AuthenticatedAdminAdminCohortsTestRoute: typeof AuthenticatedAdminAdminCohortsTestRoute
+}
+
+const AuthenticatedAdminAdminCohortsRouteChildren: AuthenticatedAdminAdminCohortsRouteChildren =
+  {
+    AuthenticatedAdminAdminCohortsTestRoute:
+      AuthenticatedAdminAdminCohortsTestRoute,
+  }
+
+const AuthenticatedAdminAdminCohortsRouteWithChildren =
+  AuthenticatedAdminAdminCohortsRoute._addFileChildren(
+    AuthenticatedAdminAdminCohortsRouteChildren,
+  )
+
+interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminAdminAttendeesRoute: typeof AuthenticatedAdminAdminAttendeesRouteWithChildren
+  AuthenticatedAdminAdminCohortsRoute: typeof AuthenticatedAdminAdminCohortsRouteWithChildren
+  AuthenticatedAdminAdminMediaRoute: typeof AuthenticatedAdminAdminMediaRoute
+  AuthenticatedAdminAdminMembersRoute: typeof AuthenticatedAdminAdminMembersRoute
+  AuthenticatedAdminAdminRegistrationsRoute: typeof AuthenticatedAdminAdminRegistrationsRoute
+  AuthenticatedAdminAdminReviewRoute: typeof AuthenticatedAdminAdminReviewRoute
+  AuthenticatedAdminAdminSiteRoute: typeof AuthenticatedAdminAdminSiteRoute
+  AuthenticatedAdminAdminUsersRoute: typeof AuthenticatedAdminAdminUsersRoute
+  AuthenticatedAdminAdminIndexRoute: typeof AuthenticatedAdminAdminIndexRoute
+  AuthenticatedAdminAdminApplicationsIdRoute: typeof AuthenticatedAdminAdminApplicationsIdRoute
+  AuthenticatedAdminAdminInquiriesIdRoute: typeof AuthenticatedAdminAdminInquiriesIdRoute
+  AuthenticatedAdminAdminApplicationsIndexRoute: typeof AuthenticatedAdminAdminApplicationsIndexRoute
+  AuthenticatedAdminAdminInquiriesIndexRoute: typeof AuthenticatedAdminAdminInquiriesIndexRoute
+}
+
+const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminAdminAttendeesRoute:
+    AuthenticatedAdminAdminAttendeesRouteWithChildren,
+  AuthenticatedAdminAdminCohortsRoute:
+    AuthenticatedAdminAdminCohortsRouteWithChildren,
+  AuthenticatedAdminAdminMediaRoute: AuthenticatedAdminAdminMediaRoute,
+  AuthenticatedAdminAdminMembersRoute: AuthenticatedAdminAdminMembersRoute,
+  AuthenticatedAdminAdminRegistrationsRoute:
+    AuthenticatedAdminAdminRegistrationsRoute,
+  AuthenticatedAdminAdminReviewRoute: AuthenticatedAdminAdminReviewRoute,
+  AuthenticatedAdminAdminSiteRoute: AuthenticatedAdminAdminSiteRoute,
+  AuthenticatedAdminAdminUsersRoute: AuthenticatedAdminAdminUsersRoute,
+  AuthenticatedAdminAdminIndexRoute: AuthenticatedAdminAdminIndexRoute,
+  AuthenticatedAdminAdminApplicationsIdRoute:
+    AuthenticatedAdminAdminApplicationsIdRoute,
+  AuthenticatedAdminAdminInquiriesIdRoute:
+    AuthenticatedAdminAdminInquiriesIdRoute,
+  AuthenticatedAdminAdminApplicationsIndexRoute:
+    AuthenticatedAdminAdminApplicationsIndexRoute,
+  AuthenticatedAdminAdminInquiriesIndexRoute:
+    AuthenticatedAdminAdminInquiriesIndexRoute,
+}
+
+const AuthenticatedAdminRouteWithChildren =
+  AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
+
+interface AuthenticatedDashboardWorkflowRouteChildren {
+  AuthenticatedDashboardWorkflowKeyRoute: typeof AuthenticatedDashboardWorkflowKeyRoute
+}
+
+const AuthenticatedDashboardWorkflowRouteChildren: AuthenticatedDashboardWorkflowRouteChildren =
+  {
+    AuthenticatedDashboardWorkflowKeyRoute:
+      AuthenticatedDashboardWorkflowKeyRoute,
+  }
+
+const AuthenticatedDashboardWorkflowRouteWithChildren =
+  AuthenticatedDashboardWorkflowRoute._addFileChildren(
+    AuthenticatedDashboardWorkflowRouteChildren,
+  )
+
+interface AuthenticatedDashboardRouteChildren {
+  AuthenticatedDashboardBriefRoute: typeof AuthenticatedDashboardBriefRoute
+  AuthenticatedDashboardDayRoute: typeof AuthenticatedDashboardDayRoute
+  AuthenticatedDashboardDeliverablesRoute: typeof AuthenticatedDashboardDeliverablesRoute
+  AuthenticatedDashboardDocumentsRoute: typeof AuthenticatedDashboardDocumentsRoute
+  AuthenticatedDashboardFilesRoute: typeof AuthenticatedDashboardFilesRoute
+  AuthenticatedDashboardFilingRoute: typeof AuthenticatedDashboardFilingRoute
+  AuthenticatedDashboardGoalsRoute: typeof AuthenticatedDashboardGoalsRoute
+  AuthenticatedDashboardMediaRoute: typeof AuthenticatedDashboardMediaRoute
+  AuthenticatedDashboardProfileRoute: typeof AuthenticatedDashboardProfileRoute
+  AuthenticatedDashboardWorkflowRoute: typeof AuthenticatedDashboardWorkflowRouteWithChildren
+  AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
+}
+
+const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
+  {
+    AuthenticatedDashboardBriefRoute: AuthenticatedDashboardBriefRoute,
+    AuthenticatedDashboardDayRoute: AuthenticatedDashboardDayRoute,
+    AuthenticatedDashboardDeliverablesRoute:
+      AuthenticatedDashboardDeliverablesRoute,
+    AuthenticatedDashboardDocumentsRoute: AuthenticatedDashboardDocumentsRoute,
+    AuthenticatedDashboardFilesRoute: AuthenticatedDashboardFilesRoute,
+    AuthenticatedDashboardFilingRoute: AuthenticatedDashboardFilingRoute,
+    AuthenticatedDashboardGoalsRoute: AuthenticatedDashboardGoalsRoute,
+    AuthenticatedDashboardMediaRoute: AuthenticatedDashboardMediaRoute,
+    AuthenticatedDashboardProfileRoute: AuthenticatedDashboardProfileRoute,
+    AuthenticatedDashboardWorkflowRoute:
+      AuthenticatedDashboardWorkflowRouteWithChildren,
+    AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
+  }
+
+const AuthenticatedDashboardRouteWithChildren =
+  AuthenticatedDashboardRoute._addFileChildren(
+    AuthenticatedDashboardRouteChildren,
+  )
+
+interface AuthenticatedRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRouteWithChildren
+  AuthenticatedPausedRoute: typeof AuthenticatedPausedRoute
+  AuthenticatedWelcomeRoute: typeof AuthenticatedWelcomeRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRouteWithChildren,
+  AuthenticatedPausedRoute: AuthenticatedPausedRoute,
+  AuthenticatedWelcomeRoute: AuthenticatedWelcomeRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  ContactRoute: ContactRoute,
+  FacilitatorRoute: FacilitatorRoute,
+  LoginRoute: LoginRoute,
+  PrivacyRoute: PrivacyRoute,
+  RegisterRoute: RegisterRoute,
+  ScheduleRoute: ScheduleRoute,
+  SignupRoute: SignupRoute,
+  TermsRoute: TermsRoute,
+  LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
+  LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
+  LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
+  LovableEmailTransactionalSendRoute: LovableEmailTransactionalSendRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
