@@ -589,6 +589,46 @@ export function MediaHub({ scope, ownerUserId, canAdminPush, title }: Props) {
           </div>
         )}
 
+        <div
+          onDragOver={(e) => {
+            if (!hasFiles(e)) return;
+            e.preventDefault();
+            setDropTargetKey("panel");
+          }}
+          onDragLeave={(e) => {
+            if (e.currentTarget === e.target) setDropTargetKey(null);
+          }}
+          onDrop={async (e) => {
+            if (!hasFiles(e)) return;
+            e.preventDefault();
+            setDropTargetKey(null);
+            if (collectionId) {
+              const newIds = await handleFiles(e.dataTransfer.files);
+              if (newIds.length === 0) return;
+              try {
+                await Promise.all(
+                  newIds.map((id) =>
+                    toggleCollectionFn({
+                      data: { collectionId, assetId: id, action: "add" },
+                    }),
+                  ),
+                );
+                const name = collections.find((c) => c.id === collectionId)?.name ?? "collection";
+                toast.success(`Added ${newIds.length} file${newIds.length === 1 ? "" : "s"} to ${name}`);
+                qc.invalidateQueries({ queryKey: ["media"] });
+              } catch (err) {
+                toast.error((err as Error).message);
+              }
+            } else {
+              await handleFiles(e.dataTransfer.files);
+            }
+          }}
+          className={`rounded-md transition ${
+            dropTargetKey === "panel"
+              ? "outline-dashed outline-2 outline-primary/60 outline-offset-2"
+              : ""
+          }`}
+        >
         {assetsQ.isLoading ? (
           <div className="py-12 text-center text-sm text-muted-foreground">Loading…</div>
         ) : assets.length === 0 ? (
