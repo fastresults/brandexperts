@@ -11,6 +11,8 @@ import heroBg from "@/assets/hero-bg.png";
 import { getPublicSiteSettings } from "@/lib/site-settings.functions";
 import { HomeSelection } from "@/components/home/HomeSelection";
 import { ArtOfThePossible } from "@/components/home/ArtOfThePossible";
+import { getRandomHeroBackground } from "@/lib/media.functions";
+import { useMemo } from "react";
 
 export const FACILITATOR_NAME = "Adam Anderson";
 export const FACILITATOR_TITLE =
