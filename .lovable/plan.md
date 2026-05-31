@@ -1,72 +1,66 @@
-## Goal
+## What's actually wrong
 
-Eliminate the black flash before the hero image appears, and make repeat visits feel instant by caching the signed URLs in the browser.
+Three compounding problems explain why the user still sees solid black:
 
-## Approach
+1. **The image isn't in the initial HTML.** The current code only fetches the URL list *after* React mounts on the client. So the browser parses the page, hydrates, runs a query, picks a URL, *then* starts downloading the image. The black gap is the entire critical path.
+2. **The signed URLs serve the original, full-size images** — likely multi-MB PNGs from the `master-media` bucket. Even from cache, the first byte takes a while.
+3. **The hero section background is `bg-background` (near-black in this theme).** While the image is downloading, that's what the user stares at.
 
-Stop fetching one random URL on every mount. Instead, fetch the **full list of background URLs once**, cache it in `sessionStorage`, warm the browser image cache, and pick a random one synchronously on every mount.
+Cached `sessionStorage` lists don't help the very first paint, and `new Image()` warming only runs *after* the first fetch — too late.
 
-## Changes
+## The fix
 
-### 1. New server function — `getHeroBackgroundList`
-`src/lib/media.functions.ts`
+### 1. SSR-pick the image in the route loader
+`src/routes/index.tsx`
 
-- Public (no auth), same Backgrounds-collection query as `getRandomHeroBackground`.
-- Returns `{ urls: string[], expiresAt: number }` — array of 1-hour signed URLs, plus an `expiresAt` epoch (now + 55 minutes) so the client knows when to refetch.
-- Keep the existing `getRandomHeroBackground` for now (delete in a later pass if unused).
+- Add a loader that calls `getHeroBackgroundList` via `queryClient.ensureQueryData` (50 min staleTime) and returns a single `heroBgUrl` chosen randomly at loader time.
+- Loader runs on the server for the initial HTML and on the client for subsequent navigations. The URL is serialized into the page, so the `<img>` tag ships in the initial HTML — the browser starts downloading during HTML parse. No client roundtrip needed before the image starts loading.
+- Random rotation still happens: the loader re-runs (and re-picks) on each navigation to `/`.
 
-### 2. New client helper — `src/lib/hero-bg-cache.ts`
-- `loadCachedList()`: read `sessionStorage["heroBgList"]`, return it if `expiresAt > Date.now()`, otherwise `null`.
-- `saveCachedList(list)`: write to `sessionStorage`.
-- `warmImages(urls)`: for each URL, `const img = new Image(); img.src = url;` so the browser fetches and caches every background in the background.
-- `pickRandom(urls)`: pure helper.
-- All wrapped in `typeof window !== "undefined"` guards so SSR is safe.
-
-### 3. Hero components — `src/routes/index.tsx` and `src/components/home/HomeSelection.tsx`
-
-Replace the current `useQuery` + `useServerFn(getRandomHeroBackground)` block with:
+### 2. Preload link with high priority
+Same route's `head()`:
 
 ```ts
-const fetchList = useServerFn(getHeroBackgroundList);
-const { data: list } = useQuery({
-  queryKey: ["heroBgList"],
-  queryFn: async () => {
-    const cached = loadCachedList();
-    if (cached) return cached;
-    const fresh = await fetchList();
-    saveCachedList(fresh);
-    warmImages(fresh.urls);
-    return fresh;
-  },
-  staleTime: 50 * 60 * 1000,
-  gcTime: 60 * 60 * 1000,
-  refetchOnMount: false,
-  refetchOnWindowFocus: false,
-});
-const bgUrl = useMemo(
-  () => (list?.urls.length ? pickRandom(list.urls) : null),
-  [list],
-);
+head: ({ loaderData }) => ({
+  links: loaderData?.heroBgUrl
+    ? [{ rel: "preload", as: "image", href: loaderData.heroBgUrl, fetchpriority: "high" }]
+    : [],
+  meta: [...existing meta...],
+})
 ```
 
-- First visit in a session: one fetch, all images warmed in parallel; the picked one paints as fast as the network allows (the others are already on their way too).
-- Every subsequent navigation within the session: synchronous read from `sessionStorage`, the chosen URL is already in HTTP cache → near-instant paint, no flash.
-- The chosen image still rotates randomly per mount.
+This tells the browser to start downloading the hero image with the highest network priority, before stylesheets, before JS — the absolute first request after the HTML itself.
 
-### 4. SSR-side priming (optional polish)
-In the `/` route loader, call `context.queryClient.ensureQueryData({ queryKey: ["heroBgList"], queryFn: () => getHeroBackgroundList() })` so the very first server-rendered HTML ships with the URL list already in the React Query cache. The hero can then pick + render on the first paint with no client roundtrip.
+### 3. Shrink the image at the edge
+`src/lib/media.functions.ts` — pass Supabase Storage image transforms to `createSignedUrl`:
 
-### 5. Soft fade-in
-Keep the current `transition-opacity duration-500` div. Add `opacity-0` until the chosen image's `onLoad` fires, then `opacity-100`. The hero section uses the site's normal background color underneath (matches the page) rather than solid black during the brief preload — no jarring flash.
+```ts
+.createSignedUrl(a.storage_path, 3600, {
+  transform: { width: 1920, quality: 75, resize: "cover" },
+})
+```
 
-## What this does NOT change
+A 5 MB PNG becomes a ~150–300 KB WebP. This alone roughly cuts the visible delay by 10–20×.
 
-- The `Backgrounds` collection, the storage bucket, or any RLS / table.
-- The overlay (still `bg-background/0`).
-- The fact that `hero-bg.png` is no longer imported anywhere.
+### 4. Soft fallback background, not black
+In both Hero components, change the section's background from `bg-background` to a subtle brand gradient (`bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900` or a token-based equivalent). The user sees a soft dark tone for the brief moment before paint instead of an abrupt black rectangle.
+
+### 5. Drop the opacity-0 → opacity-100 fade
+With the image preloaded and in initial HTML, it's almost always painted on the first frame. The fade-in was actively making the gap *more* noticeable. Render the `<img>` at full opacity from the start.
+
+### 6. Wire `HomeSelection` to the same loader data
+Pass `heroBgUrl` from `HomePage` into `<HomeSelection initialBgUrl={...} />` so the selection-variant hero uses the same SSR-picked URL. No duplicate fetch, no duplicate randomness.
 
 ## Result
 
-- First page load in a session: one network call, all backgrounds preloaded, hero fades in smoothly.
-- Subsequent navigations/refreshes: instant — URL list is in `sessionStorage`, image bytes are in HTTP cache.
-- Random rotation still happens on every mount.
+- Initial HTML contains both `<link rel="preload" ... fetchpriority="high">` and `<img src=...>`.
+- The image is now ~200 KB WebP instead of multi-MB PNG.
+- The browser starts the download as the *first* network request after the HTML, in parallel with JS.
+- Background behind the loading image is a brand gradient, not black.
+- Random rotation still happens on every visit to `/`.
+
+## Out of scope
+
+- No DB / RLS / bucket changes.
+- No removal of the `getHeroBackgroundList` server function or the `sessionStorage` cache (the cache still helps client-side navigations).
+- No image regeneration in the MediaHub.
