@@ -68,7 +68,7 @@ function Hero() {
   return (
     <section className="relative overflow-hidden">
       <div className="absolute inset-0 bg-cover bg-center transition-opacity duration-500" style={{ backgroundImage: `url(${bgUrl})` }} />
-      <div className="absolute inset-0 bg-background/60" />
+      <div className="absolute inset-0 bg-background/0" />
       <div className="relative mx-auto max-w-6xl px-6 py-16 md:py-24 lg:py-32">
         <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.18em] text-white/85 md:text-sm md:tracking-[0.2em]">
           <Sparkles className="size-3.5" /> Atlanta · Inaugural Cohort · 6 seats · 0 cost
