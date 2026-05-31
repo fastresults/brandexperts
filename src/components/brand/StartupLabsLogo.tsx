@@ -1,4 +1,4 @@
-import logoSvg from "@/assets/brandexperts-logo.svg?raw";
+import { BRANDEXPERTS_INNER, BRANDEXPERTS_VIEWBOX } from "@/assets/brandexperts-logo-inner";
 
 type Props = {
   className?: string;
@@ -6,24 +6,23 @@ type Props = {
 };
 
 /**
- * BrandExperts wordmark. The SVG is authored with `fill="currentColor"` so it
- * inherits whatever text color the surrounding container sets — light/dark
- * theming is handled by the parent applying `text-foreground` (or any other
- * text-color utility).
+ * BrandExperts wordmark. Uses `currentColor` so it inherits the surrounding
+ * text color — apply `text-foreground` (or any other text color utility) on
+ * the parent to control light/dark appearance.
  *
  * The component name is kept as `StartupLabsLogo` for backwards compatibility
  * with existing import sites.
  */
 export function StartupLabsLogo({ className, title = "BrandExperts" }: Props) {
   return (
-    <span
+    <svg
       role="img"
       aria-label={title}
-      title={title}
-      className={"inline-block " + (className ?? "")}
-      // SVG content is a static, trusted build-time asset.
-      dangerouslySetInnerHTML={{ __html: logoSvg }}
-      style={{ lineHeight: 0 }}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox={BRANDEXPERTS_VIEWBOX}
+      className={className}
+      fill="currentColor"
+      dangerouslySetInnerHTML={{ __html: `<title>${title}</title>${BRANDEXPERTS_INNER}` }}
     />
   );
 }
