@@ -1,43 +1,34 @@
-# Why dragging desktop images onto "Backgrounds" does nothing
+# Add Batch Delete to Media Library
 
-`MediaHub.tsx` has two completely separate drop paths:
+## Problem
 
-1. **Internal drags** (existing asset cards → folder/collection chips in the sidebar). `dropOnCollection` / `dropOnFolder` parse a JSON `DragPayload` written by `handleDragStart`. If that JSON isn't present, they silently return.
-2. **OS file drops** (files from your desktop → upload). Only the **empty-state** card (`assets.length === 0`) actually reads `e.dataTransfer.files` and calls `handleFiles(...)`. Nothing else does.
-
-So when you drag images from your desktop onto the "Backgrounds" collection chip in the sidebar:
-- `dropOnCollection` runs → `readPayload(e)` returns `null` (no internal JSON) → early return.
-- No upload code path is reached. No toast, no error, no network request — silent no-op.
-
-The empty-state drop zone only appears when the current view has zero assets, so as soon as Backgrounds (or the master library) has anything in it, even the working drop target disappears.
+When one or more assets are selected in the media library, there is no way to delete them as a batch. The toolbar only shows "Push to users" when `selectedIds.size > 0`. The existing `removeAsset` mutation only deletes a single asset from the detail sheet (one server call at a time). Pressing Delete on the keyboard also does nothing.
 
 ## Fix
 
-Make every drop target detect OS files (`e.dataTransfer.files.length > 0`) and upload them, in addition to handling internal asset moves.
+### 1. Toolbar button (`MediaHub.tsx`, top action row)
+Next to "Push to users", render when `selectedIds.size > 0`:
 
-### Changes (all in `src/components/media/MediaHub.tsx`)
+```
+<Button variant="destructive" onClick={confirmAndBatchDelete}>
+  <Trash2 /> Delete ({selectedIds.size})
+</Button>
+```
 
-1. **Sidebar collection chips** — `dropOnCollection(e, collectionId)`:
-   - If `e.dataTransfer.files.length > 0`: call `handleFiles(files)` to upload into the current scope/folder, then add each new asset to the target collection (reuse `toggleCollectionFn` with `action: "add"`).
-   - Else fall through to existing internal-move logic.
-   - Refactor `handleFiles` to return the created asset IDs so we can attach them to the collection.
+### 2. Batch delete handler
+Add a `batchDelete` mutation that:
+- Confirms with `window.confirm("Delete N file(s)? This cannot be undone.")`
+- Calls the existing `deleteAsset` server function once per id via `Promise.allSettled` (server fn already exists; no backend change)
+- Shows a single toast: success count + failure count
+- On completion: clears `selectedIds`, closes the detail sheet if the open asset was deleted, and invalidates the assets query
 
-2. **Sidebar folder chips** — `dropOnFolder(e, targetFolderId)`:
-   - If `e.dataTransfer.files.length > 0`: upload directly into `targetFolderId` (temporarily override the `folderId` arg passed to the upload function, or accept an optional `folderIdOverride` on `handleFiles`).
-   - Else existing internal-move logic.
+### 3. Keyboard shortcut
+Add a `useEffect` keydown listener on the MediaHub root: when `Delete` or `Backspace` is pressed, no input/textarea is focused, the detail sheet is closed, and `selectedIds.size > 0`, trigger the same `confirmAndBatchDelete`.
 
-3. **Main asset grid area** — wrap the grid/list container (not just the empty state) in an `onDragOver` / `onDrop` handler that uploads files into the currently selected folder. Keep visual affordance subtle (e.g. dashed outline when `isDragging` over the panel and files are present).
+### 4. Selection UX polish (small)
+- After batch delete completes, also clear `dropTargetKey` and `isDragging` for safety.
+- Disable the batch delete button while the mutation is pending and show a spinner.
 
-4. **dragover hints** — accept the drop when `e.dataTransfer.types.includes("Files")` so the cursor shows the copy icon and the drop actually fires. Browsers reject drops by default unless `dragover` calls `preventDefault()`, which the sidebar handlers already do — good.
-
-5. **Toast feedback** — on file drops to a collection: "Uploaded N file(s) to {collection name}". On folder drops: existing upload toasts are enough.
-
-### Out of scope
-
-- No backend changes; existing `enqueueUpload` / `finalizeUpload` / `toggleAssetInCollection` server fns cover everything.
-- No change to the upload pipeline, RLS, or storage buckets.
-- No visual redesign of the sidebar — only the drop behavior.
-
-### Risk
-
-Low. All changes are additive in event handlers; the existing internal drag-and-drop path is preserved because we branch on `e.dataTransfer.files.length`.
+## Out of scope
+- No new server function (we reuse `deleteAsset`). If performance becomes an issue later, we can add a `deleteAssets` bulk server fn — not needed now.
+- No changes to selection model, drag-and-drop, collections, or RLS.
