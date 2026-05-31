@@ -311,6 +311,11 @@ export function MediaHub({ scope, ownerUserId, canAdminPush, title }: Props) {
   async function dropOnFolder(e: React.DragEvent, targetFolderId: string | null) {
     e.preventDefault();
     setDropTargetKey(null);
+    // OS file drop → upload directly into that folder
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      await handleFiles(e.dataTransfer.files, { folderIdOverride: targetFolderId });
+      return;
+    }
     const p = readPayload(e);
     if (!p || p.ids.length === 0) return;
     try {
@@ -326,6 +331,26 @@ export function MediaHub({ scope, ownerUserId, canAdminPush, title }: Props) {
   async function dropOnCollection(e: React.DragEvent, targetCollectionId: string) {
     e.preventDefault();
     setDropTargetKey(null);
+    // OS file drop → upload (using current folder) then attach to the collection
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const newIds = await handleFiles(e.dataTransfer.files);
+      if (newIds.length === 0) return;
+      try {
+        await Promise.all(
+          newIds.map((id) =>
+            toggleCollectionFn({
+              data: { collectionId: targetCollectionId, assetId: id, action: "add" },
+            }),
+          ),
+        );
+        const name = collections.find((c) => c.id === targetCollectionId)?.name ?? "collection";
+        toast.success(`Added ${newIds.length} file${newIds.length === 1 ? "" : "s"} to ${name}`);
+        qc.invalidateQueries({ queryKey: ["media"] });
+      } catch (err) {
+        toast.error((err as Error).message);
+      }
+      return;
+    }
     const p = readPayload(e);
     if (!p || p.ids.length === 0) return;
     try {
