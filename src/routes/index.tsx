@@ -113,11 +113,22 @@ function BannerChip({ icon, label }: { icon: React.ReactNode; label: string }) {
 
 function Hero() {
   const EVENT = useEvent();
+  const fetchBg = useServerFn(getRandomHeroBackground);
+  const mountKey = useMemo(() => Math.random().toString(36).slice(2), []);
+  const { data } = useQuery({
+    queryKey: ["heroBg", mountKey],
+    queryFn: () => fetchBg(),
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: false,
+  });
+  const bgUrl = data?.url ?? heroBg;
   return (
     <section className="relative overflow-hidden">
       <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: `url(${heroBg})` }}
+        className="absolute inset-0 bg-cover bg-center transition-opacity duration-500"
+        style={{ backgroundImage: `url(${bgUrl})` }}
       />
       <div className="absolute inset-0 bg-background/50" />
       <div className="relative mx-auto max-w-6xl px-6 py-16 md:py-24 lg:py-32">
