@@ -1,51 +1,48 @@
-## Goal
-Push-to-talk mic on the chat input at `/dashboard/brief`. Tap mic → speak → tap stop → transcript appears appended in the textarea, ready to edit or send.
+# Brief conversation review — what to refine
 
-## Provider
-**ElevenLabs Scribe v2** (batch transcription) via the ElevenLabs connector. One-click connect — no API key to paste. Direct API (not gateway), called from a server function with `process.env.ELEVENLABS_API_KEY`.
+I read the chat route (`src/routes/api/brief-chat.ts`), the spine (`src/lib/brand-brief.ts`), and the chat UI (`src/routes/_authenticated/dashboard.brief.tsx`). The bones are good: AI-led, one question per turn, live brief panel on the right, import card to skip ahead. Below are the gaps I want to close before you take it.
 
-Endpoint: `POST https://api.elevenlabs.io/v1/speech-to-text` with `model_id=scribe_v2`, auto language detection. ~99-language support, strong accuracy, no diarization/event tagging needed for dictation.
+## Issues I'd fix
 
-## Files to create
-1. **`src/lib/transcribe.functions.ts`** — `transcribeAudio` server function:
-   - Auth-protected via `requireSupabaseAuth` middleware.
-   - Accepts a `FormData` with an `audio` file blob.
-   - Reads `process.env.ELEVENLABS_API_KEY`, POSTs to ElevenLabs Scribe.
-   - Returns `{ text }` on success or `{ text: "", error }` on failure (graceful, never throws to UI).
-   - 60s/25MB guard.
+1. **The kickoff looks awkward.** The UI auto-sends a literal user message `"Let's begin."` that appears in the transcript. It reads like the executive said it. Replace with a server-generated assistant greeting (no fake user turn) that:
+   - says hi, names what we're doing, sets length expectation ("about 10 minutes, ~12 short exchanges"),
+   - acknowledges imported context if present ("I read your resume — give me 30 seconds to mirror back what I see"),
+   - asks the first real question.
 
-2. **`src/hooks/use-voice-dictation.ts`** — reusable hook:
-   - `start()` → request mic permission, detect supported mime-type (`audio/webm;codecs=opus` for Chrome/Firefox/Edge, `audio/mp4` for Safari/iOS), start `MediaRecorder`.
-   - `stop()` → finalize blob, stop all tracks, upload to `transcribeAudio`, return text.
-   - Exposes `{ isRecording, isTranscribing, elapsedMs, start, stop, error }`.
-   - Hard 60s safety cap with auto-stop.
+2. **No sense of progress.** Right panel shows "X of 14" but the AI never references it in chat. Add a system-prompt rule: every 3–4 turns, briefly orient ("Halfway there — three more big ones: audience, voice, and what winning looks like.").
 
-3. **`src/components/brief/MicButton.tsx`** — UI control:
-   - Idle: mic icon. Recording: pulsing red square (stop) + live MM:SS timer. Transcribing: spinner.
-   - Tooltip + `aria-label`. Disabled while chat is `busy`.
-   - On success calls `onTranscript(text)`; on error shows a sonner toast.
+3. **Examples are optional today; they should be mandatory on abstract sections.** Current system prompt says "Offer 2–3 concrete example answers when it helps." In practice the model skips them on the hardest sections. Force examples for: `signature_pov`, `voice`, `transformation`, `domain`, `audience_pain`, `signature_themes`. Examples should be domain-flavored when imported context exists (e.g., if resume says "healthcare ops," examples reference healthcare).
 
-## File to edit
-**`src/routes/_authenticated/dashboard.brief.tsx`** (input form, lines ~190–213):
-- Drop `<MicButton onTranscript={(t) => setInput(prev => prev ? `${prev} ${t}` : t)} disabled={busy} />` between the textarea and the send button.
+4. **No graceful "I don't know" path.** Executive gets stuck on `signature_pov` or `voice` → conversation stalls. Add rule: if the user hedges twice, the strategist offers a "park-it" move ("Let's come back to this — I'll draft 2 options after we cover audience and you pick.") and records a partial fact with confidence 2 so the panel still advances.
 
-## Connector setup (one tool call)
-- Call `standard_connectors--connect` with `connector_id: "elevenlabs"`. User picks/creates the connection in Lovable's UI; `ELEVENLABS_API_KEY` becomes available to server functions.
+5. **Order isn't enforced.** Model is told "whatever order makes sense." For most execs the natural ladder is: identity → domain → expertise → audience → audience_pain → transformation → signature_pov → origin_arc → voice → themes → channels → outcome → non-negotiables → workshop_alignment. Easy/grounded first, abstract later. Pin this as the *default* order, deviate only when imported context already answers something.
 
-## UX details
-- First use triggers browser mic-permission prompt; clear error toast if denied/unsupported.
-- Live timer ("0:08") while recording.
-- Transcript is **appended**, not auto-sent — user reviews then hits Enter.
-- 60s cap per dictation; user can dictate multiple times to extend.
+6. **Voice ask is heavy and lands too early if model jumps to it.** Keep the current "paste 2–3 sentences you've written" ask, but only after audience/transformation are locked, and always offer the fallback (3 tone words + 3 anti-tone words) up front so it doesn't feel like homework.
 
-## Not doing
-- No live/streaming transcription (push-to-talk is simpler and more reliable).
-- No changes to chat backend, brief logic, or any other page.
-- No diarization, event tagging, or word-level timestamps.
+7. **A few spine labels/hints read like consulting jargon.** Light relabels in `src/lib/brand-brief.ts`:
+   - `domain` label "Domain you own" → "What you want to be known for" (hint stays specific).
+   - `signature_pov` hint → add example: "e.g., 'Most turnaround playbooks fail in regulated industries because they ignore the compliance clock.'"
+   - `non_negotiables` hint → soften: "Anything off-limits — topics, tones, platforms, or clients you won't touch."
+   - `workshop_alignment` → move to a *closing* prompt the strategist asks last ("Before I assemble this — of the 15 deliverables we'll build in the room, which 2–3 matter most?"), not a mid-flow spine item.
 
-## Acceptance check
-1. Mic button appears in the chat input on `/dashboard/brief`.
-2. Click mic → permission prompt → red recording + timer.
-3. Click stop → spinner → transcript appended to textarea.
-4. Works in Chrome, Safari desktop, iOS Safari, Firefox, Edge.
-5. If connector isn't connected, clear toast (no crash).
+8. **Finish behavior is invisible.** `finish_brief` fires silently. Before calling it, the strategist should say "I have enough — assembling your brief now," so the screen transition (chat → finished view) isn't jarring.
+
+9. **Mic + Enter behavior is fine, but no "edit my last answer" affordance.** Add a one-line note under the composer: "Tap any section on the right to edit." (UI already supports it; just surface it.)
+
+10. **Empty-state for the right panel.** "0 of 14" with no items feels cold. Add a single line: "Your brief will fill in here as we talk." (The intro paragraph at the top says something similar but the panel itself reads empty.)
+
+## Files I'd touch
+
+- `src/routes/api/brief-chat.ts` — rewrite the `system` prompt: greeting rule, default order, mandatory examples list, park-it rule, finish-announcement rule, progress check-ins.
+- `src/routes/_authenticated/dashboard.brief.tsx` — replace the auto-sent `"Let's begin."` user message with a server-initiated assistant greeting (send an empty messages array or a system-only kickoff token; render nothing for the user side). Add the "Tap any section on the right to edit" hint under the composer.
+- `src/lib/brand-brief.ts` — relabel `domain`, sharpen `signature_pov` hint with example, soften `non_negotiables`, move `workshop_alignment` to last position (it already is — keep it but mark it as the closing question in the prompt).
+- `src/components/brief/BrandBriefPanel.tsx` — add empty-state line when `facts.length === 0`.
+
+## What I'm NOT changing
+
+- The 14-section spine itself (only labels/hints/order semantics).
+- The Gemini model choice.
+- The import card flow (already solid).
+- The finished-view markdown rendering.
+
+If you want, I can also do a dry-run as a fake executive after the changes land and paste the transcript so you can sanity-check before going through it yourself.
