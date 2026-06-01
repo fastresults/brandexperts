@@ -19,7 +19,7 @@ import {
   SidebarHeader,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Home, Calendar, ClipboardList, ListChecks, FolderOpen, User, Sparkles } from "lucide-react";
+import { Home, Calendar, ClipboardList, ListChecks, FolderOpen, User, Sparkles, FileDown } from "lucide-react";
 import { getMyCohort } from "@/lib/cohort.functions";
 import { getWorkshopMode } from "@/lib/workshop-mode";
 import { RoomClock } from "@/components/dashboard/RoomClock";
@@ -95,6 +95,7 @@ function AppSidebar({ mode }: { mode: ReturnType<typeof getWorkshopMode>["mode"]
   const items: NavItem[] = [
     { to: "/dashboard", label: "Today", icon: Home },
     { to: "/dashboard/companion", label: "Workshop Companion", icon: Sparkles },
+    { to: "/dashboard/materials", label: "Workshop materials", icon: FileDown },
     { to: "/dashboard/day", label: "Workshop day", icon: Calendar, hide: mode === "after" },
     { to: "/dashboard/brief", label: "My brand intake", icon: ClipboardList },
     { to: "/dashboard/workflow", label: "Plan", icon: ListChecks, dimmed: mode === "during" },

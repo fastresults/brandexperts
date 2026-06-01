@@ -10,6 +10,7 @@ import {
   Upload,
   Sparkles,
   ChevronDown,
+  FileDown,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/dashboard/companion")({
@@ -132,6 +133,13 @@ function WorkshopCompanion() {
           <span className="inline-flex items-center gap-1.5">
             <ClipboardList className="h-4 w-4" /> 15 deliverables
           </span>
+          <a
+            href="/materials/executive-brand-intensive-workbook.pdf"
+            download="executive-brand-intensive-workbook.pdf"
+            className="inline-flex items-center gap-1.5 text-primary hover:text-primary/80 underline-offset-4 hover:underline"
+          >
+            <FileDown className="h-4 w-4" /> Download workbook PDF
+          </a>
         </div>
       </header>
 
