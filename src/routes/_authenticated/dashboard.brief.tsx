@@ -4,11 +4,12 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
-import { Send, Loader2, RefreshCw, CheckCircle2, Copy, Download, RotateCcw, Pencil } from "lucide-react";
+import { Send, Loader2, RefreshCw, CheckCircle2, Copy, Download, RotateCcw, Pencil, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { getFounderProfile } from "@/lib/discovery.functions";
-import { getBrandBrief, reopenBrandBrief, resetBrandBrief, reviseBrandBrief } from "@/lib/brand-brief.functions";
+import { getBrandBrief, regenerateBriefSummary, reopenBrandBrief, resetBrandBrief, reviseBrandBrief } from "@/lib/brand-brief.functions";
+import { MIN_FACTS_TO_FINALIZE } from "@/lib/brief-format";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -41,6 +42,8 @@ function BrandBriefPage() {
   const reopenFn = useServerFn(reopenBrandBrief);
   const resetFn = useServerFn(resetBrandBrief);
   const reviseFn = useServerFn(reviseBrandBrief);
+  const regenerateFn = useServerFn(regenerateBriefSummary);
+  const [updating, setUpdating] = useState(false);
 
   const brief = useQuery({ queryKey: ["brand-brief"], queryFn: () => briefFn() });
   const profile = useQuery({ queryKey: ["founder-profile"], queryFn: () => profileFn() });
@@ -81,6 +84,29 @@ function BrandBriefPage() {
       console.error(err);
     }
   };
+
+  const canUpdate = facts.length >= MIN_FACTS_TO_FINALIZE && !finished;
+
+  const handleUpdateBrief = async () => {
+    if (updating) return;
+    setUpdating(true);
+    try {
+      const res = await regenerateFn();
+      if (!res?.ok && res?.reason === "insufficient") {
+        toast.error(`Answer a few more sections first (${res.have}/${res.need}).`);
+        return;
+      }
+      await brief.refetch();
+      toast.success("Brief updated");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Couldn't update your brief");
+      console.error(err);
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+
 
 
   // Auth-aware transport: attach the bearer token to /api/brief-chat.
@@ -129,7 +155,24 @@ function BrandBriefPage() {
         <div className="border-b border-white/10 p-4 md:p-5">
           <div className="flex items-start justify-between gap-4">
             <h1 className="text-2xl font-semibold tracking-tight">Design your brand operating system</h1>
-            <ReviseActions onRevise={handleRevise} onReset={handleReset} hasAnswers={facts.length > 0} variant="link" />
+            <div className="flex shrink-0 items-center gap-3">
+              {canUpdate && (
+                <button
+                  type="button"
+                  onClick={() => void handleUpdateBrief()}
+                  disabled={updating}
+                  className="inline-flex items-center gap-2 rounded-md bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-60"
+                >
+                  {updating ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <Sparkles className="h-3.5 w-3.5" />
+                  )}
+                  {updating ? "Updating…" : revisionMode ? "Update brief" : "Generate brief"}
+                </button>
+              )}
+              <ReviseActions onRevise={handleRevise} onReset={handleReset} hasAnswers={facts.length > 0} variant="link" />
+            </div>
           </div>
           <p className="mt-1 text-sm text-muted-foreground">
             A conversation with your AI brand strategist. The brief assembles on the right as you go.
@@ -171,7 +214,14 @@ function BrandBriefPage() {
         />
       </div>
 
-      <BrandBriefPanel facts={facts} onChanged={() => { void brief.refetch(); }} />
+      <BrandBriefPanel
+        facts={facts}
+        onChanged={() => { void brief.refetch(); }}
+        onUpdateBrief={canUpdate ? handleUpdateBrief : undefined}
+        updating={updating}
+        revisionMode={revisionMode}
+      />
+
     </div>
   );
 }
