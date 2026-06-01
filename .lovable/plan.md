@@ -1,45 +1,37 @@
-## Goal
-Make `/dashboard` show the Brand Experts brief experience for `fastresults@gmail.com` end-to-end, not just the correct completion state.
+# Plan
 
-## What actually went wrong
-The prior fix changed the Today page to use `getBrandBrief`, but the completed-state UI it renders is still the old startup component.
+## What I’ll fix
+1. **Make login failures visible in-page**
+   - Replace toast-only auth feedback on `/login` with inline error/success states so a bad password, missing email, or network/auth failure is always visible.
+   - Keep the submit/loading states deterministic so the user can tell whether the action is running, failed, or succeeded.
 
-Evidence from the current code:
-- `src/routes/_authenticated/dashboard.index.tsx` already reads `getBrandBrief` and checks `summary.completed_at`.
-- `src/components/brief/BriefCompleteCard.tsx` is still hard-coded to startup language (`"Your startup brief"`) and startup block data (`BRIEF_BLOCKS`, `getFounderMemory`).
-- Supporting helpers still assemble startup-brief memory/context from `attendee_business_brief`, which is why the screenshot still shows startup sections even after the route-level data-source swap.
+2. **Fix the forgot-password flow end to end**
+   - Update the **Forgot?** action so it gives visible feedback even before any email is sent.
+   - Ensure the reset email uses the correct return URL and that `/reset-password` properly handles recovery sessions instead of only showing a password form.
+   - Add explicit states for: missing recovery token, expired/invalid reset link, success after password change.
 
-## Plan
-### 1) Replace the completed dashboard card with a brand-brief version
-- Stop using the startup-specific `BriefCompleteCard` for the Brand Experts dashboard.
-- Create a brand-specific completed card, or refactor the existing card to accept a data model and copy for Brand Experts.
-- Drive the card from brand-brief sections/facts instead of startup `BRIEF_BLOCKS` and founder-memory summaries.
+3. **Tighten auth transition behavior after sign-in**
+   - Review the current `use-auth` session listener and the `/login` redirect logic together so a successful sign-in reliably moves the user forward instead of appearing stuck on the login page.
+   - Keep this scoped to the login flow only.
 
-### 2) Make the Today page use one consistent brand-brief contract
-- Keep `src/routes/_authenticated/dashboard.index.tsx` on `getBrandBrief`.
-- Pass only brand-brief-derived props into the completed state.
-- Ensure all branches (`before`, `after`, `none`) use the same brand brief completion logic and never fall back to startup labels/content.
+4. **Verify in the right environment**
+   - Test both **preview** and the **published site**.
+   - If preview auth is still blocked by the platform proxy, I’ll keep the app-side fixes and clearly separate that from any preview-only limitation.
 
-### 3) Remove remaining startup wording from dashboard-facing surfaces
-- Audit the dashboard shell and Today page for leftover startup copy.
-- Fix labels such as the completed card eyebrow, section names, CTA text, and any “startup” references visible to attendees.
-- Keep the product language aligned with The Executive Brand Intensive / Brand Experts.
+## Files likely involved
+- `src/routes/login.tsx`
+- `src/routes/reset-password.tsx`
+- `src/hooks/use-auth.tsx`
+- `src/routes/__root.tsx` or the app shell if global feedback UI needs wiring
 
-### 4) Isolate legacy startup brief logic from current attendee dashboard UI
-- Prevent dashboard-facing components from importing startup-only helpers like `BRIEF_BLOCKS` or `getFounderMemory` unless they are explicitly for a legacy route.
-- Leave deeper legacy pipeline code alone unless it directly affects the dashboard, but remove any direct dependency from current attendee dashboard rendering.
+## Technical notes
+- The hosted backend looks healthy.
+- Current auth screens rely heavily on `toast.*`, which can make failures look like “nothing happened” if that feedback is not rendered or is too easy to miss.
+- The current reset-password page does not appear to validate the recovery state from the reset link before allowing password update.
 
-### 5) Validate against the real user path before calling it fixed
-- Confirm the authenticated user’s brand brief summary exists and is the source being read.
-- Verify the Today dashboard, sidebar, and `/dashboard/brief` all agree on the same completion state.
-- Recheck the preview with the completed-state card and confirm the startup sections/copy are gone.
-
-## Technical details
-**Files likely to change**
-- `src/routes/_authenticated/dashboard.index.tsx`
-- `src/components/brief/BriefCompleteCard.tsx` or a new brand-specific replacement component
-- `src/routes/_authenticated/dashboard.tsx` if any leftover dashboard labels need cleanup
-- Possibly a small helper from `src/lib/brand-brief.ts` / `src/lib/brand-brief.functions.ts` to format the completed-state summary cleanly
-
-**Why this plan should work when the earlier one didn’t**
-The earlier fix corrected the route-level query, but not the reused UI component that still renders startup-specific content. This plan fixes the actual remaining mismatch: the dashboard is reaching the completed branch, but that branch still renders the wrong component and wrong data model.
+## Validation
+- Confirm bad credentials show a visible error.
+- Confirm **Forgot?** with no email shows a visible prompt.
+- Confirm **Forgot?** with an email triggers the reset flow and shows a visible success state.
+- Confirm opening a reset link lands on a working reset screen.
+- Confirm successful sign-in redirects correctly for a normal member account.
