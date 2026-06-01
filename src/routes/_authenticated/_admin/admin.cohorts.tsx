@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
-import { listCohorts, upsertCohort, deleteCohort } from "@/lib/cohorts.functions";
+import { listCohorts, upsertCohort, deleteCohort, setCohortStatus } from "@/lib/cohorts.functions";
 import { DEFAULT_VENUE, DEFAULT_PRICING, formatPriceCents, type Cohort } from "@/lib/cohorts";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
