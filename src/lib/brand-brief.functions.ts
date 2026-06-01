@@ -14,6 +14,7 @@ import {
   type BriefSummary,
 } from "@/lib/brand-brief";
 import { VALUE_ROWS } from "@/lib/value-grid";
+import { FINAL_BRIEF_FORMAT_PROMPT, MIN_FACTS_TO_FINALIZE } from "@/lib/brief-format";
 
 const SECTION_IDS = BRIEF_SPINE.map((s) => s.id) as [BriefSectionId, ...BriefSectionId[]];
 const SectionEnum = z.enum(SECTION_IDS);
