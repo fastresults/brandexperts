@@ -264,7 +264,7 @@ function ChatPane({
   );
 }
 
-function FinishedView({ markdown, onReopen }: { markdown: string; onReopen: () => void | Promise<void> }) {
+function FinishedView({ markdown, onReopen, onReset }: { markdown: string; onReopen: () => void | Promise<void>; onReset: () => void | Promise<void> }) {
   const [copied, setCopied] = useState(false);
 
   const copy = async () => {
