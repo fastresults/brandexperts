@@ -11,6 +11,7 @@ import { getFounderProfile } from "@/lib/discovery.functions";
 import { getBrandBrief, reopenBrandBrief } from "@/lib/brand-brief.functions";
 import { BrandBriefImportCard } from "@/components/brief/BrandBriefImportCard";
 import { BrandBriefPanel } from "@/components/brief/BrandBriefPanel";
+import { BrandAlignmentPanel } from "@/components/brief/BrandAlignmentPanel";
 import type { BriefFact } from "@/lib/brand-brief";
 
 export const Route = createFileRoute("/_authenticated/dashboard/brief")({
