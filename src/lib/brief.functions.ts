@@ -23,17 +23,28 @@ export const getMyBrief = createServerFn({ method: "GET" })
       .eq("user_id", userId)
       .maybeSingle();
     if (error) throw new Error(error.message);
-    if (!data) {
+    let brief = data;
+    if (!brief) {
       const { data: ins, error: insErr } = await supabase
         .from("attendee_business_brief")
         .insert({ user_id: userId })
         .select("*")
         .single();
       if (insErr) throw new Error(insErr.message);
-      return { brief: ins };
+      brief = ins;
     }
-    return { brief: data };
+    const { data: summary } = await supabase
+      .from("attendee_brief_summary")
+      .select("completed_at, markdown")
+      .eq("user_id", userId)
+      .maybeSingle();
+    return {
+      brief,
+      summaryCompletedAt: summary?.completed_at ?? null,
+      summaryMarkdown: summary?.markdown ?? null,
+    };
   });
+
 
 const UpdateInput = z.object({
   field: z.enum(BRIEF_KEYS),
