@@ -129,15 +129,24 @@ function BrandBriefPage() {
         <div className="border-b border-white/10 p-4 md:p-5">
           <div className="flex items-start justify-between gap-4">
             <h1 className="text-2xl font-semibold tracking-tight">Design your brand operating system</h1>
-            <StartOverButton onConfirm={handleReset} variant="link" />
+            <ReviseActions onRevise={handleRevise} onReset={handleReset} hasAnswers={facts.length > 0} variant="link" />
           </div>
           <p className="mt-1 text-sm text-muted-foreground">
             A conversation with your AI brand strategist. The brief assembles on the right as you go.
           </p>
+
+          <div className="mt-4">
+            <BriefProgress progress={progress} revisionMode={revisionMode} />
+          </div>
+
           <div className="mt-4 rounded-2xl border border-primary/20 bg-primary/5 p-4 text-sm leading-relaxed text-foreground/90">
-            <div className="text-xs font-medium uppercase tracking-wide text-primary">Before your workshop</div>
+            <div className="text-xs font-medium uppercase tracking-wide text-primary">
+              {revisionMode ? "Revising your brief" : "Before your workshop"}
+            </div>
             <p className="mt-1.5">
-              Welcome! This short ~10-minute conversation builds your Brand Operating System — the foundation we'll sharpen together in the room. Upload a resume, LinkedIn, or bio to start, then chat at your own pace. Arrive ready, leave with clarity.
+              {revisionMode
+                ? "Your prior answers are kept. The strategist will walk you through each section so you can keep, refine, or replace any answer. You can also edit any section directly on the right."
+                : "Welcome! This short ~10-minute conversation builds your Brand Operating System — the foundation we'll sharpen together in the room. Upload a resume, LinkedIn, or bio to start, then chat at your own pace. Arrive ready, leave with clarity."}
             </p>
           </div>
 
@@ -152,6 +161,7 @@ function BrandBriefPage() {
             />
           </div>
         </div>
+
 
         <ChatPane
           transport={transport}
