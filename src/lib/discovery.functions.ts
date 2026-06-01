@@ -28,6 +28,19 @@ const ExtractedFounderSchema = z.object({
   skills: z.array(z.string().max(80)).max(40).optional().default([]),
   education: z.array(z.string().max(200)).max(10).optional().default([]),
   wins: z.array(z.string().max(280)).max(10).optional().default([]),
+  // --- Brand-brief priors (drafts for the strategist to confirm, NOT facts) ---
+  domain_guess: z.string().max(280).optional().default(""),
+  expertise_guess: z.array(z.string().max(160)).max(6).optional().default([]),
+  voice_signal: z
+    .object({
+      tone: z.array(z.string().max(40)).max(5).optional().default([]),
+      cadence: z.string().max(160).optional().default(""),
+      vocabulary: z.string().max(160).optional().default(""),
+      sample_phrases: z.array(z.string().max(280)).max(4).optional().default([]),
+      avoid: z.array(z.string().max(60)).max(5).optional().default([]),
+    })
+    .optional()
+    .default({ tone: [], cadence: "", vocabulary: "", sample_phrases: [], avoid: [] }),
 });
 
 export type ExtractedFounder = z.infer<typeof ExtractedFounderSchema>;
