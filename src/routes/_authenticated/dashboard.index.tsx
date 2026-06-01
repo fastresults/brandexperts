@@ -285,32 +285,40 @@ function DuringMode({ state, generated, total }: { state: WorkshopState; generat
 }
 
 function RecentlyFinished() {
-  // Pulled lazily — uses the workflow query already cached
-  const wfFn = useServerFn(getMyWorkflow);
-  const { data } = useQuery({ queryKey: ["my", "workflow"], queryFn: () => wfFn(), refetchInterval: 8000 });
-  const done = (data?.items ?? []).filter((i) => i.generated).slice(-3).reverse();
+  const deliverablesFn = useServerFn(listMyDeliverables);
+  const { data } = useQuery({
+    queryKey: ["my", "deliverables"],
+    queryFn: () => deliverablesFn(),
+    refetchInterval: 8000,
+  });
+  const done = (data?.deliverables ?? []).slice(0, 3);
   if (done.length === 0) return null;
 
   return (
     <section>
       <h2 className="mb-3 text-sm font-medium uppercase tracking-wide text-muted-foreground">Just finished by your AI</h2>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {done.map((d) => (
-          <Link
-            key={d.key}
-            to="/dashboard/workflow/$key"
-            params={{ key: d.key }}
-            className="rounded-xl border border-white/10 bg-card p-4 hover:border-primary/30 transition"
-          >
-            <div className="flex items-center gap-2 text-emerald-500">
-              <CheckCircle2 className="h-4 w-4" />
-              <span className="text-xs uppercase tracking-wide">Ready</span>
-            </div>
-            <div className="mt-1 font-medium">{d.label}</div>
-            <div className="mt-1 text-sm text-muted-foreground line-clamp-2">{d.description}</div>
-            <div className="mt-3 text-sm text-primary">Take a look →</div>
-          </Link>
-        ))}
+        {done.map((d) => {
+          const type = d.deliverable_types as { label?: string; description?: string | null } | null;
+          const content = (d.content_current ?? {}) as { title?: string; summary?: string };
+          return (
+            <Link
+              key={d.id}
+              to="/dashboard/deliverables"
+              className="rounded-xl border border-white/10 bg-card p-4 hover:border-primary/30 transition"
+            >
+              <div className="flex items-center gap-2 text-emerald-500">
+                <CheckCircle2 className="h-4 w-4" />
+                <span className="text-xs uppercase tracking-wide">Ready</span>
+              </div>
+              <div className="mt-1 font-medium">{content.title ?? type?.label ?? d.deliverable_key}</div>
+              {(content.summary ?? type?.description) && (
+                <div className="mt-1 text-sm text-muted-foreground line-clamp-2">{content.summary ?? type?.description}</div>
+              )}
+              <div className="mt-3 text-sm text-primary">Take a look →</div>
+            </Link>
+          );
+        })}
       </div>
     </section>
   );
