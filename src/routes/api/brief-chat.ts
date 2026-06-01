@@ -319,6 +319,18 @@ Send your next message now. Short. One question. No lists.`;
                   { onConflict: "user_id" },
                 );
               if (error) return { ok: false, error: error.message };
+
+              // Auto-approve member access now that they've finalized a brief.
+              await supabaseAdmin
+                .from("profiles")
+                .update({
+                  member_status: "approved",
+                  approved_at: new Date().toISOString(),
+                  approved_via: "brief",
+                })
+                .eq("user_id", userId)
+                .neq("member_status", "approved");
+
               return { ok: true, finished: true };
             },
           }),
