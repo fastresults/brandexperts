@@ -1,74 +1,63 @@
+# Enriched Brief Sections: Voice, Domain, Work Experience
+
 ## Goal
 
-Replace the current flat-prose brief card with the **Ledger** editorial layout (selected direction): 12-col grid, numbered section marks (`01.`, `02.` …) in uppercase tracked caps, varying typographic weight per section, pull-quote treatment for the Signature POV, and an architectural workshop-alignment footer.
+Make three sections in the finished brief noticeably richer and more substantive than the rest, anchored in real imported data (resume / LinkedIn / pasted text) when available:
 
-## The core challenge
+1. **Voice Profile** — tone, cadence, vocabulary, sample openers, never-sounds-like, plus a 1–2 sentence narrative voice summary.
+2. **Domain** — areas of past knowledge and competency, written as a paragraph + 3–6 tagged domain areas.
+3. **Work Experience** — an enriched narrative summary of actual roles/companies/outcomes, drawn from the imported resume/LinkedIn extract or pasted input. Currently missing from the brief entirely.
 
-The brief is stored as markdown, and the model has been emitting flat numbered prose (`1. Identity & Credibility\nGlobal marketing...`) rather than proper H2 sections — so even good CSS can't rescue it. The fix has two halves: **tighten what the model emits** and **parse whatever it emits into known slots**, so old briefs in the DB also render beautifully without regeneration.
+## Scope
 
-## Plan
+Frontend/presentation + brief-generation prompt only. No DB schema changes — the resume extract already lives in `attendee_founder_profile.extracted` and is already passed into the chat as `IMPORTED CONTEXT`.
 
-### 1. Lock the brief schema (`src/routes/api/brief-chat.ts`)
-Rewrite the `FINAL-BRIEF FORMAT` block so the model emits a deterministic set of H2 sections with stable titles, in fixed order:
+## Changes
 
-```
-## Identity & Credibility
-## Domain
-## Expertise          (3 label: description lines)
-## Audience
-## Audience Pain
-## Transformation
-## Signature POV       (single sentence, will be pulled as quote)
-## Voice               (Tone — …, Cadence — …, Vocabulary — …)
-## Signature Themes    (exactly 3 short titles, one per line)
-## Channels
-## Outcome Goal
-## Workshop Alignment  (optional)
-```
+### 1. `src/routes/api/brief-chat.ts` — prompt + schema
 
-Forbid numbered prose ("1. …", "2. …") and inline bold labels in the brief.
+- **Default order**: insert `work_experience` between `identity_credibility` and `domain`.
+- **Grounding**: when `extracted` is present, surface `work_history`, `companies`, `roles`, `education`, and `skills` fields explicitly in the system prompt (not just a JSON dump) so the model treats them as authoritative for the Work Experience and Domain sections. Add a rule: "Do not invent companies, titles, dates, or outcomes — only use what's in IMPORTED CONTEXT or what the user has stated in chat."
+- **Priority sections** block: add Work Experience rule — if `work_history` exists, do not ask; synthesize a 4–6 sentence narrative (arc across roles, scope, signature wins) and confirm. If absent, ask one question offering three paths: upload resume, paste LinkedIn URL, or paste a short career summary.
+- **Voice** rule: keep the existing 5-field capture but also require a 1–2 sentence narrative "Voice summary" stored alongside, so the rendered card has a lead-in.
+- **Domain** rule: store both a 2–3 sentence paragraph AND a comma-separated list of 3–6 domain tags (e.g. "B2B SaaS, fintech compliance, GTM strategy").
+- **FINAL-BRIEF FORMAT**: add two new H2 sections and enrich two existing ones:
+  - `## Work experience` — 4–6 sentence narrative + a short bulleted list of 3–5 anchor roles formatted `**Role, Company (years)** — one-line outcome`.
+  - `## Domain` — 2–3 sentence paragraph followed by a line: `**Domains:** tag1 · tag2 · tag3 · tag4`.
+  - `## Voice` — prepend a 1–2 sentence prose voice summary above the existing **Tone/Cadence/Vocabulary/Openers/Never** fields.
 
-### 2. Brief parser (new `src/lib/brief-parser.ts`)
-A pure function `parseBrief(md: string): BriefSections` that:
-- Splits on `^## ` and `^\d+\.\s` headings (handles both new H2 format and legacy numbered prose so old briefs upgrade visually).
-- Normalizes section keys via fuzzy match (`identity`, `credibility` → `identity`; `pov`, `signature pov` → `pov`; etc.).
-- Returns `{ identity, domain, expertise: {title, desc}[], audience, audiencePain, transformation, pov, voice: {tone, cadence, vocabulary}, themes: string[], channels, outcomeGoal, workshopAlignment, _unknown: {title, body}[] }`.
-- Strips leading `**bold:**` runs and stray `-`/`*` bullets within section bodies.
+### 2. `src/lib/brief-parser.ts` — schema + parsing
 
-### 3. Build `<LedgerBrief />` (new `src/components/brief/LedgerBrief.tsx`)
-Receives the parsed sections and renders the Ledger layout verbatim from the selected prototype:
-- Numbered section marks (`01. Identity & Credibility`) in `text-[10px] font-bold tracking-[0.3em] uppercase text-muted-foreground`.
-- Identity in `text-2xl font-light leading-relaxed` for executive-poster feel.
-- Expertise as 3-row stacked list (bold title + muted description).
-- Audience / Audience Pain / Transformation in a 3-column band separated by a top hairline.
-- Signature POV in a `bg-muted/40 rounded-xl border` card with `text-3xl font-light italic` blockquote.
-- Voice & Signature Themes left col; Channels & Outcome Goal right col.
-- Workshop Alignment footer with a small "Alignment Verified" status pill.
+- Extend `ParsedBrief`:
+  - `workExperience?: { summary: string; roles: Array<{ role: string; company: string; period?: string; outcome?: string }> }`
+  - `domainTags: string[]` (in addition to existing `domain` paragraph)
+  - `voice.summary?: string`
+- Add `parseWorkExperience(body)` that splits prose paragraph from the role bullets (parses `**Role, Company (years)** — outcome`).
+- Add domain-tag extraction: pull the `**Domains:** a · b · c` line out of the domain body, split on `·` / `,` / `•`, store as `domainTags`, keep remaining prose as `domain`.
+- Extend `parseVoice` to capture any leading prose paragraph (before the bold field labels) as `voice.summary`.
+- Register section-key matches: `work experience`, `experience`, `career`, `professional experience` → workExperience.
 
-Use semantic tokens only (`bg-background`, `border-border`, `text-foreground`, `text-muted-foreground`, `bg-muted/40`) — no raw hex. Container `max-w-[1000px]`. Gracefully omit any section that's empty in the parsed data.
+### 3. `src/components/brief/LedgerBrief.tsx` — render
 
-### 4. Wire it into `FinishedView` (`src/routes/_authenticated/dashboard.brief.tsx`)
-- Keep the existing header (title, caption, Copy markdown / Download .md / Keep refining toolbar) — just restyle the buttons to match the prototype (`px-3.5 py-2 text-xs font-semibold`, neutral chip + white primary).
-- Replace the `<Markdown variant="document" />` block with `<LedgerBrief sections={parseBrief(brief.markdown)} />`.
-- Keep `_unknown` sections rendered via the existing `<Markdown />` as a graceful fallback below the structured layout.
-- Keep `BrandAlignmentPanel` rendered below as its own visually-separated artifact (it already is).
+- New `## 02. Work Experience` block (placed right after Identity, before Domain): renders `summary` as a 2-column-friendly lead paragraph, then a vertical "résumé rail" of role rows — left column role+company, right column period and one-line outcome, separated by hairline `border-border/40` dividers. Visually heavier than the surrounding sections (slightly larger heading, more vertical breathing room) so it reads as a featured section.
+- **Domain** block: keep the paragraph, append a `DomainTags` row rendered as small pill chips (`rounded-full border border-border/60 px-3 py-1 text-xs uppercase tracking-wide`).
+- **Voice** block: render `voice.summary` as an italic lead line above the existing field grid. Promote Voice from the sidebar column into a full-width featured card (same prominence as the POV pull-quote) so it visually reads as one of the three enriched sections.
+- Renumber `SectionMark` counters so the three enriched sections (Work Experience, Domain, Voice) get the visual weight; keep auto-numbering logic intact.
 
-### 5. Out of scope
-No PDF export. No changes to chat conversation logic, kickoff guard, intake spine, or DB schema. `Markdown.tsx` `variant="document"` styling stays as a fallback path. No regenerate-existing-briefs migration — the parser handles legacy formats.
+### 4. Backward compatibility
 
-## Files
+- Parser must not crash on legacy briefs that lack Work Experience / domain tags / voice summary — all new fields are optional, renderer guards each block with a presence check (same pattern as existing `showVoice`).
+- No migration needed for existing finished briefs in `attendee_brief_summary`; they simply render without the new blocks until regenerated.
 
-**New**
-- `src/lib/brief-parser.ts`
-- `src/components/brief/LedgerBrief.tsx`
+## Out of scope
 
-**Edited**
-- `src/routes/api/brief-chat.ts` — tighten FINAL-BRIEF FORMAT
-- `src/routes/_authenticated/dashboard.brief.tsx` — swap rendering in `FinishedView`
+- Resume/LinkedIn ingestion pipeline (already exists and populates `attendee_founder_profile.extracted`).
+- Editing UI for the new sections.
+- PDF export.
+- Any chat-engine or DB changes beyond the prompt string.
 
-## Acceptance
+## Files touched
 
-- Existing brief in the screenshot renders into proper sections (numbered marks, pull-quote for POV, voice as label/value, themes as 3 left-bordered items) without regeneration.
-- A fresh brief generated after the prompt update is structurally identical and even tighter (no stray bullets, no inline bold).
-- Toolbar buttons keep working (copy, download, keep refining).
-- Workshop alignment block remains below as a separate section.
+- `src/routes/api/brief-chat.ts` (prompt + grounding)
+- `src/lib/brief-parser.ts` (types + parsers)
+- `src/components/brief/LedgerBrief.tsx` (new Work Experience block, enriched Domain + Voice rendering)
