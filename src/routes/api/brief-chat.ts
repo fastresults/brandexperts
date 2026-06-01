@@ -87,6 +87,19 @@ export const Route = createFileRoute("/api/brief-chat")({
         const isFirstTurn = (messages as UIMessage[]).filter((m) => m.role === "assistant").length === 0;
         const factsCount = facts.length;
         const totalCount = BRIEF_SPINE.length;
+        const hasSummary = !!summaryRes.data;
+        const isRevisionMode = factsCount > 0 && !hasSummary;
+
+        const revisionBlock = isRevisionMode
+          ? `\n\n═══ REVISION MODE (ACTIVE) ═══
+The user is revisiting an existing brief. Their prior answers are in BRIEF FACTS LOCKED IN SO FAR — treat each one as their starting point, not a blank slate.
+- Walk sections in spine order. For each one with an existing fact: quote a short phrase from it back ("Last time you said …") and ask if they want to keep it, refine it, or replace it. Your wording, never templated.
+- If they say "keep" — acknowledge in one short clause and move to the next section. Do NOT re-record unchanged facts.
+- If they refine or replace — call record_brief_fact with the new value, then move on.
+- For sections with NO existing fact, ask normally.
+- Do not re-introduce yourself. Open with one short orienting clause acknowledging you're picking up where they left off, then jump straight to the first revisable section.\n`
+          : "";
+
 
         const system = `You are the brand strategist for The Executive Brand Intensive — a 3-hour live workshop with Adam Anderson. Attendees: founders/CEOs, executives in transition, authors/speakers/consultants, newly-appointed C-suite. This is about personal brand, NOT company formation.
 
