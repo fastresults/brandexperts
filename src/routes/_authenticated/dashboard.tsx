@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Home, Calendar, ClipboardList, ListChecks, FolderOpen, User, Sparkles, FileDown } from "lucide-react";
 import { getMyCohort } from "@/lib/cohort.functions";
+import { getBrandBrief } from "@/lib/brand-brief.functions";
 import { getWorkshopMode } from "@/lib/workshop-mode";
 import { RoomClock } from "@/components/dashboard/RoomClock";
 import { HelpFab } from "@/components/dashboard/HelpFab";
@@ -89,13 +90,17 @@ function AppSidebar({ mode }: { mode: ReturnType<typeof getWorkshopMode>["mode"]
   const collapsed = state === "collapsed";
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
+  const briefFn = useServerFn(getBrandBrief);
+  const briefQ = useQuery({ queryKey: ["brand-brief"], queryFn: () => briefFn(), staleTime: 30_000 });
+  const briefDone = !!briefQ.data?.summary?.completed_at;
+
   // Mode-aware items: Workshop day disappears in Mode C, Plan is dimmed in Mode B.
   const items: NavItem[] = [
     { to: "/dashboard", label: "Today", icon: Home },
     { to: "/dashboard/companion", label: "Workshop Companion", icon: Sparkles },
     { to: "/dashboard/materials", label: "Workshop materials", icon: FileDown },
     { to: "/dashboard/day", label: "Workshop day", icon: Calendar, hide: mode === "after" },
-    { to: "/dashboard/brief", label: "My brand intake", icon: ClipboardList },
+    { to: "/dashboard/brief", label: briefDone ? "Brand brief" : "Brand intake", icon: ClipboardList },
     { to: "/dashboard/workflow", label: "Plan", icon: ListChecks, dimmed: mode === "during" },
     { to: "/dashboard/files", label: "My files", icon: FolderOpen },
     { to: "/dashboard/profile", label: "Account", icon: User },

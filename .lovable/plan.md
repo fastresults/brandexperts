@@ -1,61 +1,103 @@
-# Fix: duplicate opener + verbatim parroting
+# Polish the brand brief experience
 
-Two distinct bugs producing the two near-identical messages you're seeing.
+Three things to fix, all presentation-layer (no business logic changes):
 
-## Bug 1 — Duplicate kickoff (UI)
+1. **Chat sometimes shows raw/ugly markdown** (e.g. literal `*` bullets, stray `**bold**`).
+2. **The finished brief looks like a text dump** — no hierarchy, weak spacing, no section dividers, no "executive summary" framing.
+3. **Confirm the brief always lives in the dashboard** (it already does — verify + make it more discoverable).
 
-`src/routes/_authenticated/dashboard.brief.tsx` has:
+---
 
+## 1. Clean up in-chat markdown
+
+**Problem.** The system prompt already forbids bullets/headings in chat replies, but Gemini occasionally slips in `*`/`-` bullets, `**bold**` runs, or `#` headings. The chat bubble renders these via `Markdown`, which mostly works — but a stray `-` at line start, an unmatched `**`, or a single `*` reads as raw punctuation to a non-technical user.
+
+**Fix (two layers).**
+
+- **Render layer (`src/components/brief/Markdown.tsx`)** — Add a small `sanitizeChatMarkdown(text)` helper used only by the chat transcript (not the final brief). It strips leading list markers on otherwise prose-only replies, collapses headings to plain emphasis, and trims stray inline markers. Final brief rendering keeps full markdown.
+- **Prompt layer (`src/routes/api/brief-chat.ts`)** — Tighten HARD RULE #3 to also ban `**bold**`, `_italics_`, `#` and leading `-`/`*`/`•` in chat replies (the existing rule says "prose only" but doesn't explicitly forbid inline emphasis markers). Examples-policy rule already says "inline in parentheses" — keep that.
+
+## 2. Make the finished brief look polished
+
+This is the big one. Two parts: **what the model writes** + **how we render it**.
+
+### 2a. What the model writes (`src/routes/api/brief-chat.ts` — `finish_brief` description + a new FINAL-BRIEF FORMAT block)
+
+Today the prompt just says "polished markdown brief" — Gemini returns a flat blob. Add an explicit structure contract so every brief comes back with:
+
+```text
+# {Their name} — Brand Operating System
+
+> One-sentence positioning line (the "lean-in" line).
+
+## Executive snapshot
+3–4 sentence prose paragraph.
+
+## Identity & credibility
+…
+
+## Audience & transformation
+**Who they serve** — …
+**The pain** — …
+**The transformation** — …
+
+## Signature point of view
+…
+
+## Voice
+**Tone** — …
+**Cadence** — …
+**Sample openers** — …
+**Never sounds like** — …
+
+## Signature themes
+- theme 1 — one-line gloss
+- theme 2 — one-line gloss
+- theme 3 — one-line gloss
+
+## Channels & cadence
+…
+
+## Outcome goal & non-negotiables
+…
+
+---
+*Assembled {date} from your intake conversation.*
 ```
-useEffect(() => {
-  if (messages.length === 0 && status === "ready") {
-    void sendMessage({ text: KICKOFF });
-  }
-}, [status]);
-```
 
-This fires more than once: React StrictMode in dev re-mounts effects, and `status` cycles `ready → submitted → streaming → ready`, re-triggering the check. By the time the second run reads `messages.length`, the optimistic user message may not yet be in `messages`, so the guard passes and a second `__kickoff__` is sent — producing two assistant greetings.
+Sections map 1:1 to the spine so coverage stays honest. Bullets are allowed **here** (the final brief), unlike chat.
 
-**Fix:** guard with a `useRef<boolean>` so the kickoff sends exactly once per component mount, regardless of effect re-runs or status churn.
+### 2b. How we render it (`src/routes/_authenticated/dashboard.brief.tsx` `FinishedView` + `src/components/brief/Markdown.tsx`)
 
-```
-const kickedRef = useRef(false);
-useEffect(() => {
-  if (kickedRef.current) return;
-  if (status === "ready" && messages.length === 0) {
-    kickedRef.current = true;
-    void sendMessage({ text: KICKOFF });
-  }
-}, [status, messages.length]);
-```
+- Wrap the brief in a magazine-style "document" shell: max-width ~720px, generous padding (`p-8 md:p-12`), soft card background, subtle border, sticky in-view title.
+- Add a header strip above the markdown: brief title, completion date, a small toolbar with **Copy as markdown**, **Download .md**, and **Keep refining** (move the existing button there).
+- Pass a richer prose class set to `Markdown` when used for the final brief: bigger H1, drop-cap-style lead paragraph, `prose-h2:border-b prose-h2:border-white/10 prose-h2:pb-2 prose-h2:mt-10`, `prose-blockquote:text-lg prose-blockquote:not-italic prose-blockquote:font-medium prose-blockquote:text-foreground`, `prose-hr:my-10`, tighter `prose-li` rhythm, `prose-strong:text-primary` for the inline labels (`**Tone** —`).
+- Introduce a `variant` prop on `Markdown` (`"chat" | "document"`) so chat keeps its compact styling and the brief gets the document treatment. No new dependency.
+- Below the document, keep `BrandAlignmentPanel` but separate it with a clear section header ("How your brief shapes the workshop") so the page reads as two distinct artifacts.
 
-## Bug 2 — Model copies my example verbatim (prompt)
+## 3. Brief lives in the dashboard permanently
 
-In `src/routes/api/brief-chat.ts` the OPENING block contains a literal sample sentence ("Hey — I'm your strategist for the next ~10 minutes…"). Gemini treats it as a script. Same risk on the imported-context line, the voice question, the workshop_alignment closer, and the finishing line.
+Already wired (`src/routes/_authenticated/dashboard.tsx` line 98: `/dashboard/brief — "My brand intake"`). Two small improvements:
 
-**Fix — replace scripts with ingredients + anti-copy rule.** System prompt changes only:
+- Rename the sidebar label to **"Brand brief"** once finished, **"Brand intake (in progress)"** while incomplete — driven by `summary?.completed_at`. (Either a small hook reading the brief query, or a status dot.)
+- On `/dashboard` (home), surface a compact "Your Brand Brief" card: shows progress (`X of 14 sections`) while in-progress, or "Ready — view brief" once finished, deep-linking to `/dashboard/brief`.
 
-1. Add to HARD RULES: "NEVER copy any example sentence from this prompt verbatim. Examples describe shape, not script. Compose your own words every time. In particular, do NOT use the phrases 'I'm your strategist', 'next 10 minutes', or 'when someone introduces you in a room full of strangers' — find your own opening."
+---
 
-2. **OPENING** — strip the canned sentences. Replace with constraints:
-   - Max 2 short sentences + 1 question.
-   - One human hello (no boilerplate, no time estimate — the page header already says "~10 minutes").
-   - One question on identity & credibility, phrased fresh. Vary the angle across attempts (the bio they're proudest of, the credential people quote back, the line that lands when a host introduces them, the result they're known for). Do NOT default to the "room of strangers" angle.
+## Files touched
 
-3. **Imported-context branch** — say "Mirror one specific thing from the imported context in your own words (one sentence), then ask if it should anchor their credibility or get sharpened. Use your own phrasing."
+- `src/components/brief/Markdown.tsx` — add `variant` prop + `sanitizeChatMarkdown`; richer document-variant prose classes.
+- `src/routes/_authenticated/dashboard.brief.tsx` — `FinishedView` redesign (document shell, toolbar, copy/download); pass `variant="document"`; pass `variant="chat"` in `ChatPane`.
+- `src/routes/api/brief-chat.ts` — tighten HARD RULE #3; add FINAL-BRIEF FORMAT block referenced from `finish_brief` description.
+- `src/routes/_authenticated/dashboard.tsx` — dynamic sidebar label based on brief status.
+- `src/routes/_authenticated/dashboard.index.tsx` — add a compact brief-status card linking to `/dashboard/brief`.
 
-4. **Voice question** — replace the literal template with the ingredients (two paths: 3 tone words + 3 anti-tone words, OR a 2–3 sentence writing sample; ask which they prefer). Phrase fresh.
+## Out of scope
 
-5. **workshop_alignment closer** — replace the literal line with: "Frame it as the final question. Reference the 15 in-room deliverables and ask which 2–3 they want to walk out with. Phrase fresh."
+- Changing the spine, the conversation logic, kickoff guard, or `BrandAlignmentPanel` data model.
+- PDF export (markdown copy/download covers the immediate need; PDF can be a follow-up).
+- New dependencies.
 
-6. **Finishing line** — replace the literal "Got what I need…" with: "Send one short line announcing you're assembling the brief now. Your words, not mine."
+## Open question
 
-## Files
-
-- `src/routes/_authenticated/dashboard.brief.tsx` — add `kickedRef` guard around the kickoff effect.
-- `src/routes/api/brief-chat.ts` — system prompt edits per above. No logic changes.
-
-## What I'm not changing
-
-- The hard caps (≤60 words, exactly 1 question, no lists).
-- Spine, model, UI structure, kickoff token mechanism.
+Do you want a **PDF download** of the finished brief now, or is **Copy markdown + Download .md** enough for v1? (PDF would add `@react-pdf/renderer` or a server route; happy to do it as a follow-up.)
