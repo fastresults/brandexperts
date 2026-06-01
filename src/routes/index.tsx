@@ -29,13 +29,13 @@ export const Route = createFileRoute("/")({
   },
   head: ({ loaderData }) => ({
     meta: [
-      { title: "The Executive Brand Intensive — Install a Brand Operating System in one afternoon." },
+      { title: "The Executive Brand Intensive — Install a Personal Branding Operating System in one afternoon." },
       {
         name: "description",
         content:
-          "Three hours at the IGNITE Center in Norcross, GA. Twelve seats. You walk in as a title. You walk out operating a Brand Operating System that publishes in your voice, on its own, for the next 90 days and every quarter after.",
+          "Three hours at the IGNITE Center in Norcross, GA. Twelve seats. You walk in as a title. You walk out operating a Personal Branding Operating System that publishes in your voice, on its own, for the next 90 days and every quarter after.",
       },
-      { property: "og:title", content: "The Executive Brand Intensive — Install a Brand Operating System in one afternoon." },
+      { property: "og:title", content: "The Executive Brand Intensive — Install a Personal Branding Operating System in one afternoon." },
       {
         property: "og:description",
         content:
@@ -138,7 +138,7 @@ function Hero({ heroBgUrl }: { heroBgUrl: string | null }) {
           For executives whose résumé no longer does the work it used to.
         </p>
         <h1 className="max-w-3xl text-4xl font-semibold leading-[1.08] tracking-tight text-white md:text-5xl lg:text-7xl">
-          While AI flattens everyone else, <span className="italic">you install a Brand Operating System that compounds in your name</span>.
+          AI erases your edge. <span className="italic">Install a Personal Branding Operating System that compounds.</span>
         </h1>
         <p className="mt-5 max-w-2xl text-base text-white/90 md:mt-6 md:text-lg">
           One afternoon at the IGNITE Center in Norcross, GA.{" "}

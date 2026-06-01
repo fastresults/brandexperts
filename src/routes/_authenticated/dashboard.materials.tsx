@@ -20,7 +20,7 @@ const MATERIALS: Material[] = [
   {
     title: "Attendee Workbook",
     description:
-      "Pre-work checklist, in-room prompts for all 15 brand deliverables, the one-page Brand Operating System summary, and your 30-minute weekly cadence card.",
+      "Pre-work checklist, in-room prompts for all 15 brand deliverables, the one-page Personal Branding Operating System summary, and your 30-minute weekly cadence card.",
     href: "/materials/executive-brand-intensive-workbook.pdf",
     filename: "executive-brand-intensive-workbook.pdf",
     sizeKb: 34,
