@@ -42,7 +42,7 @@ export function LedgerBrief({ sections }: { sections: ParsedBrief }) {
       {/* 01. Identity */}
       {identityLead && (
         <section className="md:col-span-12">
-          <SectionMark n={num()} title="Identity &amp; credibility" />
+          <SectionMark n={num()} title="Identity & credibility" />
           <p className="max-w-3xl text-2xl font-light leading-relaxed text-foreground/90">
             {identityLead}
           </p>
@@ -188,7 +188,7 @@ export function LedgerBrief({ sections }: { sections: ParsedBrief }) {
             >
               {sections.channels && (
                 <div>
-                  <SectionMark n={num()} title="Channels &amp; cadence" />
+                  <SectionMark n={num()} title="Channels & cadence" />
                   <p className="text-sm leading-relaxed text-muted-foreground">
                     {sections.channels}
                   </p>
