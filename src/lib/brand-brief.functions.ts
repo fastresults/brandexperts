@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { generateText, Output } from "ai";
+import { generateText, NoObjectGeneratedError, Output } from "ai";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
@@ -131,6 +131,43 @@ const AlignmentOutputSchema = z.object({
   items: z.array(AlignmentItemSchema).min(VALUE_ROWS.length).max(VALUE_ROWS.length),
 });
 
+function extractLikelyJsonObject(raw: string): unknown {
+  const cleaned = raw
+    .replace(/^```json\s*/i, "")
+    .replace(/^```\s*/i, "")
+    .replace(/```\s*$/i, "")
+    .trim();
+
+  const objectStart = cleaned.indexOf("{");
+  const arrayStart = cleaned.indexOf("[");
+  const useArray = arrayStart !== -1 && (objectStart === -1 || arrayStart < objectStart);
+  const start = useArray ? arrayStart : objectStart;
+  const end = useArray ? cleaned.lastIndexOf("]") : cleaned.lastIndexOf("}");
+
+  if (start === -1 || end <= start) {
+    throw new Error("No valid JSON found in AI response");
+  }
+
+  return JSON.parse(cleaned.slice(start, end + 1));
+}
+
+function coerceAlignmentOutput(raw: unknown) {
+  const parsed = z
+    .object({
+      items: z.array(z.unknown()).default([]),
+    })
+    .parse(raw);
+
+  const validItems = parsed.items
+    .map((item) => AlignmentItemSchema.safeParse(item))
+    .filter((result) => result.success)
+    .map((result) => result.data);
+
+  return {
+    items: validItems,
+  };
+}
+
 export const regenerateBriefAlignment = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<BriefAlignment> => {
@@ -169,33 +206,56 @@ export const regenerateBriefAlignment = createServerFn({ method: "POST" })
     const sectionList = BRIEF_SPINE.map((s) => `${s.id} (${s.label})`).join(", ");
 
     const gateway = createLovableAiGatewayProvider(apiKey);
-    const { output } = await generateText({
-      model: gateway(ALIGNMENT_MODEL),
-      output: Output.object({ schema: AlignmentOutputSchema }),
-      system: [
-        "You are a senior brand strategist for The Executive Brand Intensive.",
-        "Given an executive's Brand Operating System brief, write how each of the workshop's 15 promised deliverables will be personalized for them.",
-        "For every deliverable, write ONE tight paragraph (2–3 sentences, ≤ 60 words) addressed to the executive ('you', 'your').",
-        "Ground every sentence in specifics from their brief — quote a phrase, name their audience, reference their POV, voice, domain, expertise, or 12-month outcome.",
-        "Routing hints: positioning-shaped deliverables (brand blueprint, signature themes, POV pieces) lean on 'domain', 'expertise', 'signature_pov', 'audience'. Voice-shaped deliverables (voice profile, content engine, ghostwritten posts, talk openers) lean on 'voice', 'signature_themes', 'channels'. Outcome-shaped deliverables lean on 'outcome_goal' and 'transformation'.",
-        "Do NOT invent facts. If a relevant section is missing, say what we'll lock down in the room.",
-        "Then list 1–4 brief section IDs you anchored on (allowed: " + sectionList + ").",
-        "Return all 15 items, one per deliverable_key, in the order given.",
-      ].join("\n"),
-      prompt: [
-        "BRIEF SUMMARY (markdown):",
-        summary?.markdown?.trim() || "(no summary yet)",
-        "",
-        "BRIEF FACTS:",
-        factsBlock || "(no facts yet)",
-        "",
-        "DELIVERABLES TO ALIGN (use these deliverable_key values exactly):",
-        deliverablesBlock,
-      ].join("\n"),
-    });
+    const alignmentSystemPrompt = [
+      "You are a senior brand strategist for The Executive Brand Intensive.",
+      "Given an executive's Brand Operating System brief, write how each of the workshop's 15 promised deliverables will be personalized for them.",
+      "For every deliverable, write ONE tight paragraph (2–3 sentences, ≤ 60 words) addressed to the executive ('you', 'your').",
+      "Ground every sentence in specifics from their brief — quote a phrase, name their audience, reference their POV, voice, domain, expertise, or 12-month outcome.",
+      "Routing hints: positioning-shaped deliverables (brand blueprint, signature themes, POV pieces) lean on 'domain', 'expertise', 'signature_pov', 'audience'. Voice-shaped deliverables (voice profile, content engine, ghostwritten posts, talk openers) lean on 'voice', 'signature_themes', 'channels'. Outcome-shaped deliverables lean on 'outcome_goal' and 'transformation'.",
+      "Do NOT invent facts. If a relevant section is missing, say what we'll lock down in the room.",
+      "Then list 1–4 brief section IDs you anchored on (allowed: " + sectionList + ").",
+      "Return valid JSON only. No markdown fences. The shape must be {\"items\":[...]}.",
+      "Return all 15 items, one per deliverable_key, in the order given.",
+    ].join("\n");
+    const alignmentPrompt = [
+      "BRIEF SUMMARY (markdown):",
+      summary?.markdown?.trim() || "(no summary yet)",
+      "",
+      "BRIEF FACTS:",
+      factsBlock || "(no facts yet)",
+      "",
+      "DELIVERABLES TO ALIGN (use these deliverable_key values exactly):",
+      deliverablesBlock,
+    ].join("\n");
+
+    let generatedOutput: z.infer<typeof AlignmentOutputSchema> | { items: Array<z.infer<typeof AlignmentItemSchema>> };
+
+    try {
+      const { output } = await generateText({
+        model: gateway(ALIGNMENT_MODEL),
+        output: Output.object({ schema: AlignmentOutputSchema }),
+        system: alignmentSystemPrompt,
+        prompt: alignmentPrompt,
+      });
+      generatedOutput = output;
+    } catch (error) {
+      if (!NoObjectGeneratedError.isInstance(error) || !error.text) {
+        throw error;
+      }
+
+      if (error.finishReason === "length" || error.finishReason === "max_tokens") {
+        throw new Error("The alignment draft was truncated. Please try again.");
+      }
+
+      try {
+        generatedOutput = coerceAlignmentOutput(extractLikelyJsonObject(error.text));
+      } catch {
+        generatedOutput = { items: [] };
+      }
+    }
 
     // Merge AI output with canonical labels.
-    const byKey = new Map(output.items.map((i) => [i.deliverable_key, i]));
+    const byKey = new Map(generatedOutput.items.map((i) => [i.deliverable_key, i]));
     const items: AlignmentItem[] = VALUE_ROWS.map((row) => {
       const ai = byKey.get(row.key);
       return {
