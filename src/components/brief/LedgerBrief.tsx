@@ -253,10 +253,9 @@ export function LedgerBrief({ sections }: { sections: ParsedBrief }) {
 
 function SectionMark({ n, title }: { n: string; title: string }) {
   return (
-    <div
-      className="mb-4 block text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground"
-      dangerouslySetInnerHTML={{ __html: n ? `${n}. ${title}` : title }}
-    />
+    <div className="mb-4 block text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground">
+      {n ? `${n}. ${title}` : title}
+    </div>
   );
 }
 
