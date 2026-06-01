@@ -40,10 +40,32 @@ export const getBrandBrief = createServerFn({ method: "GET" })
     ]);
     if (factsRes.error) throw new Error(factsRes.error.message);
     if (summaryRes.error) throw new Error(summaryRes.error.message);
-    return {
-      facts: (factsRes.data ?? []) as BriefFact[],
-      summary: (summaryRes.data ?? null) as BriefSummary | null,
+
+    const facts = (factsRes.data ?? []) as BriefFact[];
+    const summary = (summaryRes.data ?? null) as BriefSummary | null;
+
+    const filledIds = new Set(facts.filter((f) => (f.value ?? "").trim().length > 0).map((f) => f.section));
+    const sections = BRIEF_SPINE.map((s, idx) => ({
+      id: s.id,
+      label: s.label,
+      index: idx,
+      completed: filledIds.has(s.id),
+    }));
+    const completed = sections.filter((s) => s.completed).length;
+    const total = sections.length;
+    const nextSection = sections.find((s) => !s.completed) ?? null;
+    const progress = {
+      total,
+      completed,
+      percent: total === 0 ? 0 : Math.round((completed / total) * 100),
+      allComplete: completed === total,
+      currentSectionId: nextSection?.id ?? null,
+      currentSectionLabel: nextSection?.label ?? "Review & finish",
+      currentIndex: nextSection?.index ?? total,
+      sections,
     };
+
+    return { facts, summary, progress };
   });
 
 // ----- Inline edit from the live brief panel -----
@@ -110,6 +132,21 @@ export const resetBrandBrief = createServerFn({ method: "POST" })
       supabaseAdmin.from("attendee_brief_alignment").delete().eq("user_id", userId),
     ]);
     const err = facts.error || summary.error || alignment.error;
+    if (err) throw new Error(err.message);
+    return { ok: true };
+  });
+
+// ----- Revise: keep facts, clear summary + alignment so the chat re-walks each section -----
+
+export const reviseBrandBrief = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { userId } = context;
+    const [summary, alignment] = await Promise.all([
+      supabaseAdmin.from("attendee_brief_summary").delete().eq("user_id", userId),
+      supabaseAdmin.from("attendee_brief_alignment").delete().eq("user_id", userId),
+    ]);
+    const err = summary.error || alignment.error;
     if (err) throw new Error(err.message);
     return { ok: true };
   });

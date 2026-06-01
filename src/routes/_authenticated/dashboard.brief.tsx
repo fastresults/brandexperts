@@ -4,11 +4,11 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
-import { Send, Loader2, RefreshCw, CheckCircle2, Copy, Download, RotateCcw } from "lucide-react";
+import { Send, Loader2, RefreshCw, CheckCircle2, Copy, Download, RotateCcw, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { getFounderProfile } from "@/lib/discovery.functions";
-import { getBrandBrief, reopenBrandBrief, resetBrandBrief } from "@/lib/brand-brief.functions";
+import { getBrandBrief, reopenBrandBrief, resetBrandBrief, reviseBrandBrief } from "@/lib/brand-brief.functions";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,6 +28,7 @@ import type { BriefFact } from "@/lib/brand-brief";
 import { Markdown } from "@/components/brief/Markdown";
 import { parseBrief } from "@/lib/brief-parser";
 import { LedgerBrief } from "@/components/brief/LedgerBrief";
+import { BriefProgress, type BriefProgressData } from "@/components/brief/BriefProgress";
 
 export const Route = createFileRoute("/_authenticated/dashboard/brief")({
   component: BrandBriefPage,
@@ -39,24 +40,48 @@ function BrandBriefPage() {
   const profileFn = useServerFn(getFounderProfile);
   const reopenFn = useServerFn(reopenBrandBrief);
   const resetFn = useServerFn(resetBrandBrief);
-
-  const handleReset = async () => {
-    try {
-      await resetFn();
-      await Promise.all([brief.refetch(), profile.refetch()]);
-      toast.success("Assessment reset — let's start fresh");
-    } catch (err) {
-      toast.error("Couldn't reset the assessment");
-      console.error(err);
-    }
-  };
+  const reviseFn = useServerFn(reviseBrandBrief);
 
   const brief = useQuery({ queryKey: ["brand-brief"], queryFn: () => briefFn() });
   const profile = useQuery({ queryKey: ["founder-profile"], queryFn: () => profileFn() });
 
   const facts = (brief.data?.facts ?? []) as BriefFact[];
   const summary = brief.data?.summary ?? null;
+  const progress = (brief.data?.progress ?? {
+    total: 0,
+    completed: 0,
+    percent: 0,
+    allComplete: false,
+    currentSectionId: null,
+    currentSectionLabel: "",
+    currentIndex: 0,
+    sections: [],
+  }) as BriefProgressData;
   const finished = !!summary?.completed_at;
+  const revisionMode = !finished && facts.length > 0 && !summary;
+
+  const handleRevise = async () => {
+    try {
+      await reviseFn();
+      await Promise.all([brief.refetch(), profile.refetch()]);
+      toast.success("Revision mode — your answers are kept. Walk through what you'd like to change.");
+    } catch (err) {
+      toast.error("Couldn't enter revision mode");
+      console.error(err);
+    }
+  };
+
+  const handleReset = async () => {
+    try {
+      await resetFn();
+      await Promise.all([brief.refetch(), profile.refetch()]);
+      toast.success("Cleared — let's start fresh");
+    } catch (err) {
+      toast.error("Couldn't clear the assessment");
+      console.error(err);
+    }
+  };
+
 
   // Auth-aware transport: attach the bearer token to /api/brief-chat.
   const [transport, setTransport] = useState<DefaultChatTransport<UIMessage> | null>(null);
@@ -104,15 +129,24 @@ function BrandBriefPage() {
         <div className="border-b border-white/10 p-4 md:p-5">
           <div className="flex items-start justify-between gap-4">
             <h1 className="text-2xl font-semibold tracking-tight">Design your brand operating system</h1>
-            <StartOverButton onConfirm={handleReset} variant="link" />
+            <ReviseActions onRevise={handleRevise} onReset={handleReset} hasAnswers={facts.length > 0} variant="link" />
           </div>
           <p className="mt-1 text-sm text-muted-foreground">
             A conversation with your AI brand strategist. The brief assembles on the right as you go.
           </p>
+
+          <div className="mt-4">
+            <BriefProgress progress={progress} revisionMode={revisionMode} />
+          </div>
+
           <div className="mt-4 rounded-2xl border border-primary/20 bg-primary/5 p-4 text-sm leading-relaxed text-foreground/90">
-            <div className="text-xs font-medium uppercase tracking-wide text-primary">Before your workshop</div>
+            <div className="text-xs font-medium uppercase tracking-wide text-primary">
+              {revisionMode ? "Revising your brief" : "Before your workshop"}
+            </div>
             <p className="mt-1.5">
-              Welcome! This short ~10-minute conversation builds your Brand Operating System — the foundation we'll sharpen together in the room. Upload a resume, LinkedIn, or bio to start, then chat at your own pace. Arrive ready, leave with clarity.
+              {revisionMode
+                ? "Your prior answers are kept. The strategist will walk you through each section so you can keep, refine, or replace any answer. You can also edit any section directly on the right."
+                : "Welcome! This short ~10-minute conversation builds your Brand Operating System — the foundation we'll sharpen together in the room. Upload a resume, LinkedIn, or bio to start, then chat at your own pace. Arrive ready, leave with clarity."}
             </p>
           </div>
 
@@ -127,6 +161,7 @@ function BrandBriefPage() {
             />
           </div>
         </div>
+
 
         <ChatPane
           transport={transport}
@@ -265,6 +300,8 @@ function ChatPane({
 }
 
 function FinishedView({ markdown, onReopen, onReset }: { markdown: string; onReopen: () => void | Promise<void>; onReset: () => void | Promise<void> }) {
+  // FinishedView uses Keep refining (onReopen) and Clear everything (onReset).
+  // Revise-with-retention only makes sense on the in-progress view, so it's not exposed here.
   const [copied, setCopied] = useState(false);
 
   const copy = async () => {
@@ -330,7 +367,7 @@ function FinishedView({ markdown, onReopen, onReset }: { markdown: string; onReo
           >
             <RefreshCw className="h-3.5 w-3.5" /> Keep refining
           </button>
-          <StartOverButton onConfirm={onReset} variant="ghost" />
+          <ReviseActions onReset={onReset} hasAnswers={false} variant="ghost" />
         </div>
       </header>
 
@@ -353,52 +390,145 @@ function FinishedView({ markdown, onReopen, onReset }: { markdown: string; onReo
   );
 }
 
-function StartOverButton({
-  onConfirm,
+function ReviseActions({
+  onRevise,
+  onReset,
+  hasAnswers,
   variant = "ghost",
 }: {
-  onConfirm: () => void | Promise<void>;
+  onRevise?: () => void | Promise<void>;
+  onReset: () => void | Promise<void>;
+  hasAnswers: boolean;
   variant?: "ghost" | "link";
 }) {
+  const [open, setOpen] = useState(false);
+  const [confirmingWipe, setConfirmingWipe] = useState(false);
   const [busy, setBusy] = useState(false);
+
+  // If there are no answers yet, only expose Clear everything (no revise to do).
+  const showRevise = hasAnswers && !!onRevise;
+  const label = showRevise ? "Revise answers" : "Clear everything";
+  const Icon = showRevise ? Pencil : RotateCcw;
+
   const triggerClass =
     variant === "link"
-      ? "inline-flex shrink-0 items-center gap-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-destructive"
-      : "inline-flex items-center gap-2 rounded-md border border-destructive/30 bg-transparent px-3.5 py-2 text-xs font-semibold text-destructive/90 transition-colors hover:bg-destructive/10 hover:text-destructive";
+      ? "inline-flex shrink-0 items-center gap-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
+      : "inline-flex items-center gap-2 rounded-md border border-white/10 bg-transparent px-3.5 py-2 text-xs font-semibold text-foreground/80 transition-colors hover:bg-muted/40 hover:text-foreground";
+
+  const handleRevise = async () => {
+    if (!onRevise) return;
+    setBusy(true);
+    try {
+      await onRevise();
+      setOpen(false);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleWipe = async () => {
+    setBusy(true);
+    try {
+      await onReset();
+      setOpen(false);
+      setConfirmingWipe(false);
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
-    <AlertDialog>
+    <AlertDialog
+      open={open}
+      onOpenChange={(o) => {
+        setOpen(o);
+        if (!o) setConfirmingWipe(false);
+      }}
+    >
       <AlertDialogTrigger asChild>
-        <button type="button" className={triggerClass} disabled={busy}>
-          <RotateCcw className="h-3.5 w-3.5" /> Start over
+        <button type="button" className={triggerClass}>
+          <Icon className="h-3.5 w-3.5" /> {label}
         </button>
       </AlertDialogTrigger>
       <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Reset your brand brief?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This permanently clears your captured facts, generated brief, and workshop alignment.
-            The conversation will start fresh. This can't be undone.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel disabled={busy}>Cancel</AlertDialogCancel>
-          <AlertDialogAction
-            disabled={busy}
-            onClick={async (e) => {
-              e.preventDefault();
-              setBusy(true);
-              try {
-                await onConfirm();
-              } finally {
-                setBusy(false);
-              }
-            }}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-          >
-            {busy ? "Resetting…" : "Yes, start over"}
-          </AlertDialogAction>
-        </AlertDialogFooter>
+        {!confirmingWipe ? (
+          <>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                {showRevise ? "Revise your brand brief?" : "Clear your brand brief?"}
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                {showRevise
+                  ? "Your prior answers are kept. The strategist will walk you through each one so you can keep, refine, or replace it. Your generated brief and workshop alignment will be regenerated. You can also edit any section directly on the right panel."
+                  : "This permanently deletes every answer, the generated brief, and the workshop alignment. This can't be undone."}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              {showRevise ? (
+                <button
+                  type="button"
+                  onClick={() => setConfirmingWipe(true)}
+                  className="text-xs font-medium text-muted-foreground underline-offset-4 hover:text-destructive hover:underline"
+                  disabled={busy}
+                >
+                  Or clear everything and start blank
+                </button>
+              ) : (
+                <span />
+              )}
+              <div className="flex items-center gap-2">
+                <AlertDialogCancel disabled={busy}>Cancel</AlertDialogCancel>
+                {showRevise ? (
+                  <AlertDialogAction
+                    disabled={busy}
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      await handleRevise();
+                    }}
+                  >
+                    {busy ? "Loading…" : "Yes, revise"}
+                  </AlertDialogAction>
+                ) : (
+                  <AlertDialogAction
+                    disabled={busy}
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      await handleWipe();
+                    }}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    {busy ? "Clearing…" : "Yes, clear everything"}
+                  </AlertDialogAction>
+                )}
+              </div>
+            </AlertDialogFooter>
+          </>
+        ) : (
+          <>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Clear everything and start blank?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This permanently deletes every answer you've given, the generated brief, and the workshop alignment.
+                You'll begin the conversation from zero. This can't be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={busy} onClick={() => setConfirmingWipe(false)}>
+                Back
+              </AlertDialogCancel>
+              <AlertDialogAction
+                disabled={busy}
+                onClick={async (e) => {
+                  e.preventDefault();
+                  await handleWipe();
+                }}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {busy ? "Clearing…" : "Yes, delete everything"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </>
+        )}
       </AlertDialogContent>
     </AlertDialog>
   );
