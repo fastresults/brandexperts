@@ -36,12 +36,12 @@ export const Route = createFileRoute("/register")({
       {
         name: "description",
         content:
-          "One afternoon. A locked Brand Blueprint, three bios, an Op-Ed, a POV post, a framework carousel, a newsletter, a keynote opener, and a publishing system that runs on a 30-min weekly cadence.",
+          "One 3-hour afternoon at the IGNITE Center in Norcross, GA. You walk in as a title. You walk out operating a Personal Branding Operating System that publishes in your voice — on its own — for the next 90 days and every quarter after.",
       },
       { property: "og:title", content: "Reserve your seat — The Executive Brand Intensive" },
       {
         property: "og:description",
-        content: "Walk in with a title. Walk out with a brand that ships without you.",
+        content: "Walk in with a title. Walk out operating a Personal Branding Operating System.",
       },
     ],
   }),
@@ -188,12 +188,12 @@ function RegisterDefault() {
           </p>
           <h1 className="text-4xl font-semibold leading-tight tracking-tight md:text-5xl lg:text-6xl">
             Walk in with a title.{" "}
-            <span className="text-gradient-brand">Walk out with a brand that ships without you.</span>
+            <span className="text-gradient-brand">Walk out operating a Personal Branding Operating System.</span>
           </h1>
           <p className="mt-4 max-w-2xl text-base text-muted-foreground md:mt-5 md:text-lg">
-            One 3-hour afternoon intensive. 15 finished brand assets. A locked Brand Blueprint, an
-            Op-Ed, a newsletter, a keynote opener, fourteen days of scheduled social, and a 30-min
-            weekly cadence on your calendar — all done in the room.
+            One 3-hour afternoon intensive. A locked Brand Blueprint, an Op-Ed, a newsletter, a
+            keynote opener, fourteen days of scheduled publishing, and a 30-minute weekly cadence
+            on your calendar — installed in the room, in your voice, running long after you leave.
           </p>
           <div className="mt-5 flex flex-col gap-2 text-sm text-muted-foreground sm:flex-row sm:flex-wrap sm:gap-4 md:mt-6">
             <span className="inline-flex items-center gap-2">
@@ -307,7 +307,7 @@ function RegisterDefault() {
               Reserve your seat
             </h2>
             <p className="mt-2 text-muted-foreground">
-              Tell us a bit about your idea so we can tailor the day to your cohort.
+              A few details so we can tailor the room to the operators in it.
             </p>
           </div>
           {submitted ? (
@@ -343,12 +343,12 @@ function RegisterDefault() {
               <Field label="Phone (optional)" error={errors.phone?.message}>
                 <input {...register("phone")} className="input" placeholder="+1 (404) 555-0123" autoComplete="tel" />
               </Field>
-              <Field label="What business do you want to start?" error={errors.business_idea?.message}>
+              <Field label="What's the brand you're here to install?" error={errors.business_idea?.message}>
                 <textarea
                   {...register("business_idea")}
                   rows={4}
                   className="input resize-y"
-                  placeholder="One or two sentences. Who is it for, what does it do?"
+                  placeholder="A sentence or two. Your role, the audience you want to lead, the POV you want known for."
                 />
               </Field>
               <div className="grid gap-5 md:grid-cols-2">
@@ -370,11 +370,11 @@ function RegisterDefault() {
                     ))}
                   </select>
                 </Field>
-                <Field label="Where are you today?" error={errors.stage?.message}>
+                <Field label="Where's your brand today?" error={errors.stage?.message}>
                   <select {...register("stage")} className="input">
-                    <option value="idea">Just an idea</option>
-                    <option value="early">Early — testing it</option>
-                    <option value="existing">Existing business</option>
+                    <option value="idea">Defining it</option>
+                    <option value="early">Publishing inconsistently</option>
+                    <option value="existing">Established and scaling</option>
                   </select>
                 </Field>
               </div>
@@ -511,8 +511,8 @@ function SuccessCard({
   const bring = [
     "Your laptop and charger",
     "Headphones (optional)",
-    "Any existing brand assets / domain ideas",
-    "An open mind and your business idea",
+    "Any existing bios, headshots, or links you want pulled in",
+    "The executive POV you're ready to make public",
   ];
   const tierLabel = tier === "founders" ? "Founders Seat" : "Cohort Seat";
   return (

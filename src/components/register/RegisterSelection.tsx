@@ -148,7 +148,7 @@ export function RegisterSelection() {
 
               <Field
                 label="Tell us about you"
-                hint="Where you come from, what you&rsquo;re doing right now, what you&rsquo;ve shipped before — even if it was a side project. Specifics earn the read."
+                hint="Where you come from, what you&rsquo;re leading right now, what you&rsquo;ve built or operated before. Specifics earn the read."
                 error={errors.about_you?.message}
               >
                 <textarea
