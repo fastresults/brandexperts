@@ -33,7 +33,7 @@ export const BRIEF_SPINE: BriefSection[] = [
   { id: "audience", label: "Audience", hint: "Who specifically needs to hear from you (role, industry, stage, geography)." },
   { id: "audience_pain", label: "Audience pain", hint: "What they're quietly struggling with that no one else is naming." },
   { id: "transformation", label: "Transformation promise", hint: "What's different in their life or career after 12 months of following you." },
-  { id: "voice", label: "Writing voice profile", hint: "Tone words, cadence (punchy vs essayistic), vocabulary register, 1–2 sample opening lines, and what you never sound like." },
+  { id: "voice", label: "Writing voice profile", hint: "A 1–2 sentence narrative summary of how they sound, plus tone words, cadence, vocabulary register, 1–2 sample opening lines, and what they never sound like." },
   { id: "signature_themes", label: "Signature themes", hint: "The 3–5 topics you want to own for the next year." },
   { id: "channels", label: "Channels", hint: "Where you'll publish (LinkedIn, newsletter, podcast, keynote, etc.)." },
   { id: "outcome_goal", label: "12-month outcome", hint: "What winning looks like — boards, keynotes, inbound, a book, an exit." },
