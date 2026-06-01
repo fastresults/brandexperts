@@ -36,12 +36,12 @@ export const Route = createFileRoute("/register")({
       {
         name: "description",
         content:
-          "One 3-hour afternoon at the IGNITE Center in Norcross, GA. You walk in as a title. You walk out operating a Personal Branding Operating System that publishes in your voice — on its own — for the next 90 days and every quarter after.",
+          "One 3-hour afternoon at the IGNITE Center in Norcross, GA. You walk in as a title. You walk out with a Personal Branding Operating System that publishes in your voice — on its own — for the next 90 days and every quarter after.",
       },
       { property: "og:title", content: "Reserve your seat — The Executive Brand Intensive" },
       {
         property: "og:description",
-        content: "Walk in with a title. Walk out operating a Personal Branding Operating System.",
+        content: "Walk in with a title. Walk out with a Personal Branding Operating System.",
       },
     ],
   }),
