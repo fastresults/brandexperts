@@ -23,7 +23,6 @@ import { Home, Calendar, ClipboardList, ListChecks, FolderOpen, User, Sparkles, 
 import { getMyCohort } from "@/lib/cohort.functions";
 import { getWorkshopMode } from "@/lib/workshop-mode";
 import { RoomClock } from "@/components/dashboard/RoomClock";
-import { AIWorklogPill } from "@/components/dashboard/AIWorklogPill";
 import { HelpFab } from "@/components/dashboard/HelpFab";
 import { StartupLabsLogo } from "@/components/brand/StartupLabsLogo";
 
@@ -77,7 +76,6 @@ function DashboardShell() {
             <Outlet />
           </div>
         </main>
-        <AIWorklogPill />
         <HelpFab />
       </div>
     </div>
