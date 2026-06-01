@@ -151,7 +151,7 @@ function extractLikelyJsonObject(raw: string): unknown {
   return JSON.parse(cleaned.slice(start, end + 1));
 }
 
-function coerceAlignmentOutput(raw: unknown, facts: Array<Pick<BriefFact, "section" | "value">>) {
+function coerceAlignmentOutput(raw: unknown) {
   const parsed = z
     .object({
       items: z.array(z.unknown()).default([]),
@@ -266,7 +266,7 @@ export const regenerateBriefAlignment = createServerFn({ method: "POST" })
       }
 
       try {
-        generatedOutput = coerceAlignmentOutput(extractLikelyJsonObject(error.text), facts);
+        generatedOutput = coerceAlignmentOutput(extractLikelyJsonObject(error.text));
       } catch {
         generatedOutput = { items: [] };
       }
