@@ -154,6 +154,18 @@ Use this exact skeleton. EVERY section heading MUST be an H2 (\`## \`). NEVER us
 ## Identity & credibility
 {2–3 sentence prose. Lead with their proudest credential or signature result.}
 
+## Work experience
+{4–6 sentence narrative paragraph: the arc across roles, scope of responsibility, signature wins, and the through-line that ties them together. Pull from IMPORTED CONTEXT verbatim where possible — do not invent.}
+
+- **{Role, Company (years)}** — {one-line outcome}
+- **{Role, Company (years)}** — {one-line outcome}
+- **{Role, Company (years)}** — {one-line outcome}
+
+## Domain
+{2–3 sentence paragraph naming the specific field they want to own and why they've earned the right to own it.}
+
+**Domains:** {tag1} · {tag2} · {tag3} · {tag4}
+
 ## Audience & transformation
 **Who they serve** — {one sentence}
 **The pain they walk in with** — {one sentence}
@@ -166,6 +178,8 @@ Use this exact skeleton. EVERY section heading MUST be an H2 (\`## \`). NEVER us
 {2–3 sentence prose. The pivot or earned moment that gives the POV its authority.}
 
 ## Voice
+{1–2 sentence prose summary of how they sound on the page — the overall feel before the labels.}
+
 **Tone** — {3–6 adjectives}
 **Cadence** — {short phrase}
 **Vocabulary** — {what they say / don't say}
