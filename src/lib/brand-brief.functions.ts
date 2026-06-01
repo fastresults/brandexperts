@@ -136,6 +136,21 @@ export const resetBrandBrief = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+// ----- Revise: keep facts, clear summary + alignment so the chat re-walks each section -----
+
+export const reviseBrandBrief = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { userId } = context;
+    const [summary, alignment] = await Promise.all([
+      supabaseAdmin.from("attendee_brief_summary").delete().eq("user_id", userId),
+      supabaseAdmin.from("attendee_brief_alignment").delete().eq("user_id", userId),
+    ]);
+    const err = summary.error || alignment.error;
+    if (err) throw new Error(err.message);
+    return { ok: true };
+  });
+
 // ----- Workshop alignment -----
 
 const ALIGNMENT_MODEL = "google/gemini-3-flash-preview";
