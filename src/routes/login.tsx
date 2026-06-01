@@ -25,6 +25,7 @@ function LoginPage() {
   const { isAuthenticated, isAdmin, isApprovedMember, loading } = useAuth();
   const navigate = useNavigate();
   const { redirect } = useSearch({ from: "/login" });
+  const safeRedirect = redirect && !redirect.startsWith("/login") && !redirect.startsWith("/signup") ? redirect : undefined;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -33,9 +34,9 @@ function LoginPage() {
     if (loading) return;
     if (isAuthenticated) {
       const fallback = isAdmin ? "/admin" : "/dashboard";
-      navigate({ to: redirect ?? fallback, replace: true });
+      navigate({ to: safeRedirect ?? fallback, replace: true });
     }
-  }, [isAuthenticated, isAdmin, isApprovedMember, loading, navigate, redirect]);
+  }, [isAuthenticated, isAdmin, isApprovedMember, loading, navigate, safeRedirect]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
