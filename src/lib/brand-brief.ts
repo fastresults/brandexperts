@@ -25,7 +25,8 @@ export type BriefSection = {
 
 export const BRIEF_SPINE: BriefSection[] = [
   { id: "identity_credibility", label: "Identity & credibility", hint: "Who you are, roles, results, rooms — the credibility that travels with you." },
-  { id: "domain", label: "What you want to be known for", hint: "The single field/category you want to own — specific, not 'leadership' (e.g. 'operational turnarounds in regulated healthcare')." },
+  { id: "work_experience", label: "Work experience", hint: "The actual arc of roles, companies, and signature outcomes — pulled from resume/LinkedIn when available; ask only if missing." },
+  { id: "domain", label: "What you want to be known for", hint: "The single field/category you want to own — specific, not 'leadership' (e.g. 'operational turnarounds in regulated healthcare'). Also capture 3–6 short domain tags." },
   { id: "expertise", label: "Specific expertise", hint: "3–5 concrete capabilities inside that domain you can teach (e.g. 'post-merger ops integration', 'FDA submission readiness')." },
   { id: "signature_pov", label: "Signature POV", hint: "The one belief about your industry you'd defend on a stage (e.g. 'Most turnaround playbooks fail in regulated industries because they ignore the compliance clock')." },
   { id: "origin_arc", label: "Origin arc", hint: "The experience or turning point that gave you that POV." },
