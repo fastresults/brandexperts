@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { getMyWorkflow, runMyDeliverable, runMyRemaining, getMyRecentRuns } from "@/lib/userPipeline.functions";
+import { getMyWorkflow, runMyDeliverable, runMyRemaining } from "@/lib/userPipeline.functions";
+import { getMyRecentRuns } from "@/lib/recentRuns.functions";
 import { STAGES } from "@/lib/workflow";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
