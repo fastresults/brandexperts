@@ -188,7 +188,7 @@ function RegisterDefault() {
           </p>
           <h1 className="text-4xl font-semibold leading-tight tracking-tight md:text-5xl lg:text-6xl">
             Walk in with a title.{" "}
-            <span className="text-gradient-brand">Walk out operating a Personal Branding Operating System.</span>
+            <span className="text-gradient-brand">Walk out with a Personal Branding Operating System.</span>
           </h1>
           <p className="mt-4 max-w-2xl text-base text-muted-foreground md:mt-5 md:text-lg">
             One 3-hour afternoon intensive. A locked Brand Blueprint, an Op-Ed, a newsletter, a
