@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { getBrandBrief } from "@/lib/brand-brief.functions";
 import { getMyFiling } from "@/lib/filing.functions";
-import { getMyWorkflow } from "@/lib/userPipeline.functions";
+import { listMyDeliverables } from "@/lib/attendee.functions";
 import { getMyCohort } from "@/lib/cohort.functions";
 import { getWorkshopMode, formatMinutesLeft, FRIENDLY_STAGE, type WorkshopState } from "@/lib/workshop-mode";
 import { ProgressRing } from "@/components/dashboard/ProgressRing";
@@ -19,12 +19,12 @@ export const Route = createFileRoute("/_authenticated/dashboard/")({
 function TodayPage() {
   const briefFn = useServerFn(getBrandBrief);
   const filingFn = useServerFn(getMyFiling);
-  const wfFn = useServerFn(getMyWorkflow);
+  const deliverablesFn = useServerFn(listMyDeliverables);
   const cohortFn = useServerFn(getMyCohort);
 
   const brief = useQuery({ queryKey: ["brand-brief"], queryFn: () => briefFn() });
   const filing = useQuery({ queryKey: ["my", "filing"], queryFn: () => filingFn() });
-  const wf = useQuery({ queryKey: ["my", "workflow"], queryFn: () => wfFn() });
+  const deliverables = useQuery({ queryKey: ["my", "deliverables"], queryFn: () => deliverablesFn() });
   const cohort = useQuery({ queryKey: ["my", "cohort"], queryFn: () => cohortFn(), staleTime: 60_000 });
 
   // Re-render once a minute so the mode and clock stay live
@@ -41,9 +41,9 @@ function TodayPage() {
   const briefScore = summaryDone ? briefTotal : rawScore;
   const briefReady = summaryDone || !!brief.data?.progress?.allComplete;
   const filingReady = !!filing.data?.filing?.llc_name;
-  const items = wf.data?.items ?? [];
-  const generated = items.filter((i) => i.generated).length;
-  const total = items.length;
+  const publishedDeliverables = deliverables.data?.deliverables ?? [];
+  const generated = publishedDeliverables.length;
+  const total = generated;
   const firstName = null;
   const pitch = null;
 
