@@ -380,27 +380,42 @@ function FinishedView({ markdown, onReopen, onReset }: { markdown: string; onReo
     URL.revokeObjectURL(url);
   };
 
-  const downloadCompletePackage = async () => {
+  const copyCompletePackage = async () => {
     if (packaging) return;
     setPackaging(true);
     try {
       const { markdown: pkg, filename } = await exportPackage();
-      const blob = new Blob([pkg], { type: "text/markdown;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-      toast.success("Complete package downloaded");
+      const sizeLabel =
+        pkg.length < 1024
+          ? `${pkg.length} B`
+          : pkg.length < 1024 * 1024
+          ? `${(pkg.length / 1024).toFixed(1)} KB`
+          : `${(pkg.length / 1024 / 1024).toFixed(2)} MB`;
+      try {
+        await navigator.clipboard.writeText(pkg);
+        setPackageCopied(true);
+        toast.success(`Complete package copied — ${sizeLabel} on your clipboard`);
+        setTimeout(() => setPackageCopied(false), 2500);
+      } catch {
+        // Clipboard blocked (permissions, insecure context, payload too large) — fall back to download.
+        const blob = new Blob([pkg], { type: "text/markdown;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        toast.success(`Clipboard blocked — downloaded the package (${sizeLabel}) instead`);
+      }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Couldn't build the complete package");
     } finally {
       setPackaging(false);
     }
   };
+
 
   const sections = parseBrief(markdown);
 
