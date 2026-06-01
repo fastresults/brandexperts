@@ -33,9 +33,12 @@ export type Cohort = {
   id: string;
   startISO: string;
   endISO: string;
-  dateLabel: string;
-  shortLabel: string;
-  monthLabel: string;
+  dateLabel: string;       // "Wed, Aug 5, 2026"
+  dateLabelLong: string;   // "Wednesday, August 5, 2026"
+  dayOfWeekLong: string;   // "Wednesday"
+  shortLabel: string;      // "Aug 5"
+  monthLabel: string;      // "August 2026"
+  decisionDateLabel: string; // "July 21, 2026" — 15 days before workshop
   status: CohortStatus;
   seatsLeft?: number;
   // Pricing & capacity (per cohort)
