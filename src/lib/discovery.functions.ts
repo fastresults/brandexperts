@@ -124,8 +124,19 @@ export const extractFounderFromText = createServerFn({ method: "POST" })
     if (textForModel.length >= 20) {
       const model = createLovableAiGatewayProvider(apiKey)("google/gemini-3-flash-preview");
       const prompt = [
-        "You are extracting a founder's professional profile from text they provided.",
-        "Be faithful to the source — do not invent. If a field isn't present, leave it empty.",
+        "You are extracting an executive's professional profile from text they provided, for use in a personal-brand strategy session.",
+        "Be faithful to the source — do not invent. If a field isn't present, leave it empty/default.",
+        "",
+        "In addition to the factual fields, infer three brand-brief priors (treated by downstream as DRAFTS, not facts):",
+        "- domain_guess: one sentence naming the specific field/category this person is positioned to own (e.g. 'operational turnarounds in regulated healthcare'). Avoid generic words like 'leadership' or 'strategy' alone. Leave empty if the source is too thin.",
+        "- expertise_guess: up to 6 concrete teachable capabilities inside that domain, derived from their actual roles/wins (e.g. 'post-merger ops integration', 'scaling clinical ops past 200 FTE'). No fluff.",
+        "- voice_signal: ONLY populate when the source contains real prose written BY the person (a summary paragraph, about-me, posts, talk excerpts). For pure bullet-point resumes or LinkedIn skill lists, leave every voice_signal field empty — do not fabricate a voice.",
+        "  - tone: 2–4 adjectives describing how they actually sound in the prose.",
+        "  - cadence: one phrase (e.g. 'short punchy sentences', 'long essayistic paragraphs').",
+        "  - vocabulary: one phrase (e.g. 'operator jargon, plain English', 'academic register').",
+        "  - sample_phrases: up to 3 short verbatim phrases from the source that exemplify the voice.",
+        "  - avoid: up to 3 patterns absent or off-tone for this writer (e.g. 'corporate buzzwords', 'hype').",
+        "",
         "Return ONLY the structured object.",
         "",
         data.linkedin_url ? `LinkedIn URL (for reference): ${data.linkedin_url}` : "",
