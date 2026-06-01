@@ -59,6 +59,16 @@ export const Route = createFileRoute("/lovable/email/transactional/send")({
           return Response.json({ error: 'Unauthorized' }, { status: 401 })
         }
 
+        // Admin-only: prevent abuse of the sender domain by ordinary signed-in users.
+        // App-internal email sends bypass this route entirely via enqueueTransactionalEmail
+        // (server-side, service role). This HTTP endpoint is for admin/test tooling only.
+        const { data: isAdmin, error: adminErr } = await supabase.rpc('is_admin', {
+          _user_id: user.id,
+        })
+        if (adminErr || !isAdmin) {
+          return Response.json({ error: 'Forbidden' }, { status: 403 })
+        }
+
         // Parse request body
         let templateName: string
         let recipientEmail: string
