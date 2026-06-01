@@ -220,6 +220,9 @@ function FinishedView({ markdown, onReopen }: { markdown: string; onReopen: () =
       <article className="prose prose-invert max-w-none whitespace-pre-wrap rounded-2xl border border-white/10 bg-card/60 p-6 text-sm leading-relaxed">
         {markdown}
       </article>
+
+      <BrandAlignmentPanel />
+
       <div className="flex justify-end">
         <button
           type="button"
