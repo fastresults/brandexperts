@@ -343,12 +343,12 @@ function RegisterDefault() {
               <Field label="Phone (optional)" error={errors.phone?.message}>
                 <input {...register("phone")} className="input" placeholder="+1 (404) 555-0123" autoComplete="tel" />
               </Field>
-              <Field label="What business do you want to start?" error={errors.business_idea?.message}>
+              <Field label="What's the brand you're here to install?" error={errors.business_idea?.message}>
                 <textarea
                   {...register("business_idea")}
                   rows={4}
                   className="input resize-y"
-                  placeholder="One or two sentences. Who is it for, what does it do?"
+                  placeholder="A sentence or two. Your role, the audience you want to lead, the POV you want known for."
                 />
               </Field>
               <div className="grid gap-5 md:grid-cols-2">
