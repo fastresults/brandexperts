@@ -69,14 +69,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     activeRef.current = true;
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, s) => {
+    let prevUserId: string | null = null;
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, s) => {
+      const nextUserId = s?.user?.id ?? null;
       setSession(s);
       setUser(s?.user ?? null);
-      setTimeout(() => {
-        loadAccount(s?.user ?? null);
-        router.invalidate();
-        queryClient.invalidateQueries();
-      }, 0);
+      const userChanged = nextUserId !== prevUserId;
+      prevUserId = nextUserId;
+      // Only re-fetch on real auth transitions, not on every TOKEN_REFRESHED / INITIAL_SESSION.
+      if (event === "SIGNED_IN" || event === "SIGNED_OUT" || userChanged) {
+        setTimeout(() => {
+          loadAccount(s?.user ?? null);
+          router.invalidate();
+          queryClient.invalidateQueries();
+        }, 0);
+      }
     });
 
     supabase.auth.getSession().then(({ data }) => {
