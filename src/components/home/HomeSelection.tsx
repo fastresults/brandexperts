@@ -278,24 +278,26 @@ function WhatYouWalkOut() {
 }
 
 
-const CRITERIA = [
-  {
-    title: "Atlanta-based or relocating",
-    body: "You&rsquo;re building in metro Atlanta — or moving here in the next 90 days.",
-  },
-  {
-    title: "An idea you have been turning over",
-    body: "You don&rsquo;t need revenue. You do need a real idea you can&rsquo;t stop thinking about.",
-  },
-  {
-    title: "Coachable and decisive",
-    body: "You&rsquo;ll make calls in the room — name, offer, pricing — and stick with them past the parking lot.",
-  },
-  {
-    title: "Free on July 23",
-    body: "You can commit the full day, in person, in Norcross. No half-attendance, no Zoom-in.",
-  },
-];
+function buildCriteria(EVENT: ReturnType<typeof useEvent>) {
+  return [
+    {
+      title: "Atlanta-based or relocating",
+      body: "You&rsquo;re building in metro Atlanta — or moving here in the next 90 days.",
+    },
+    {
+      title: "An idea you have been turning over",
+      body: "You don&rsquo;t need revenue. You do need a real idea you can&rsquo;t stop thinking about.",
+    },
+    {
+      title: "Coachable and decisive",
+      body: "You&rsquo;ll make calls in the room — name, offer, pricing — and stick with them past the parking lot.",
+    },
+    {
+      title: `Free on ${EVENT.shortLabel}`,
+      body: "You can commit the full day, in person, in Norcross. No half-attendance, no Zoom-in.",
+    },
+  ];
+}
 
 function WhoWereLookingFor() {
   return (
