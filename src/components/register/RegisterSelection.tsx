@@ -205,7 +205,7 @@ export function RegisterSelection() {
 
               <Field
                 label="Why this workshop, why now?"
-                hint="What actually changes in your life if you walk out July 23 with a launched startup? Be concrete — money, time, freedom, a person you want to prove something to."
+                hint={`What actually changes in your life if you walk out ${EVENT.shortLabel} with a launched startup? Be concrete — money, time, freedom, a person you want to prove something to.`}
                 error={errors.why_now?.message}
               >
                 <textarea
