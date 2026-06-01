@@ -317,6 +317,7 @@ export function parseBrief(md: string): ParsedBrief {
   const result: ParsedBrief = {
     title,
     positioning: extractPositioning(preamble),
+    domainTags: [],
     expertise: [],
     themes: [],
     unknown: [],
@@ -342,8 +343,21 @@ export function parseBrief(md: string): ParsedBrief {
       continue;
     }
 
+    if (
+      key === "work experience" ||
+      key === "experience" ||
+      key === "career" ||
+      key === "professional experience" ||
+      key === "work history"
+    ) {
+      result.workExperience = parseWorkExperience(sec.body);
+      continue;
+    }
+
     if (key === "domain") {
-      result.domain = cleanProse(sec.body);
+      const { prose, tags } = extractDomainTags(sec.body);
+      result.domain = cleanProse(prose);
+      result.domainTags = tags;
       continue;
     }
 
