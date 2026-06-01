@@ -1,58 +1,66 @@
-## Problem
+# Why the dashboard says "start your brief" even though the user finished it
 
-When a user logs in to the published site, they don't land on `/dashboard` — they're redirected to `/welcome`, which still renders the old **"Atlanta Startup Sprint — Tell us what you're building"** intake form (screenshot). That page is a leftover from the prior startup-formation product and has nothing to do with The Executive Brand Intensive.
+## What I found
 
-### Root cause
+The user `fastresults@gmail.com` (`auth.users.id = ecc26f23-…dfbfd5`) **has** completed their brief — `public.attendee_brief_summary` has a `completed_at` row for them (timestamped today, 2026-06-01 15:03 UTC).
 
-`src/routes/_authenticated.tsx` enforces an "approved member" gate:
+The dashboard's "Today" page (`src/routes/_authenticated/dashboard.index.tsx`) decides "brief is done" with:
 
 ```ts
-if (!isApprovedMember && !isWelcome) {
-  return <Navigate to="/welcome" replace />;
-}
+const summaryDone = !!brief.data?.summaryCompletedAt;
 ```
 
-`isApprovedMember` is true only when the user is an admin OR `profiles.member_status === 'approved'`. New signups default to `'pending'`, so every normal user gets bounced into the startup-intake funnel and never reaches their dashboard.
+That value is supposed to come from `getMyBrief` (`src/lib/brief.functions.ts`), which runs as the authenticated user and queries `attendee_brief_summary`. Row-Level Security policies on that table are correct (`auth.uid() = user_id` for SELECT/INSERT/UPDATE/DELETE).
 
-This gate made sense for the old "apply to join" startup product. For the Executive Brand Intensive, registration = payment for a workshop seat, and the dashboard is the post-registration experience. There is no "approve to enter the app" step.
+**But the table has no GRANTs for `authenticated` or `service_role`** — only `sandbox_exec`:
 
-## Fix (brute force, as requested)
+```
+attendee_brief_summary | sandbox_exec | INSERT,SELECT
+```
 
-Remove the approval gate. Any authenticated, non-paused user goes straight into the app.
+PostgREST therefore returns a permission error before RLS is even evaluated. `getMyBrief` ignores the error (it destructures only `data`), so `summary` is `undefined`, `summaryCompletedAt` becomes `null`, and the dashboard falls into the "not done" branch of `NoCohortMode` — exactly what the screenshot shows.
 
-### 1. `src/routes/_authenticated.tsx`
+The same missing-grants bug exists on every brief/founder table:
 
-Strip the `isApprovedMember` / `/welcome` redirect. Keep:
-- Auth check (redirect to `/login` if not authenticated)
-- Loading state
-- `paused` handling (a previously-active member whose access was revoked still gets the `/paused` screen)
+```
+attendee_brief_alignment, attendee_brief_facts, attendee_brief_summary,
+attendee_business_brief, attendee_founder_memory, attendee_founder_profile
+```
 
-Resulting flow:
-- Not authenticated → `/login`
-- Authenticated + paused (non-admin) → `/paused`
-- Everyone else → render `<Outlet />`
+These all have RLS policies that reference `authenticated`, but no role has been granted base table privileges, so every read silently fails.
 
-### 2. Remove the welcome route
+## The fix
 
-Delete `src/routes/_authenticated/welcome.tsx` (and any `Link to="/welcome"` references, e.g. the "Or register for a workshop directly" link if it points there). The router tree regenerates automatically.
+Single migration that adds the standard grants the project's own guidelines require (table-level GRANT must accompany every public-schema table):
 
-### 3. Backfill existing pending users
+```sql
+GRANT SELECT, INSERT, UPDATE, DELETE ON
+  public.attendee_brief_summary,
+  public.attendee_business_brief,
+  public.attendee_brief_facts,
+  public.attendee_brief_alignment,
+  public.attendee_founder_memory,
+  public.attendee_founder_profile
+TO authenticated;
 
-Run a one-time data update flipping every `profiles.member_status = 'pending'` to `'approved'` so the `useAuth().isApprovedMember` flag (still used in places like `BeforeMode` copy, admin badges, etc.) reflects reality. Leave `'paused'` and `'rejected'` alone.
+GRANT ALL ON
+  public.attendee_brief_summary,
+  public.attendee_business_brief,
+  public.attendee_brief_facts,
+  public.attendee_brief_alignment,
+  public.attendee_founder_memory,
+  public.attendee_founder_profile
+TO service_role;
+```
 
-### 4. Leave alone
+RLS still enforces per-user access (`auth.uid() = user_id`); the grants just let PostgREST attempt the query at all.
 
-- `member_status` column itself — still useful for the `paused` lifecycle and admin tooling.
-- `isAdmin` / `_admin` layout — separate gate, unaffected.
-- `member_intakes` table — no schema change; the table just stops getting new rows.
+## Optional follow-up (not in this fix unless you want it)
 
-## What you'll see after the fix
-
-Log in → land on `/dashboard` (the Today page with the workshop countdown / brief progress), exactly like an approved member sees today. No more startup-intake form.
+`getMyBrief` and `updateBriefField` swallow Supabase errors on several reads (`const { data: summary } = …` with no `error` check). I'd leave the call sites alone for now since the grant fix removes the actual failure, but flagging it — silent error-swallowing is what hid this bug for so long.
 
 ## Files touched
 
-- `src/routes/_authenticated.tsx` — remove welcome gate
-- `src/routes/_authenticated/welcome.tsx` — delete
-- Any stray `to="/welcome"` links — remove or repoint
-- One data update on `profiles` (pending → approved)
+- One new migration adding the GRANTs above. No application code changes.
+
+After this, the user's "Today" page will see `summaryCompletedAt`, hit the `done` branch, and render `BriefCompleteCard` instead of the "start your brief" CTA.
