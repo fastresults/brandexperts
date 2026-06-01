@@ -188,12 +188,12 @@ function RegisterDefault() {
           </p>
           <h1 className="text-4xl font-semibold leading-tight tracking-tight md:text-5xl lg:text-6xl">
             Walk in with a title.{" "}
-            <span className="text-gradient-brand">Walk out with a brand that ships without you.</span>
+            <span className="text-gradient-brand">Walk out operating a Personal Branding Operating System.</span>
           </h1>
           <p className="mt-4 max-w-2xl text-base text-muted-foreground md:mt-5 md:text-lg">
-            One 3-hour afternoon intensive. 15 finished brand assets. A locked Brand Blueprint, an
-            Op-Ed, a newsletter, a keynote opener, fourteen days of scheduled social, and a 30-min
-            weekly cadence on your calendar — all done in the room.
+            One 3-hour afternoon intensive. A locked Brand Blueprint, an Op-Ed, a newsletter, a
+            keynote opener, fourteen days of scheduled publishing, and a 30-minute weekly cadence
+            on your calendar — installed in the room, in your voice, running long after you leave.
           </p>
           <div className="mt-5 flex flex-col gap-2 text-sm text-muted-foreground sm:flex-row sm:flex-wrap sm:gap-4 md:mt-6">
             <span className="inline-flex items-center gap-2">
