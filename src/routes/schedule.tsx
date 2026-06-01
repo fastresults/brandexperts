@@ -260,7 +260,7 @@ function SchedulePage() {
           {/* Footer CTA tile */}
           <div className="mt-16 rounded-2xl border border-white/10 bg-card p-6 text-center md:p-10">
             <h3 className="text-2xl font-semibold tracking-tight md:text-3xl">
-              One afternoon. One door. Twelve seats.
+              One afternoon. One door. {EVENT.totalSeats} seats.
             </h3>
             <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
               Profile in at 1:00 PM. A brand that ships without you out at 4:00 PM.
