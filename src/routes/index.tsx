@@ -140,7 +140,7 @@ function Hero({ heroBgUrl }: { heroBgUrl: string | null }) {
         <h1 className="max-w-3xl text-4xl font-semibold leading-[1.08] tracking-tight text-white md:text-5xl lg:text-7xl">
           AI erases your edge.{" "}
           <span className="italic">
-            Install a <span className="text-primary">Personal Branding Operating System</span> that compounds.
+            Install a <span className="text-hero-blue">Personal Branding Operating System</span> that compounds.
           </span>
         </h1>
         <p className="mt-5 max-w-2xl text-base text-white/90 md:mt-6 md:text-lg">

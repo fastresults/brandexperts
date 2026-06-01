@@ -33,6 +33,7 @@
   --color-brand-orange: var(--brand-orange);
   --color-brand-magenta: var(--brand-magenta);
   --color-brand-violet: var(--brand-violet);
+  --color-hero-blue: var(--hero-blue);
 }
 
 :root {
@@ -66,6 +67,7 @@
   --brand-orange: oklch(0.72 0.21 45);
   --brand-magenta: oklch(0.62 0.27 350);
   --brand-violet: oklch(0.55 0.27 295);
+  --hero-blue: #6c92d4;
 
   /* Header — tinted toward the hero's blue end to bridge the gradient */
   --header-bg: oklch(0.18 0.035 255 / 0.78);
