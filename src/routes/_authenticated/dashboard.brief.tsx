@@ -223,6 +223,9 @@ function ChatPane({
             <Send className="h-4 w-4" />
           </button>
         </div>
+        <p className="mx-auto mt-2 max-w-2xl text-center text-[11px] text-muted-foreground">
+          Tap any section on the right to edit. Your brief saves as you go.
+        </p>
       </form>
     </div>
   );
