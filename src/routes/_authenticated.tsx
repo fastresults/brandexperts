@@ -8,6 +8,7 @@ export const Route = createFileRoute("/_authenticated")({
 function AuthenticatedLayout() {
   const { isAuthenticated, isAdmin, memberStatus, loading } = useAuth();
   const { location } = useRouterState();
+  const isAuthPage = location.pathname === "/login" || location.pathname === "/signup";
 
   if (loading) {
     return (
@@ -18,7 +19,7 @@ function AuthenticatedLayout() {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" search={{ redirect: location.href }} replace />;
+    return <Navigate to="/login" search={isAuthPage ? undefined : { redirect: location.href }} replace />;
   }
 
   const path = location.pathname;

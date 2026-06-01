@@ -1,66 +1,34 @@
-# Why the dashboard says "start your brief" even though the user finished it
+## Fix plan
 
-## What I found
+The issue is not just missing permissions anymore — the dashboard is still reading the wrong brief system.
 
-The user `fastresults@gmail.com` (`auth.users.id = ecc26f23-…dfbfd5`) **has** completed their brief — `public.attendee_brief_summary` has a `completed_at` row for them (timestamped today, 2026-06-01 15:03 UTC).
+### What I’ll change
+1. **Replace the Today page’s data source**
+   - Stop using `getMyBrief` in `src/routes/_authenticated/dashboard.index.tsx` for the completion gate.
+   - Use the same brand-brief source that the real brief page and sidebar already use: `getBrandBrief`.
 
-The dashboard's "Today" page (`src/routes/_authenticated/dashboard.index.tsx`) decides "brief is done" with:
+2. **Make the completion logic consistent everywhere**
+   - Drive the dashboard’s `done / not done` state from `brand brief summary.completed_at` and brand-brief progress, not the older startup-brief fields.
+   - Ensure the hero card, CTA label, and fallback copy all follow that same source of truth.
 
-```ts
-const summaryDone = !!brief.data?.summaryCompletedAt;
-```
+3. **Remove the product-mismatch on the dashboard**
+   - The screenshot shows startup users being told to “Design your brand operating system.”
+   - I’ll update the Today page so it renders the correct completed state for this product instead of falling back to the stale brand-intake CTA.
 
-That value is supposed to come from `getMyBrief` (`src/lib/brief.functions.ts`), which runs as the authenticated user and queries `attendee_brief_summary`. Row-Level Security policies on that table are correct (`auth.uid() = user_id` for SELECT/INSERT/UPDATE/DELETE).
+4. **Check for one more mixed path**
+   - The sidebar already uses `getBrandBrief`, while the Today page uses `getMyBrief`.
+   - I’ll align any remaining dashboard-only brief labels so this cannot split again.
 
-**But the table has no GRANTs for `authenticated` or `service_role`** — only `sandbox_exec`:
+## Exact problem
+Right now the app has **two different brief systems wired into the dashboard**:
+- `dashboard.index.tsx` uses `getMyBrief` from `src/lib/brief.functions.ts`
+- `dashboard.tsx` sidebar and `/dashboard/brief` use `getBrandBrief` from `src/lib/brand-brief.functions.ts`
 
-```
-attendee_brief_summary | sandbox_exec | INSERT,SELECT
-```
+That mismatch is why a user can complete their real brief and still land on the “start your brief” card.
 
-PostgREST therefore returns a permission error before RLS is even evaluated. `getMyBrief` ignores the error (it destructures only `data`), so `summary` is `undefined`, `summaryCompletedAt` becomes `null`, and the dashboard falls into the "not done" branch of `NoCohortMode` — exactly what the screenshot shows.
-
-The same missing-grants bug exists on every brief/founder table:
-
-```
-attendee_brief_alignment, attendee_brief_facts, attendee_brief_summary,
-attendee_business_brief, attendee_founder_memory, attendee_founder_profile
-```
-
-These all have RLS policies that reference `authenticated`, but no role has been granted base table privileges, so every read silently fails.
-
-## The fix
-
-Single migration that adds the standard grants the project's own guidelines require (table-level GRANT must accompany every public-schema table):
-
-```sql
-GRANT SELECT, INSERT, UPDATE, DELETE ON
-  public.attendee_brief_summary,
-  public.attendee_business_brief,
-  public.attendee_brief_facts,
-  public.attendee_brief_alignment,
-  public.attendee_founder_memory,
-  public.attendee_founder_profile
-TO authenticated;
-
-GRANT ALL ON
-  public.attendee_brief_summary,
-  public.attendee_business_brief,
-  public.attendee_brief_facts,
-  public.attendee_brief_alignment,
-  public.attendee_founder_memory,
-  public.attendee_founder_profile
-TO service_role;
-```
-
-RLS still enforces per-user access (`auth.uid() = user_id`); the grants just let PostgREST attempt the query at all.
-
-## Optional follow-up (not in this fix unless you want it)
-
-`getMyBrief` and `updateBriefField` swallow Supabase errors on several reads (`const { data: summary } = …` with no `error` check). I'd leave the call sites alone for now since the grant fix removes the actual failure, but flagging it — silent error-swallowing is what hid this bug for so long.
-
-## Files touched
-
-- One new migration adding the GRANTs above. No application code changes.
-
-After this, the user's "Today" page will see `summaryCompletedAt`, hit the `done` branch, and render `BriefCompleteCard` instead of the "start your brief" CTA.
+## Technical notes
+- Files likely touched:
+  - `src/routes/_authenticated/dashboard.index.tsx`
+  - possibly `src/routes/_authenticated/dashboard.tsx` for label cleanup only
+- No backend schema change should be needed for this step if the grants migration already ran.
+- After implementation, I’ll verify that a completed user on `/dashboard` sees `BriefCompleteCard` instead of `NextActionCard`.
