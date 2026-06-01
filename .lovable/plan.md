@@ -1,61 +1,65 @@
 ## Problem
 
-`fastresults@gmail.com` has completed the brand brief (15 facts, 5,250-char summary, `attendee_brief_summary.completed_at` set), but `profiles.member_status` is still `pending`. The `_authenticated` layout (`src/routes/_authenticated.tsx`) redirects every non-approved user to `/welcome`, so `/dashboard/materials`, `/dashboard/brief`, etc. all show the "Welcome — start your brief" screen even though the brief is already done.
+The Today page (`/dashboard`) reads completion from the legacy `attendee_business_brief.completeness_score` column. The current brief flow writes to `attendee_brief_summary` (with `completed_at`) instead. Users who finish the chat-based brief still see the "We haven't matched you to a workshop date yet. While you wait, start your brief." + "Start the conversation" CTA — making the dashboard look broken.
 
-Today `member_status` only flips to `approved` via the `auto_approve_member_on_payment` trigger (on `workshop_registrations` → paid/confirmed). Brief completion has no equivalent path.
+Confirmed for `fastresults@gmail.com`:
+- `attendee_brief_summary.completed_at` is set (5,250-char summary, 15 facts)
+- `attendee_business_brief` row is empty → `completeness_score = 0`
+- `profiles.member_status = approved`, so the `_authenticated` gate passes
+- Result: Today page renders `NoCohortMode` with `briefScore = 0` → "Start the conversation"
 
 ## Fix
 
-Auto-approve the user the moment their brief summary is finalized.
+Make the Today page read brief completion from the new system (`attendee_brief_summary.completed_at`) instead of the legacy score.
 
-### 1. Server-side promotion in `regenerateBriefSummary`
+### 1. `src/lib/brief.functions.ts` — extend `getMyBrief`
 
-In `src/lib/brand-brief.functions.ts`, right after the `attendee_brief_summary` upsert that sets `completed_at: nowIso` (around line 463), promote the profile using `supabaseAdmin`:
+Inside the handler, after fetching `attendee_business_brief`, also fetch the summary row:
 
 ```ts
-await supabaseAdmin
-  .from("profiles")
-  .update({
-    member_status: "approved",
-    approved_at: new Date().toISOString(),
-    approved_via: "brief",
-  })
+const { data: summary } = await supabase
+  .from("attendee_brief_summary")
+  .select("completed_at, summary_text")
   .eq("user_id", userId)
-  .neq("member_status", "approved");
+  .maybeSingle();
+
+return {
+  brief: data ?? ins,
+  summaryCompletedAt: summary?.completed_at ?? null,
+  summaryText: summary?.summary_text ?? null,
+};
 ```
 
-`supabaseAdmin` is already imported and bypasses RLS, so no policy changes are needed. Using `.neq("member_status", "approved")` keeps it idempotent and preserves any earlier `approved_at`/`approved_via` if a paid registration already promoted them.
+Return shape stays serializable. The legacy `brief` object is untouched so nothing else breaks.
 
-### 2. Backfill the existing stuck user
+### 2. `src/routes/_authenticated/dashboard.index.tsx`
 
-Run a one-time data update via the insert tool to promote every user who already has a completed brief but is still `pending`:
+Derive a single source of truth at the top of `TodayPage`:
 
-```sql
-UPDATE public.profiles p
-   SET member_status = 'approved',
-       approved_at   = COALESCE(p.approved_at, now()),
-       approved_via  = COALESCE(p.approved_via, 'brief')
- WHERE p.member_status <> 'approved'
-   AND EXISTS (
-     SELECT 1 FROM public.attendee_brief_summary s
-      WHERE s.user_id = p.user_id AND s.completed_at IS NOT NULL
-   );
+```ts
+const briefDone = !!brief.data?.summaryCompletedAt;
+const briefScore = briefDone ? 10 : (brief.data?.brief?.completeness_score ?? 0);
 ```
 
-This unblocks `fastresults@gmail.com` immediately and covers any other user in the same state.
+This keeps the existing `briefScore`/`briefReady`/`pct` math working, and `briefDone` flips both `BeforeMode` and `NoCohortMode` into the "complete" branch.
 
-### 3. Client cache refresh
+In `NoCohortMode` (around line 360-385):
+- When `briefDone`: render `BriefCompleteCard` with a "We'll match you to a workshop soon" footnote instead of the "Start the conversation" `NextActionCard`.
+- Headline copy: keep "Welcome", swap subhead to "Your brief is complete. We'll match you to a workshop date shortly."
 
-`useAuth()` reads `member_status` from `profiles`. After step 1 fires server-side, the dashboard panel that triggers brief finalization should `router.invalidate()` (or `queryClient.invalidateQueries({ queryKey: ["auth"] })` — whichever key `useAuth` uses) so the user is moved past the `/welcome` gate without a manual refresh. I'll wire this into the existing "finalize brief" success handler in `src/routes/_authenticated/dashboard.brief.tsx`.
+Pass `briefDone` down to `BeforeMode` and `NoCohortMode` (small prop addition); the existing `briefDone = briefScore >= briefTotal` line in `BeforeMode` becomes `briefDone` from props.
+
+### 3. No DB migration, no schema changes, no auth changes
+
+Both tables already exist, both already have correct RLS, the user is already approved. This is a pure read-path fix.
 
 ## Out of scope
 
-- No changes to the `_authenticated` gate itself — keeping `isApprovedMember` as the single source of truth for dashboard access.
-- No changes to RLS or table grants.
-- No changes to the payment-based approval trigger.
+- The legacy `attendee_business_brief` table and `updateBriefField` server fn stay as-is (admin tools still use them).
+- `dashboard.brief.tsx`, `dashboard.day.tsx`, deliverables, materials — unchanged.
+- No changes to the `_authenticated` gate or member-status logic.
 
-## Files
+## Files touched
 
-- `src/lib/brand-brief.functions.ts` — promote profile in `regenerateBriefSummary`.
-- `src/routes/_authenticated/dashboard.brief.tsx` — invalidate auth/router after finalize.
-- One-time SQL `UPDATE` via the insert tool — backfill stuck users.
+- `src/lib/brief.functions.ts` (extend return shape of `getMyBrief`)
+- `src/routes/_authenticated/dashboard.index.tsx` (read `summaryCompletedAt`, flip CTA when done)
