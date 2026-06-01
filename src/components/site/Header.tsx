@@ -6,6 +6,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useAuth } from "@/hooks/use-auth";
 import { StartupLabsLogo } from "@/components/brand/StartupLabsLogo";
 import { getPublicSiteSettings } from "@/lib/site-settings.functions";
+import { PRICING } from "@/lib/value-grid";
 import {
   Sheet,
   SheetContent,
