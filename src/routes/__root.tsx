@@ -83,8 +83,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "Lovable App" },
       { name: "twitter:description", content: "Atlanta Startup Sprint is a one-day workshop designed to guide aspiring entrepreneurs from idea to launch." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/f46de334-deb7-4b31-9f4d-905f06099a46/id-preview-e620b9bc--c8862b1b-6e2d-43fc-916e-3cbc978bcf87.lovable.app-1780015008377.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/f46de334-deb7-4b31-9f4d-905f06099a46/id-preview-e620b9bc--c8862b1b-6e2d-43fc-916e-3cbc978bcf87.lovable.app-1780015008377.png" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/sD8Fqs0vpzVCXZYukIg4npj165v2/social-images/social-1780276208697-socialcover.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/sD8Fqs0vpzVCXZYukIg4npj165v2/social-images/social-1780276208697-socialcover.webp" },
     ],
     links: [
       {
