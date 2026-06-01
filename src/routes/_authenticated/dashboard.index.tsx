@@ -251,12 +251,12 @@ function DuringMode({ state, generated, total }: { state: WorkshopState; generat
 
         <div className="mt-6 grid gap-3 sm:grid-cols-2">
           <Link
-            to="/dashboard/workflow"
+            to="/dashboard/deliverables"
             className="rounded-xl border border-white/10 bg-card p-4 hover:border-primary/30 transition"
           >
-            <div className="text-sm font-medium">Open this stage's questions</div>
+            <div className="text-sm font-medium">See your deliverables</div>
             <div className="mt-1 text-xs text-muted-foreground">
-              Answer them with your voice — the AI uses them right away.
+              The work your AI strategist is finishing in the room.
             </div>
           </Link>
           <button
