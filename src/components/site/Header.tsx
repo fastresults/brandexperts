@@ -6,6 +6,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useAuth } from "@/hooks/use-auth";
 import { StartupLabsLogo } from "@/components/brand/StartupLabsLogo";
 import { getPublicSiteSettings } from "@/lib/site-settings.functions";
+import { PRICING } from "@/lib/value-grid";
 import {
   Sheet,
   SheetContent,
@@ -33,7 +34,7 @@ export function SiteHeader() {
     staleTime: 60_000,
   });
   const isFreeCohort = settings?.home_variant === "selection";
-  const ctaFull = isFreeCohort ? "Apply — free cohort" : "Reserve seat — from $679";
+  const ctaFull = isFreeCohort ? "Apply — free cohort" : `Reserve seat — from $${PRICING.founders.price}`;
   const ctaShort = isFreeCohort ? "Apply" : "Reserve";
 
   const close = () => setOpen(false);
