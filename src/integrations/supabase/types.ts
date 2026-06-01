@@ -148,6 +148,54 @@ export type Database = {
           },
         ]
       }
+      attendee_brief_facts: {
+        Row: {
+          confidence: number
+          section: string
+          updated_at: string
+          user_id: string
+          value: string
+        }
+        Insert: {
+          confidence?: number
+          section: string
+          updated_at?: string
+          user_id: string
+          value: string
+        }
+        Update: {
+          confidence?: number
+          section?: string
+          updated_at?: string
+          user_id?: string
+          value?: string
+        }
+        Relationships: []
+      }
+      attendee_brief_summary: {
+        Row: {
+          completed_at: string | null
+          markdown: string
+          spine_coverage: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          markdown?: string
+          spine_coverage?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          markdown?: string
+          spine_coverage?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       attendee_business_brief: {
         Row: {
           business_model: string | null
