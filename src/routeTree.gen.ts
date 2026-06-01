@@ -23,7 +23,6 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as ApiBriefChatRouteImport } from './routes/api/brief-chat'
-import { Route as AuthenticatedWelcomeRouteImport } from './routes/_authenticated/welcome'
 import { Route as AuthenticatedPausedRouteImport } from './routes/_authenticated/paused'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/_admin'
@@ -133,11 +132,6 @@ const ApiBriefChatRoute = ApiBriefChatRouteImport.update({
   id: '/api/brief-chat',
   path: '/api/brief-chat',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedWelcomeRoute = AuthenticatedWelcomeRouteImport.update({
-  id: '/welcome',
-  path: '/welcome',
-  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedPausedRoute = AuthenticatedPausedRouteImport.update({
   id: '/paused',
@@ -389,7 +383,6 @@ export interface FileRoutesByFullPath {
   '/unsubscribe': typeof UnsubscribeRoute
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/paused': typeof AuthenticatedPausedRoute
-  '/welcome': typeof AuthenticatedWelcomeRoute
   '/api/brief-chat': typeof ApiBriefChatRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/dashboard/brief': typeof AuthenticatedDashboardBriefRoute
@@ -443,7 +436,6 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/paused': typeof AuthenticatedPausedRoute
-  '/welcome': typeof AuthenticatedWelcomeRoute
   '/api/brief-chat': typeof ApiBriefChatRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/dashboard/brief': typeof AuthenticatedDashboardBriefRoute
@@ -501,7 +493,6 @@ export interface FileRoutesById {
   '/_authenticated/_admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/_authenticated/paused': typeof AuthenticatedPausedRoute
-  '/_authenticated/welcome': typeof AuthenticatedWelcomeRoute
   '/api/brief-chat': typeof ApiBriefChatRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/_authenticated/dashboard/brief': typeof AuthenticatedDashboardBriefRoute
@@ -558,7 +549,6 @@ export interface FileRouteTypes {
     | '/unsubscribe'
     | '/dashboard'
     | '/paused'
-    | '/welcome'
     | '/api/brief-chat'
     | '/email/unsubscribe'
     | '/dashboard/brief'
@@ -612,7 +602,6 @@ export interface FileRouteTypes {
     | '/terms'
     | '/unsubscribe'
     | '/paused'
-    | '/welcome'
     | '/api/brief-chat'
     | '/email/unsubscribe'
     | '/dashboard/brief'
@@ -669,7 +658,6 @@ export interface FileRouteTypes {
     | '/_authenticated/_admin'
     | '/_authenticated/dashboard'
     | '/_authenticated/paused'
-    | '/_authenticated/welcome'
     | '/api/brief-chat'
     | '/email/unsubscribe'
     | '/_authenticated/dashboard/brief'
@@ -832,13 +820,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/brief-chat'
       preLoaderRoute: typeof ApiBriefChatRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/welcome': {
-      id: '/_authenticated/welcome'
-      path: '/welcome'
-      fullPath: '/welcome'
-      preLoaderRoute: typeof AuthenticatedWelcomeRouteImport
-      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/paused': {
       id: '/_authenticated/paused'
@@ -1263,14 +1244,12 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRouteWithChildren
   AuthenticatedPausedRoute: typeof AuthenticatedPausedRoute
-  AuthenticatedWelcomeRoute: typeof AuthenticatedWelcomeRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRouteWithChildren,
   AuthenticatedPausedRoute: AuthenticatedPausedRoute,
-  AuthenticatedWelcomeRoute: AuthenticatedWelcomeRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
@@ -1302,3 +1281,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
