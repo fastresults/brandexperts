@@ -29,6 +29,8 @@ function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [infoMsg, setInfoMsg] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && isAuthenticated) {
@@ -39,13 +41,17 @@ function LoginPage() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setErrorMsg(null);
+    setInfoMsg(null);
     setSubmitting(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setSubmitting(false);
     if (error) {
+      setErrorMsg(error.message);
       toast.error(error.message);
       return;
     }
+    setInfoMsg("Signed in. Redirecting…");
     toast.success("Signed in");
   };
 
