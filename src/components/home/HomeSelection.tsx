@@ -3,6 +3,7 @@ import { SiteHeader } from "@/components/site/Header";
 import { SiteFooter } from "@/components/site/Footer";
 import { ValueGrid } from "@/components/value/ValueGrid";
 import { ArtOfThePossible } from "@/components/home/ArtOfThePossible";
+import { useEvent } from "@/lib/use-event";
 import facilitatorPhoto from "@/assets/facilitator.jpg";
 
 import {
