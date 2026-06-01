@@ -136,7 +136,7 @@ Whenever the user gives you signal (even partial), CALL record_brief_fact. The r
 When most of the spine is covered (typically 8–12 turns), send ONE short line (your words) announcing you're assembling the brief now. THEN call finish_brief with a polished markdown brief that follows FINAL-BRIEF FORMAT exactly. Never call finish_brief silently.
 
 ═══ FINAL-BRIEF FORMAT (for the finish_brief markdown arg ONLY — not chat) ═══
-Use this exact skeleton. Fill each section with prose written in their voice, drawing only on locked facts. Sections may be omitted ONLY if there's truly no signal. Use \`---\` between major blocks. Keep paragraphs short (2–4 sentences). Bullets allowed in "Signature themes" only.
+Use this exact skeleton. EVERY section heading MUST be an H2 (\`## \`). NEVER use numbered prose like "1. Identity & Credibility" — that breaks the rendering. Fill each section with prose written in their voice, drawing only on locked facts. Sections may be omitted ONLY if there's truly no signal. Use \`---\` between major blocks. Keep paragraphs short (2–4 sentences). Bullets allowed in "Signature themes" only.
 
 # {Their full name} — Brand Operating System
 

@@ -1,103 +1,74 @@
-# Polish the brand brief experience
+## Goal
 
-Three things to fix, all presentation-layer (no business logic changes):
+Replace the current flat-prose brief card with the **Ledger** editorial layout (selected direction): 12-col grid, numbered section marks (`01.`, `02.` …) in uppercase tracked caps, varying typographic weight per section, pull-quote treatment for the Signature POV, and an architectural workshop-alignment footer.
 
-1. **Chat sometimes shows raw/ugly markdown** (e.g. literal `*` bullets, stray `**bold**`).
-2. **The finished brief looks like a text dump** — no hierarchy, weak spacing, no section dividers, no "executive summary" framing.
-3. **Confirm the brief always lives in the dashboard** (it already does — verify + make it more discoverable).
+## The core challenge
 
----
+The brief is stored as markdown, and the model has been emitting flat numbered prose (`1. Identity & Credibility\nGlobal marketing...`) rather than proper H2 sections — so even good CSS can't rescue it. The fix has two halves: **tighten what the model emits** and **parse whatever it emits into known slots**, so old briefs in the DB also render beautifully without regeneration.
 
-## 1. Clean up in-chat markdown
+## Plan
 
-**Problem.** The system prompt already forbids bullets/headings in chat replies, but Gemini occasionally slips in `*`/`-` bullets, `**bold**` runs, or `#` headings. The chat bubble renders these via `Markdown`, which mostly works — but a stray `-` at line start, an unmatched `**`, or a single `*` reads as raw punctuation to a non-technical user.
+### 1. Lock the brief schema (`src/routes/api/brief-chat.ts`)
+Rewrite the `FINAL-BRIEF FORMAT` block so the model emits a deterministic set of H2 sections with stable titles, in fixed order:
 
-**Fix (two layers).**
-
-- **Render layer (`src/components/brief/Markdown.tsx`)** — Add a small `sanitizeChatMarkdown(text)` helper used only by the chat transcript (not the final brief). It strips leading list markers on otherwise prose-only replies, collapses headings to plain emphasis, and trims stray inline markers. Final brief rendering keeps full markdown.
-- **Prompt layer (`src/routes/api/brief-chat.ts`)** — Tighten HARD RULE #3 to also ban `**bold**`, `_italics_`, `#` and leading `-`/`*`/`•` in chat replies (the existing rule says "prose only" but doesn't explicitly forbid inline emphasis markers). Examples-policy rule already says "inline in parentheses" — keep that.
-
-## 2. Make the finished brief look polished
-
-This is the big one. Two parts: **what the model writes** + **how we render it**.
-
-### 2a. What the model writes (`src/routes/api/brief-chat.ts` — `finish_brief` description + a new FINAL-BRIEF FORMAT block)
-
-Today the prompt just says "polished markdown brief" — Gemini returns a flat blob. Add an explicit structure contract so every brief comes back with:
-
-```text
-# {Their name} — Brand Operating System
-
-> One-sentence positioning line (the "lean-in" line).
-
-## Executive snapshot
-3–4 sentence prose paragraph.
-
-## Identity & credibility
-…
-
-## Audience & transformation
-**Who they serve** — …
-**The pain** — …
-**The transformation** — …
-
-## Signature point of view
-…
-
-## Voice
-**Tone** — …
-**Cadence** — …
-**Sample openers** — …
-**Never sounds like** — …
-
-## Signature themes
-- theme 1 — one-line gloss
-- theme 2 — one-line gloss
-- theme 3 — one-line gloss
-
-## Channels & cadence
-…
-
-## Outcome goal & non-negotiables
-…
-
----
-*Assembled {date} from your intake conversation.*
+```
+## Identity & Credibility
+## Domain
+## Expertise          (3 label: description lines)
+## Audience
+## Audience Pain
+## Transformation
+## Signature POV       (single sentence, will be pulled as quote)
+## Voice               (Tone — …, Cadence — …, Vocabulary — …)
+## Signature Themes    (exactly 3 short titles, one per line)
+## Channels
+## Outcome Goal
+## Workshop Alignment  (optional)
 ```
 
-Sections map 1:1 to the spine so coverage stays honest. Bullets are allowed **here** (the final brief), unlike chat.
+Forbid numbered prose ("1. …", "2. …") and inline bold labels in the brief.
 
-### 2b. How we render it (`src/routes/_authenticated/dashboard.brief.tsx` `FinishedView` + `src/components/brief/Markdown.tsx`)
+### 2. Brief parser (new `src/lib/brief-parser.ts`)
+A pure function `parseBrief(md: string): BriefSections` that:
+- Splits on `^## ` and `^\d+\.\s` headings (handles both new H2 format and legacy numbered prose so old briefs upgrade visually).
+- Normalizes section keys via fuzzy match (`identity`, `credibility` → `identity`; `pov`, `signature pov` → `pov`; etc.).
+- Returns `{ identity, domain, expertise: {title, desc}[], audience, audiencePain, transformation, pov, voice: {tone, cadence, vocabulary}, themes: string[], channels, outcomeGoal, workshopAlignment, _unknown: {title, body}[] }`.
+- Strips leading `**bold:**` runs and stray `-`/`*` bullets within section bodies.
 
-- Wrap the brief in a magazine-style "document" shell: max-width ~720px, generous padding (`p-8 md:p-12`), soft card background, subtle border, sticky in-view title.
-- Add a header strip above the markdown: brief title, completion date, a small toolbar with **Copy as markdown**, **Download .md**, and **Keep refining** (move the existing button there).
-- Pass a richer prose class set to `Markdown` when used for the final brief: bigger H1, drop-cap-style lead paragraph, `prose-h2:border-b prose-h2:border-white/10 prose-h2:pb-2 prose-h2:mt-10`, `prose-blockquote:text-lg prose-blockquote:not-italic prose-blockquote:font-medium prose-blockquote:text-foreground`, `prose-hr:my-10`, tighter `prose-li` rhythm, `prose-strong:text-primary` for the inline labels (`**Tone** —`).
-- Introduce a `variant` prop on `Markdown` (`"chat" | "document"`) so chat keeps its compact styling and the brief gets the document treatment. No new dependency.
-- Below the document, keep `BrandAlignmentPanel` but separate it with a clear section header ("How your brief shapes the workshop") so the page reads as two distinct artifacts.
+### 3. Build `<LedgerBrief />` (new `src/components/brief/LedgerBrief.tsx`)
+Receives the parsed sections and renders the Ledger layout verbatim from the selected prototype:
+- Numbered section marks (`01. Identity & Credibility`) in `text-[10px] font-bold tracking-[0.3em] uppercase text-muted-foreground`.
+- Identity in `text-2xl font-light leading-relaxed` for executive-poster feel.
+- Expertise as 3-row stacked list (bold title + muted description).
+- Audience / Audience Pain / Transformation in a 3-column band separated by a top hairline.
+- Signature POV in a `bg-muted/40 rounded-xl border` card with `text-3xl font-light italic` blockquote.
+- Voice & Signature Themes left col; Channels & Outcome Goal right col.
+- Workshop Alignment footer with a small "Alignment Verified" status pill.
 
-## 3. Brief lives in the dashboard permanently
+Use semantic tokens only (`bg-background`, `border-border`, `text-foreground`, `text-muted-foreground`, `bg-muted/40`) — no raw hex. Container `max-w-[1000px]`. Gracefully omit any section that's empty in the parsed data.
 
-Already wired (`src/routes/_authenticated/dashboard.tsx` line 98: `/dashboard/brief — "My brand intake"`). Two small improvements:
+### 4. Wire it into `FinishedView` (`src/routes/_authenticated/dashboard.brief.tsx`)
+- Keep the existing header (title, caption, Copy markdown / Download .md / Keep refining toolbar) — just restyle the buttons to match the prototype (`px-3.5 py-2 text-xs font-semibold`, neutral chip + white primary).
+- Replace the `<Markdown variant="document" />` block with `<LedgerBrief sections={parseBrief(brief.markdown)} />`.
+- Keep `_unknown` sections rendered via the existing `<Markdown />` as a graceful fallback below the structured layout.
+- Keep `BrandAlignmentPanel` rendered below as its own visually-separated artifact (it already is).
 
-- Rename the sidebar label to **"Brand brief"** once finished, **"Brand intake (in progress)"** while incomplete — driven by `summary?.completed_at`. (Either a small hook reading the brief query, or a status dot.)
-- On `/dashboard` (home), surface a compact "Your Brand Brief" card: shows progress (`X of 14 sections`) while in-progress, or "Ready — view brief" once finished, deep-linking to `/dashboard/brief`.
+### 5. Out of scope
+No PDF export. No changes to chat conversation logic, kickoff guard, intake spine, or DB schema. `Markdown.tsx` `variant="document"` styling stays as a fallback path. No regenerate-existing-briefs migration — the parser handles legacy formats.
 
----
+## Files
 
-## Files touched
+**New**
+- `src/lib/brief-parser.ts`
+- `src/components/brief/LedgerBrief.tsx`
 
-- `src/components/brief/Markdown.tsx` — add `variant` prop + `sanitizeChatMarkdown`; richer document-variant prose classes.
-- `src/routes/_authenticated/dashboard.brief.tsx` — `FinishedView` redesign (document shell, toolbar, copy/download); pass `variant="document"`; pass `variant="chat"` in `ChatPane`.
-- `src/routes/api/brief-chat.ts` — tighten HARD RULE #3; add FINAL-BRIEF FORMAT block referenced from `finish_brief` description.
-- `src/routes/_authenticated/dashboard.tsx` — dynamic sidebar label based on brief status.
-- `src/routes/_authenticated/dashboard.index.tsx` — add a compact brief-status card linking to `/dashboard/brief`.
+**Edited**
+- `src/routes/api/brief-chat.ts` — tighten FINAL-BRIEF FORMAT
+- `src/routes/_authenticated/dashboard.brief.tsx` — swap rendering in `FinishedView`
 
-## Out of scope
+## Acceptance
 
-- Changing the spine, the conversation logic, kickoff guard, or `BrandAlignmentPanel` data model.
-- PDF export (markdown copy/download covers the immediate need; PDF can be a follow-up).
-- New dependencies.
-
-## Open question
-
-Do you want a **PDF download** of the finished brief now, or is **Copy markdown + Download .md** enough for v1? (PDF would add `@react-pdf/renderer` or a server route; happy to do it as a follow-up.)
+- Existing brief in the screenshot renders into proper sections (numbered marks, pull-quote for POV, voice as label/value, themes as 3 left-bordered items) without regeneration.
+- A fresh brief generated after the prompt update is structurally identical and even tighter (no stray bullets, no inline bold).
+- Toolbar buttons keep working (copy, download, keep refining).
+- Workshop alignment block remains below as a separate section.
