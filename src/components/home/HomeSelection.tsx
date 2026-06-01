@@ -330,16 +330,15 @@ function WhoWereLookingFor() {
   );
 }
 
-const STEPS = [
-  { label: "Applications open", date: "Now" },
-  { label: "Applications close", date: "June 20, 2026" },
-  { label: "Selections announced — six seats emailed", date: "July 8, 2026" },
-  { label: "Founder&rsquo;s Discount emailed to every other applicant", date: "July 8, 2026" },
-  { label: "Workshop day", date: "July 23, 2026" },
-  { label: "90-day follow-through — launches in public", date: "Through October 2026" },
-];
-
 function Timeline() {
+  const EVENT = useEvent();
+  const STEPS = [
+    { label: "Applications open", date: "Now" },
+    { label: "Selections announced — six seats emailed", date: EVENT.decisionDateLabel },
+    { label: "Founder&rsquo;s Discount emailed to every other applicant", date: EVENT.decisionDateLabel },
+    { label: "Workshop day", date: EVENT.dateLabelLong },
+    { label: "90-day follow-through — launches in public", date: "Through the following quarter" },
+  ];
   return (
     <section className="py-12 md:py-20">
       <div className="mx-auto max-w-4xl px-6">
