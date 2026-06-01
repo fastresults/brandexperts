@@ -353,6 +353,8 @@ function FinishedView({ markdown, onReopen, onReset }: { markdown: string; onReo
   // FinishedView uses Keep refining (onReopen) and Clear everything (onReset).
   // Revise-with-retention only makes sense on the in-progress view, so it's not exposed here.
   const [copied, setCopied] = useState(false);
+  const [packaging, setPackaging] = useState(false);
+  const exportPackage = useServerFn(exportCompletePackage);
 
   const copy = async () => {
     try {
@@ -375,6 +377,28 @@ function FinishedView({ markdown, onReopen, onReset }: { markdown: string; onReo
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
+  };
+
+  const downloadCompletePackage = async () => {
+    if (packaging) return;
+    setPackaging(true);
+    try {
+      const { markdown: pkg, filename } = await exportPackage();
+      const blob = new Blob([pkg], { type: "text/markdown;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      toast.success("Complete package downloaded");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Couldn't build the complete package");
+    } finally {
+      setPackaging(false);
+    }
   };
 
   const sections = parseBrief(markdown);
@@ -412,12 +436,23 @@ function FinishedView({ markdown, onReopen, onReset }: { markdown: string; onReo
           </button>
           <button
             type="button"
+            onClick={() => void downloadCompletePackage()}
+            disabled={packaging}
+            title="Download a single markdown file containing every source, every answer, and the final brief"
+            className="inline-flex items-center gap-2 rounded-md border border-primary/30 bg-primary/10 px-3.5 py-2 text-xs font-semibold text-primary transition-colors hover:bg-primary/20 disabled:opacity-60"
+          >
+            {packaging ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Package className="h-3.5 w-3.5" />}
+            {packaging ? "Building package…" : "Copy complete package"}
+          </button>
+          <button
+            type="button"
             onClick={() => void onReopen()}
             className="inline-flex items-center gap-2 rounded-md bg-foreground px-3.5 py-2 text-xs font-semibold text-background transition-colors hover:bg-foreground/90"
           >
             <RefreshCw className="h-3.5 w-3.5" /> Keep refining
           </button>
           <ReviseActions onReset={onReset} hasAnswers={false} variant="ghost" />
+
         </div>
       </header>
 
