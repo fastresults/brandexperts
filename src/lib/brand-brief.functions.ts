@@ -151,7 +151,7 @@ function extractLikelyJsonObject(raw: string): unknown {
   return JSON.parse(cleaned.slice(start, end + 1));
 }
 
-function coerceAlignmentOutput(raw: unknown) {
+function coerceAlignmentOutput(raw: unknown, facts: Array<Pick<BriefFact, "section" | "value">>) {
   const parsed = z
     .object({
       items: z.array(z.unknown()).default([]),
@@ -166,6 +166,24 @@ function coerceAlignmentOutput(raw: unknown) {
   return {
     items: validItems,
   };
+}
+
+function buildFallbackAlignmentText(
+  row: (typeof VALUE_ROWS)[number],
+  facts: Array<Pick<BriefFact, "section" | "value">>,
+) {
+  const anchor = facts
+    .filter((fact) => ["domain", "expertise", "signature_pov", "audience", "voice", "signature_themes", "channels", "outcome_goal", "transformation"].includes(fact.section))
+    .slice(0, 2)
+    .map((fact) => fact.value.trim())
+    .filter(Boolean)
+    .join(" ");
+
+  if (!anchor) {
+    return "We'll personalize this in the room using your brief.";
+  }
+
+  return `We’ll tailor ${row.deliverable.toLowerCase()} around ${anchor.slice(0, 220)}.`;
 }
 
 export const regenerateBriefAlignment = createServerFn({ method: "POST" })
@@ -248,7 +266,7 @@ export const regenerateBriefAlignment = createServerFn({ method: "POST" })
       }
 
       try {
-        generatedOutput = coerceAlignmentOutput(extractLikelyJsonObject(error.text));
+        generatedOutput = coerceAlignmentOutput(extractLikelyJsonObject(error.text), facts);
       } catch {
         generatedOutput = { items: [] };
       }
@@ -264,7 +282,7 @@ export const regenerateBriefAlignment = createServerFn({ method: "POST" })
         block_label: row.stageLabel,
         application_text:
           ai?.application_text?.trim() ||
-          "We'll personalize this in the room using your brief.",
+          buildFallbackAlignmentText(row, facts),
         anchored_sections: (ai?.anchored_sections ?? []) as BriefSectionId[],
       };
     });
