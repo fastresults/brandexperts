@@ -97,7 +97,7 @@ function BrandBriefPage() {
         />
       </div>
 
-      <BrandBriefPanel facts={facts} onChanged={() => brief.refetch()} />
+      <BrandBriefPanel facts={facts} onChanged={() => { void brief.refetch(); }} />
     </div>
   );
 }
