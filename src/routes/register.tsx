@@ -191,9 +191,7 @@ function RegisterDefault() {
             <span className="text-gradient-brand">Walk out with a Personal Branding Operating System.</span>
           </h1>
           <p className="mt-4 max-w-2xl text-base text-muted-foreground md:mt-5 md:text-lg">
-            One 3-hour afternoon intensive. A locked Brand Blueprint, an Op-Ed, a newsletter, a
-            keynote opener, fourteen days of scheduled publishing, and a 30-minute weekly cadence
-            on your calendar — installed in the room, in your voice, running long after you leave.
+            One 3-hour afternoon. A locked Brand Blueprint, an Op-Ed, a newsletter, a keynote opener, fourteen days of scheduled publishing, and a 30-minute weekly cadence on your calendar. Installed in the room, locked to your voice, replacing the $4K article, $2K bio, $8K monthly retainer you've been quietly paying to sound generic.
           </p>
           <div className="mt-5 flex flex-col gap-2 text-sm text-muted-foreground sm:flex-row sm:flex-wrap sm:gap-4 md:mt-6">
             <span className="inline-flex items-center gap-2">
@@ -225,7 +223,7 @@ function RegisterDefault() {
               Every asset. <span className="text-muted-foreground">What an agency charges. What it would take you.</span>
             </h2>
             <p className="mt-3 text-muted-foreground">
-              Conservative agency rates and DIY hours, asset by asset. A comparable engagement runs $15K–$40K over 6–10 weeks.
+              Conservative agency rates and DIY hours, asset by asset. A comparable engagement runs $15K–$40K over 6–10 weeks — and ends the day the invoice clears, instead of compounding into inbound, speaking, and boards every quarter after.
             </p>
           </div>
           <ValueGrid />
@@ -307,7 +305,7 @@ function RegisterDefault() {
               Reserve your seat
             </h2>
             <p className="mt-2 text-muted-foreground">
-              A few details so we can tailor the room to the operators in it.
+              A few details so the room — and the voice profile built inside it — is tuned to the operator you actually are, not the title on your card.
             </p>
           </div>
           {submitted ? (

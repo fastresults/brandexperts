@@ -14,7 +14,7 @@ export function FacilitatorCTA() {
         Ready to install the system?
       </h2>
       <p className="mt-3 text-base text-muted-foreground md:mt-4 md:text-lg mb-6">
-        Three-hour afternoon intensives at IGNITE Center, Norcross. Private team and conference formats also available — each engagement is custom-scoped, practitioner-led, and built to leave the room with the brand already shipping.
+        Three-hour afternoon intensives at the IGNITE Center, Norcross. Private executive team and conference formats also available — each engagement is custom-scoped, practitioner-led, and built to leave the room with the brand already publishing, not assigned as homework.
       </p>
       <Button asChild size="lg">
         <a href="mailto:adam@madebyopen.com">Book a Workshop →</a>

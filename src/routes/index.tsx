@@ -92,7 +92,7 @@ function NotACourseBanner() {
                 You're not buying a curriculum. You're getting a system installed — in your voice, in one room, in three hours.
               </h2>
               <p className="mt-2 text-sm text-white/55 leading-relaxed md:text-sm">
-                A course gives you knowledge you don't have time to apply. A ghostwriter gives you a dependency you can't scale. The Brand Operating System gives you a self-running asset — 15 finished pieces leave the room with you, and a 30-minute weekly cadence keeps the engine producing without rebuilding it. <span className="text-white/40">(Hard costs — scheduler/newsletter subscriptions, premium AI tier, paid distribution — aren't covered by the workshop fee.)</span>
+                A course hands you knowledge you'll never schedule time to apply. A ghostwriter hands you a $4K article, a $2K bio, an $8K monthly retainer — and a dependency that scales the invoice, not your authority. The Brand Operating System replaces both with an asset you own: 15 finished pieces leave the room with you, and a 30-minute weekly ritual keeps the engine producing in your voice — quarter after quarter, without rebuilding it. <span className="text-white/40">(Hard costs — scheduler/newsletter subscriptions, premium AI tier, paid distribution — aren't covered by the workshop fee.)</span>
               </p>
 
             </div>
@@ -375,7 +375,7 @@ function WhatYouLeaveWith() {
           </span>
         </p>
         <p className="mb-10 max-w-2xl text-base text-muted-foreground md:text-lg">
-          Three modules of the Brand Operating System. Five assets per module. Every one shipped in the room, every one yours to run.
+          Three modules of the Brand Operating System. Five assets per module. One well-formed idea becomes an article, a newsletter, a keynote opener, a carousel, and two weeks of social — the same insight, working ten places at once, in your name.
         </p>
         <div className="grid gap-4 md:grid-cols-3">
           {WALKOUT_PHASES.map((p) => (
@@ -533,10 +533,7 @@ function BottomCTA() {
               {seatsWord(EVENT.totalSeats)} seats. One afternoon. A Brand Operating System that outruns the AI flood.
             </h2>
             <p className="mt-4 text-base text-white/90 md:mt-5 md:text-lg">
-              If you've been waiting for the right week to finally show up publicly, this is the
-              afternoon you stop waiting — and stop being one of the executives AI is quietly making
-              interchangeable. Bring the bio, the posts, and the headshot. We bring the operator,
-              the room, and the system that produces in your name long after you leave.
+              In a feed flooded with AI sludge that sounds the same, the only executives who break through are the ones publishing a named, specific point of view faster and more consistently than their peers. This is the afternoon you stop being one of the interchangeable ones. Bring the bio, the posts, the headshot. We bring the operator, the room, and the system that produces in your voice long after you leave it.
             </p>
             <div className="mt-7 md:mt-8">
               <Link
@@ -568,42 +565,42 @@ const WALKOUT_PHASES: WalkoutPhase[] = [
     n: 1,
     label: "Module 1 · Foundation installed",
     title: "Foundation installed — locked, in your voice",
-    intro: "By the first break, your positioning is locked and the AI writes as you — not as a generic LinkedIn voice.",
+    intro: "By the first break, your positioning is locked and the captured voice profile is the firewall — the model writes as you at scale instead of flattening you into another ChatGPT-shaped executive.",
     runAtHome: "Paste the new About into LinkedIn before Block 3 begins.",
     items: [
-      { name: "Brand Blueprint", desc: "Positioning, three content pillars, audience, and proof points — the anchor every future asset inherits from." },
-      { name: "Brand Assessment Report", desc: "Sourced gap analysis vs. peers in your category, with the white space you can credibly own." },
-      { name: "Voice Profile", desc: "Your tone, vocabulary, cadence, and rhythm — captured as the firewall against generic AI output." },
-      { name: "Three Bios (50w / 150w / 350w)", desc: "Copy-paste ready for LinkedIn, speaker pages, press kits, podcast intros, and board bios." },
-      { name: "Executive Headshot Set", desc: "On-brand variations from one source photo — LinkedIn, press, speaking decks, podcast tiles." },
+      { name: "Brand Blueprint", desc: "Positioning, three content pillars, audience, and proof points — the locked anchor every future asset, deck, and email inherits from." },
+      { name: "Brand Assessment Report", desc: "Sourced gap analysis against the peers showing up in your category, with the specific white space you can credibly own." },
+      { name: "Voice Profile", desc: "Your tone, vocabulary, cadence, and rhythm captured as a reusable pattern — the moat that keeps every AI-assisted draft unmistakably yours." },
+      { name: "Three Bios (50w / 150w / 350w)", desc: "Copy-paste ready for LinkedIn, speaker pages, press kits, podcast intros, and board bios — every public surface saying the same thing about you." },
+      { name: "Executive Headshot Set", desc: "On-brand variations from one source photo — LinkedIn, press, speaking decks, podcast tiles. No more mismatched headshots leaking across your footprint." },
     ],
   },
   {
     n: 2,
     label: "Module 2 · Authority assets published",
     title: "Authority assets — published, not promised",
-    intro: "By the second hour, three publish-ready pieces are sitting in your folder — every one of them yours, none of them ghostwritten.",
+    intro: "By the second hour, three publish-ready pieces are sitting in your folder — every one of them written from your voice profile, none of them billed by a ghostwriter, all of them traceable to your actual expertise.",
     runAtHome: "Publish the POV post today — before you leave Block 6.",
     items: [
-      { name: "Op-Ed / Thought leadership article", desc: "800–1,200 words on your #1 pillar — the kind editors and conference programmers actually open." },
-      { name: "POV Post", desc: "Contrarian, conversation-starting, LinkedIn and X ready — engineered for comments, not vanity likes." },
-      { name: "Framework Carousel", desc: "Seven slides of your proprietary methodology — the format that gets bookmarked, saved, and cited." },
-      { name: "Keynote Opener + Q&A talking points", desc: "Same idea, repurposed for the stage and for executive Q&A prep." },
-      { name: "Newsletter Issue", desc: "Same idea, repurposed for subscribers — subject line, preview text, and body included." },
+      { name: "Op-Ed / Thought leadership article", desc: "800–1,200 words on your #1 pillar — the kind editors and conference programmers actually open, not the kind they delete on sight." },
+      { name: "POV Post", desc: "A contrarian, conversation-starting take, LinkedIn and X ready — engineered to earn comments and DMs from buyers, not vanity likes from strangers." },
+      { name: "Framework Carousel", desc: "Seven slides of your proprietary methodology — the format that gets bookmarked, saved, and cited back to you in someone else's keynote." },
+      { name: "Keynote Opener + Q&A talking points", desc: "The same idea repurposed for the stage and for executive Q&A prep — one thought, two channels, zero rewriting." },
+      { name: "Newsletter Issue", desc: "The same idea repurposed for subscribers — subject line, preview text, and body included. One insight, ten places, in a single afternoon." },
     ],
   },
   {
     n: 3,
     label: "Module 3 · The system running without you",
     title: "The Brand Operating System — running without you",
-    intro: "By 4:00 PM, the next 90 days are on auto-publish and the cadence to keep it producing fits inside one weekly coffee.",
+    intro: "By 4:00 PM, the next 90 days are on auto-publish and the cadence to keep it producing fits inside one weekly coffee — the operational equivalent of replacing a $150K-a-year comms coordinator with a 30-minute ritual you actually keep.",
     runAtHome: "Run the 30-min weekly cadence: review · capture · approve.",
     items: [
-      { name: "30-Day Authority Sprint", desc: "Day-by-day sequence around pillar #1, ready to execute starting tomorrow." },
-      { name: "90-Day Newsletter Arc", desc: "The next quarter's issues — themes, through-lines, and publishing order." },
-      { name: "Two Weeks of Scheduled Social Posts", desc: "Auto-publishing from day one across the platforms you actually use." },
-      { name: "Reusable Content Presets", desc: "One per pillar — every future draft auto-aligns to brand without re-explaining context." },
-      { name: "Brand Operating System Playbook (PDF)", desc: "The operating manual — 30-min weekly cadence, content-trigger map, and the metrics that actually matter." },
+      { name: "30-Day Authority Sprint", desc: "Day-by-day sequence around pillar #1, ready to execute starting tomorrow — no week-long draft-review-revise loop standing between you and the news cycle." },
+      { name: "90-Day Newsletter Arc", desc: "The next quarter's issues — themes, through-lines, and publishing order. Authority that compounds week over week instead of restarting every Monday." },
+      { name: "Two Weeks of Scheduled Social Posts", desc: "Auto-publishing from day one across the platforms you actually use, so cadence stops depending on your willpower or your assistant's bandwidth." },
+      { name: "Reusable Content Presets", desc: "One per pillar — every future draft auto-aligns to your voice and positioning without re-explaining context. The knowledge base gets smarter every time you use it." },
+      { name: "Brand Operating System Playbook (PDF)", desc: "The operating manual — 30-min weekly cadence, content-trigger map for breaking-news moments, and the inbound metrics that actually correlate with deals, boards, and stages." },
     ],
   },
 ];

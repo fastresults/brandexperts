@@ -39,7 +39,7 @@ export function FacilitatorHero() {
           He installs the system that does.
         </h1>
         <p className="mt-4 max-w-2xl text-base text-muted-foreground md:mt-5 md:text-lg">
-          One of the few practitioners fluent across three rooms most consultants never enter together — Fortune 500 boardrooms, sovereign cabinet ministries, and the AI-native product trenches. This workshop translates that fluency into an executive brand operating system you walk out owning, in your voice, ready to publish from Monday.
+          One of the few practitioners fluent across three rooms most consultants never enter together — Fortune 500 boardrooms, sovereign cabinet ministries, and the AI-native product trenches. Adam doesn't write your content. He installs the operating system that does — locked to your voice, defensibly grounded in your actual expertise, ready to publish from Monday and compound every quarter after.
         </p>
       </div>
     </motion.section>

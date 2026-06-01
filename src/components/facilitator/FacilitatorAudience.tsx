@@ -2,10 +2,10 @@ import { motion } from "framer-motion";
 import { Rocket, Briefcase, Mic2, Crown, type LucideIcon } from "lucide-react";
 
 const ITEMS: { icon: LucideIcon; title: string; desc: string }[] = [
-  { icon: Rocket, title: "Founders & CEOs", desc: "Building inbound pipeline from their own profile — leaving the room with the publishing system that turns the next 90 days of meetings, news, and ideas into authority content." },
-  { icon: Briefcase, title: "Executives in transition", desc: "Stepping into a new role, a new board, or a public-facing remit — needing a credible brand fast, without three months of agency back-and-forth." },
-  { icon: Mic2, title: "Authors, speakers & consultants", desc: "Monetizing authority — turning one well-formed idea into an Op-Ed, a keynote opener, a newsletter, and a month of social presence in a single afternoon." },
-  { icon: Crown, title: "Newly-appointed C-suite", desc: "Senior partners, practice leaders, and first-90-day execs who need to show up credibly without weekend rewrites or a ghostwriter on retainer." },
+  { icon: Rocket, title: "Founders & CEOs", desc: "Done chasing opportunities, ready to be chased by them. Walk out with the publishing system that turns the next 90 days of meetings, news cycles, and half-formed ideas into the authority content that walks deals, speaking invites, and talent through your door." },
+  { icon: Briefcase, title: "Executives in transition", desc: "Stepping into a new role, a new board, or a public-facing remit — and out of time. A credible brand installed in one afternoon, instead of three months of agency back-and-forth and a résumé that no longer does the work it used to." },
+  { icon: Mic2, title: "Authors, speakers & consultants", desc: "Monetizing authority on a 10x multiplier. One well-formed idea becomes an Op-Ed, a keynote opener, a newsletter, and a month of social — every asset traceable to your actual expertise, none of it ghostwritten." },
+  { icon: Crown, title: "Newly-appointed C-suite", desc: "Senior partners, practice leaders, and first-90-day execs who need to show up credibly from week one — without weekend rewrites, a $8K monthly ghostwriter retainer, or a public footprint that contradicts itself across LinkedIn, press, and the keynote stage." },
 ];
 
 export function FacilitatorAudience() {
