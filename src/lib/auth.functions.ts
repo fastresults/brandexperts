@@ -36,6 +36,6 @@ export const getMyAccount = createServerFn({ method: "GET" })
     return {
       roles: (rolesRes.data ?? []).map((r) => r.role as AppRole),
       memberStatus: (profileRes.data?.member_status ?? "pending") as MemberStatus,
-      approvedVia: (profileRes.data?.approved_via ?? null) as "admin" | "payment" | null,
+      approvedVia: (profileRes.data?.approved_via ?? null) as "admin" | "payment" | "brief" | null,
     };
   });

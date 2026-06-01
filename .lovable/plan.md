@@ -1,35 +1,61 @@
-# Fix plan for broken complete-package downloads
+## Problem
 
-## What’s actually failing
-The download UI is wired up, but the app currently has a server parse error in `src/routes/api/brief-chat.ts`. Because that route is part of the running app, the preview server is failing before or during normal page/server-function handling, which can make the export actions appear broken even though the button handlers exist.
+`fastresults@gmail.com` has completed the brand brief (15 facts, 5,250-char summary, `attendee_brief_summary.completed_at` set), but `profiles.member_status` is still `pending`. The `_authenticated` layout (`src/routes/_authenticated.tsx`) redirects every non-approved user to `/welcome`, so `/dashboard/materials`, `/dashboard/brief`, etc. all show the "Welcome — start your brief" screen even though the brief is already done.
 
-## Root cause found
-- The preview server logs show a `SyntaxError: Missing semicolon. (99:81)` and SSR `500` failures.
-- The failing area is `src/routes/api/brief-chat.ts`, inside the large template string used for the strategist system prompt.
-- That file contains embedded backticks and interpolation-heavy prompt text, so one malformed character/escape in that prompt is enough to break the whole server bundle.
-- When the server bundle is in that bad state, the complete-package export requests cannot reliably complete.
+Today `member_status` only flips to `approved` via the `auto_approve_member_on_payment` trigger (on `workshop_registrations` → paid/confirmed). Brief completion has no equivalent path.
 
-## Plan
-1. Repair the syntax break in `src/routes/api/brief-chat.ts` so the preview server parses and runs again.
-2. Re-test the complete-package actions from the finished brief screen:
-   - download Markdown
-   - download plain text
-   - download Word
-   - download PDF
-   - copy Markdown
-   - copy plain text
-3. If any export still fails after the parse fix, inspect that specific export path:
-   - client dropdown handler in `src/routes/_authenticated/dashboard.brief.tsx`
-   - server export fns in `src/lib/brand-brief.functions.ts`
-   - format builders in `src/lib/complete-package-formats.ts`
-4. Apply only the minimal follow-up fix needed for the remaining failing format(s), then verify the success path with fresh logs.
+## Fix
 
-## Expected outcome
-- The preview stops throwing server parse errors.
-- The export menu works again.
-- If a specific format still has a runtime problem, it will be isolated and fixed without changing the package contents or UI scope.
+Auto-approve the user the moment their brief summary is finalized.
 
-## Technical notes
-- Most likely first fix target: the long `const system = \`...\`` prompt block in `src/routes/api/brief-chat.ts`.
-- The download buttons in `dashboard.brief.tsx` already call the correct server functions and blob download helpers, so this does not currently look like a button wiring problem first.
-- No backend schema changes are needed for this fix.
+### 1. Server-side promotion in `regenerateBriefSummary`
+
+In `src/lib/brand-brief.functions.ts`, right after the `attendee_brief_summary` upsert that sets `completed_at: nowIso` (around line 463), promote the profile using `supabaseAdmin`:
+
+```ts
+await supabaseAdmin
+  .from("profiles")
+  .update({
+    member_status: "approved",
+    approved_at: new Date().toISOString(),
+    approved_via: "brief",
+  })
+  .eq("user_id", userId)
+  .neq("member_status", "approved");
+```
+
+`supabaseAdmin` is already imported and bypasses RLS, so no policy changes are needed. Using `.neq("member_status", "approved")` keeps it idempotent and preserves any earlier `approved_at`/`approved_via` if a paid registration already promoted them.
+
+### 2. Backfill the existing stuck user
+
+Run a one-time data update via the insert tool to promote every user who already has a completed brief but is still `pending`:
+
+```sql
+UPDATE public.profiles p
+   SET member_status = 'approved',
+       approved_at   = COALESCE(p.approved_at, now()),
+       approved_via  = COALESCE(p.approved_via, 'brief')
+ WHERE p.member_status <> 'approved'
+   AND EXISTS (
+     SELECT 1 FROM public.attendee_brief_summary s
+      WHERE s.user_id = p.user_id AND s.completed_at IS NOT NULL
+   );
+```
+
+This unblocks `fastresults@gmail.com` immediately and covers any other user in the same state.
+
+### 3. Client cache refresh
+
+`useAuth()` reads `member_status` from `profiles`. After step 1 fires server-side, the dashboard panel that triggers brief finalization should `router.invalidate()` (or `queryClient.invalidateQueries({ queryKey: ["auth"] })` — whichever key `useAuth` uses) so the user is moved past the `/welcome` gate without a manual refresh. I'll wire this into the existing "finalize brief" success handler in `src/routes/_authenticated/dashboard.brief.tsx`.
+
+## Out of scope
+
+- No changes to the `_authenticated` gate itself — keeping `isApprovedMember` as the single source of truth for dashboard access.
+- No changes to RLS or table grants.
+- No changes to the payment-based approval trigger.
+
+## Files
+
+- `src/lib/brand-brief.functions.ts` — promote profile in `regenerateBriefSummary`.
+- `src/routes/_authenticated/dashboard.brief.tsx` — invalidate auth/router after finalize.
+- One-time SQL `UPDATE` via the insert tool — backfill stuck users.

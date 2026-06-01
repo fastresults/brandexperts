@@ -7,6 +7,7 @@ import { DefaultChatTransport, type UIMessage } from "ai";
 import { Send, Loader2, RefreshCw, CheckCircle2, Copy, Download, RotateCcw, Pencil, Sparkles, Package, ChevronDown, FileText, FileType2, FileCode2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
 import { getFounderProfile } from "@/lib/discovery.functions";
 import { getBrandBrief, regenerateBriefSummary, reopenBrandBrief, resetBrandBrief, reviseBrandBrief, exportCompletePackage, exportCompletePackageDocx, exportCompletePackagePdf } from "@/lib/brand-brief.functions";
 import { MIN_FACTS_TO_FINALIZE } from "@/lib/brief-format";
@@ -53,6 +54,7 @@ function BrandBriefPage() {
   const resetFn = useServerFn(resetBrandBrief);
   const reviseFn = useServerFn(reviseBrandBrief);
   const regenerateFn = useServerFn(regenerateBriefSummary);
+  const { refreshAccount } = useAuth();
   const [updating, setUpdating] = useState(false);
 
   const brief = useQuery({ queryKey: ["brand-brief"], queryFn: () => briefFn() });
@@ -107,6 +109,7 @@ function BrandBriefPage() {
         return;
       }
       await brief.refetch();
+      await refreshAccount();
       toast.success("Brief updated");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Couldn't update your brief");

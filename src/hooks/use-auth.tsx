@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { useRouter } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
@@ -10,13 +10,14 @@ type AuthState = {
   session: Session | null;
   roles: AppRole[];
   memberStatus: MemberStatus;
-  approvedVia: "admin" | "payment" | null;
+  approvedVia: "admin" | "payment" | "brief" | null;
   loading: boolean;
   isAuthenticated: boolean;
   isAdmin: boolean;
   isSuperAdmin: boolean;
   isApprovedMember: boolean;
   signOut: () => Promise<void>;
+  refreshAccount: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthState | null>(null);
@@ -28,37 +29,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [memberStatus, setMemberStatus] = useState<MemberStatus>("pending");
-  const [approvedVia, setApprovedVia] = useState<"admin" | "payment" | null>(null);
+  const [approvedVia, setApprovedVia] = useState<"admin" | "payment" | "brief" | null>(null);
   const [loading, setLoading] = useState(true);
+  const activeRef = useRef(true);
+
+  const loadAccount = useCallback(async (u: User | null) => {
+    if (!u) {
+      if (activeRef.current) {
+        setRoles([]);
+        setMemberStatus("pending");
+        setApprovedVia(null);
+      }
+      return;
+    }
+    try {
+      const res = await getMyAccount();
+      if (activeRef.current) {
+        setRoles(res.roles);
+        setMemberStatus(res.memberStatus);
+        setApprovedVia(res.approvedVia);
+      }
+    } catch (e) {
+      console.error("Failed to load account", e);
+      if (activeRef.current) {
+        setRoles([]);
+        setMemberStatus("pending");
+        setApprovedVia(null);
+      }
+    }
+  }, []);
+
+  const refreshAccount = useCallback(async () => {
+    const { data } = await supabase.auth.getSession();
+    await loadAccount(data.session?.user ?? null);
+    router.invalidate();
+    queryClient.invalidateQueries();
+  }, [loadAccount, router, queryClient]);
 
   useEffect(() => {
-    let active = true;
-
-    const loadAccount = async (u: User | null) => {
-      if (!u) {
-        if (active) {
-          setRoles([]);
-          setMemberStatus("pending");
-          setApprovedVia(null);
-        }
-        return;
-      }
-      try {
-        const res = await getMyAccount();
-        if (active) {
-          setRoles(res.roles);
-          setMemberStatus(res.memberStatus);
-          setApprovedVia(res.approvedVia);
-        }
-      } catch (e) {
-        console.error("Failed to load account", e);
-        if (active) {
-          setRoles([]);
-          setMemberStatus("pending");
-          setApprovedVia(null);
-        }
-      }
-    };
+    activeRef.current = true;
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, s) => {
       setSession(s);
@@ -71,19 +80,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     supabase.auth.getSession().then(({ data }) => {
-      if (!active) return;
+      if (!activeRef.current) return;
       setSession(data.session);
       setUser(data.session?.user ?? null);
       loadAccount(data.session?.user ?? null).finally(() => {
-        if (active) setLoading(false);
+        if (activeRef.current) setLoading(false);
       });
     });
 
     return () => {
-      active = false;
+      activeRef.current = false;
       subscription.unsubscribe();
     };
-  }, [router, queryClient]);
+  }, [router, queryClient, loadAccount]);
 
   const signOut = async () => {
     await supabase.auth.signOut();
@@ -103,6 +112,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isSuperAdmin: roles.includes("super_admin"),
     isApprovedMember: isAdmin || memberStatus === "approved",
     signOut,
+    refreshAccount,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
