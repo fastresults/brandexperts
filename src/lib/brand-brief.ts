@@ -2,6 +2,8 @@
 
 export type BriefSectionId =
   | "identity_credibility"
+  | "domain"
+  | "expertise"
   | "signature_pov"
   | "origin_arc"
   | "audience"
@@ -22,12 +24,14 @@ export type BriefSection = {
 
 export const BRIEF_SPINE: BriefSection[] = [
   { id: "identity_credibility", label: "Identity & credibility", hint: "Who you are, roles, results, rooms — the credibility that travels with you." },
+  { id: "domain", label: "Domain you own", hint: "The single field/category you want to be known in — specific, not 'leadership' (e.g. 'operational turnarounds in regulated healthcare')." },
+  { id: "expertise", label: "Specific expertise", hint: "3–5 concrete capabilities inside that domain you can teach (e.g. 'post-merger ops integration', 'FDA submission readiness')." },
   { id: "signature_pov", label: "Signature POV", hint: "The one belief about your industry you'd defend on a stage." },
   { id: "origin_arc", label: "Origin arc", hint: "The experience or turning point that gave you that POV." },
   { id: "audience", label: "Audience", hint: "Who specifically needs to hear from you (role, industry, stage, geography)." },
   { id: "audience_pain", label: "Audience pain", hint: "What they're quietly struggling with that no one else is naming." },
   { id: "transformation", label: "Transformation promise", hint: "What's different in their life or career after 12 months of following you." },
-  { id: "voice", label: "Voice", hint: "Three words for how you sound. Three words for how you never sound." },
+  { id: "voice", label: "Writing voice profile", hint: "Tone words, cadence (punchy vs essayistic), vocabulary register, 1–2 sample opening lines, and what you never sound like." },
   { id: "signature_themes", label: "Signature themes", hint: "The 3–5 topics you want to own for the next year." },
   { id: "channels", label: "Channels", hint: "Where you'll publish (LinkedIn, newsletter, podcast, keynote, etc.)." },
   { id: "outcome_goal", label: "12-month outcome", hint: "What winning looks like — boards, keynotes, inbound, a book, an exit." },

@@ -28,6 +28,19 @@ const ExtractedFounderSchema = z.object({
   skills: z.array(z.string().max(80)).max(40).optional().default([]),
   education: z.array(z.string().max(200)).max(10).optional().default([]),
   wins: z.array(z.string().max(280)).max(10).optional().default([]),
+  // --- Brand-brief priors (drafts for the strategist to confirm, NOT facts) ---
+  domain_guess: z.string().max(280).optional().default(""),
+  expertise_guess: z.array(z.string().max(160)).max(6).optional().default([]),
+  voice_signal: z
+    .object({
+      tone: z.array(z.string().max(40)).max(5).optional().default([]),
+      cadence: z.string().max(160).optional().default(""),
+      vocabulary: z.string().max(160).optional().default(""),
+      sample_phrases: z.array(z.string().max(280)).max(4).optional().default([]),
+      avoid: z.array(z.string().max(60)).max(5).optional().default([]),
+    })
+    .optional()
+    .default({ tone: [], cadence: "", vocabulary: "", sample_phrases: [], avoid: [] }),
 });
 
 export type ExtractedFounder = z.infer<typeof ExtractedFounderSchema>;
@@ -111,8 +124,19 @@ export const extractFounderFromText = createServerFn({ method: "POST" })
     if (textForModel.length >= 20) {
       const model = createLovableAiGatewayProvider(apiKey)("google/gemini-3-flash-preview");
       const prompt = [
-        "You are extracting a founder's professional profile from text they provided.",
-        "Be faithful to the source — do not invent. If a field isn't present, leave it empty.",
+        "You are extracting an executive's professional profile from text they provided, for use in a personal-brand strategy session.",
+        "Be faithful to the source — do not invent. If a field isn't present, leave it empty/default.",
+        "",
+        "In addition to the factual fields, infer three brand-brief priors (treated by downstream as DRAFTS, not facts):",
+        "- domain_guess: one sentence naming the specific field/category this person is positioned to own (e.g. 'operational turnarounds in regulated healthcare'). Avoid generic words like 'leadership' or 'strategy' alone. Leave empty if the source is too thin.",
+        "- expertise_guess: up to 6 concrete teachable capabilities inside that domain, derived from their actual roles/wins (e.g. 'post-merger ops integration', 'scaling clinical ops past 200 FTE'). No fluff.",
+        "- voice_signal: ONLY populate when the source contains real prose written BY the person (a summary paragraph, about-me, posts, talk excerpts). For pure bullet-point resumes or LinkedIn skill lists, leave every voice_signal field empty — do not fabricate a voice.",
+        "  - tone: 2–4 adjectives describing how they actually sound in the prose.",
+        "  - cadence: one phrase (e.g. 'short punchy sentences', 'long essayistic paragraphs').",
+        "  - vocabulary: one phrase (e.g. 'operator jargon, plain English', 'academic register').",
+        "  - sample_phrases: up to 3 short verbatim phrases from the source that exemplify the voice.",
+        "  - avoid: up to 3 patterns absent or off-tone for this writer (e.g. 'corporate buzzwords', 'hype').",
+        "",
         "Return ONLY the structured object.",
         "",
         data.linkedin_url ? `LinkedIn URL (for reference): ${data.linkedin_url}` : "",
