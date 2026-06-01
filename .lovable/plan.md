@@ -1,65 +1,58 @@
 ## Problem
 
-The Today page (`/dashboard`) reads completion from the legacy `attendee_business_brief.completeness_score` column. The current brief flow writes to `attendee_brief_summary` (with `completed_at`) instead. Users who finish the chat-based brief still see the "We haven't matched you to a workshop date yet. While you wait, start your brief." + "Start the conversation" CTA — making the dashboard look broken.
+When a user logs in to the published site, they don't land on `/dashboard` — they're redirected to `/welcome`, which still renders the old **"Atlanta Startup Sprint — Tell us what you're building"** intake form (screenshot). That page is a leftover from the prior startup-formation product and has nothing to do with The Executive Brand Intensive.
 
-Confirmed for `fastresults@gmail.com`:
-- `attendee_brief_summary.completed_at` is set (5,250-char summary, 15 facts)
-- `attendee_business_brief` row is empty → `completeness_score = 0`
-- `profiles.member_status = approved`, so the `_authenticated` gate passes
-- Result: Today page renders `NoCohortMode` with `briefScore = 0` → "Start the conversation"
+### Root cause
 
-## Fix
-
-Make the Today page read brief completion from the new system (`attendee_brief_summary.completed_at`) instead of the legacy score.
-
-### 1. `src/lib/brief.functions.ts` — extend `getMyBrief`
-
-Inside the handler, after fetching `attendee_business_brief`, also fetch the summary row:
+`src/routes/_authenticated.tsx` enforces an "approved member" gate:
 
 ```ts
-const { data: summary } = await supabase
-  .from("attendee_brief_summary")
-  .select("completed_at, summary_text")
-  .eq("user_id", userId)
-  .maybeSingle();
-
-return {
-  brief: data ?? ins,
-  summaryCompletedAt: summary?.completed_at ?? null,
-  summaryText: summary?.summary_text ?? null,
-};
+if (!isApprovedMember && !isWelcome) {
+  return <Navigate to="/welcome" replace />;
+}
 ```
 
-Return shape stays serializable. The legacy `brief` object is untouched so nothing else breaks.
+`isApprovedMember` is true only when the user is an admin OR `profiles.member_status === 'approved'`. New signups default to `'pending'`, so every normal user gets bounced into the startup-intake funnel and never reaches their dashboard.
 
-### 2. `src/routes/_authenticated/dashboard.index.tsx`
+This gate made sense for the old "apply to join" startup product. For the Executive Brand Intensive, registration = payment for a workshop seat, and the dashboard is the post-registration experience. There is no "approve to enter the app" step.
 
-Derive a single source of truth at the top of `TodayPage`:
+## Fix (brute force, as requested)
 
-```ts
-const briefDone = !!brief.data?.summaryCompletedAt;
-const briefScore = briefDone ? 10 : (brief.data?.brief?.completeness_score ?? 0);
-```
+Remove the approval gate. Any authenticated, non-paused user goes straight into the app.
 
-This keeps the existing `briefScore`/`briefReady`/`pct` math working, and `briefDone` flips both `BeforeMode` and `NoCohortMode` into the "complete" branch.
+### 1. `src/routes/_authenticated.tsx`
 
-In `NoCohortMode` (around line 360-385):
-- When `briefDone`: render `BriefCompleteCard` with a "We'll match you to a workshop soon" footnote instead of the "Start the conversation" `NextActionCard`.
-- Headline copy: keep "Welcome", swap subhead to "Your brief is complete. We'll match you to a workshop date shortly."
+Strip the `isApprovedMember` / `/welcome` redirect. Keep:
+- Auth check (redirect to `/login` if not authenticated)
+- Loading state
+- `paused` handling (a previously-active member whose access was revoked still gets the `/paused` screen)
 
-Pass `briefDone` down to `BeforeMode` and `NoCohortMode` (small prop addition); the existing `briefDone = briefScore >= briefTotal` line in `BeforeMode` becomes `briefDone` from props.
+Resulting flow:
+- Not authenticated → `/login`
+- Authenticated + paused (non-admin) → `/paused`
+- Everyone else → render `<Outlet />`
 
-### 3. No DB migration, no schema changes, no auth changes
+### 2. Remove the welcome route
 
-Both tables already exist, both already have correct RLS, the user is already approved. This is a pure read-path fix.
+Delete `src/routes/_authenticated/welcome.tsx` (and any `Link to="/welcome"` references, e.g. the "Or register for a workshop directly" link if it points there). The router tree regenerates automatically.
 
-## Out of scope
+### 3. Backfill existing pending users
 
-- The legacy `attendee_business_brief` table and `updateBriefField` server fn stay as-is (admin tools still use them).
-- `dashboard.brief.tsx`, `dashboard.day.tsx`, deliverables, materials — unchanged.
-- No changes to the `_authenticated` gate or member-status logic.
+Run a one-time data update flipping every `profiles.member_status = 'pending'` to `'approved'` so the `useAuth().isApprovedMember` flag (still used in places like `BeforeMode` copy, admin badges, etc.) reflects reality. Leave `'paused'` and `'rejected'` alone.
+
+### 4. Leave alone
+
+- `member_status` column itself — still useful for the `paused` lifecycle and admin tooling.
+- `isAdmin` / `_admin` layout — separate gate, unaffected.
+- `member_intakes` table — no schema change; the table just stops getting new rows.
+
+## What you'll see after the fix
+
+Log in → land on `/dashboard` (the Today page with the workshop countdown / brief progress), exactly like an approved member sees today. No more startup-intake form.
 
 ## Files touched
 
-- `src/lib/brief.functions.ts` (extend return shape of `getMyBrief`)
-- `src/routes/_authenticated/dashboard.index.tsx` (read `summaryCompletedAt`, flip CTA when done)
+- `src/routes/_authenticated.tsx` — remove welcome gate
+- `src/routes/_authenticated/welcome.tsx` — delete
+- Any stray `to="/welcome"` links — remove or repoint
+- One data update on `profiles` (pending → approved)
