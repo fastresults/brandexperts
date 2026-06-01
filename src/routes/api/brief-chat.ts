@@ -64,6 +64,7 @@ export const Route = createFileRoute("/api/brief-chat")({
         ]);
 
         const extracted = (profileRes.data?.extracted ?? null) as Record<string, unknown> | null;
+        const rawResumeText = ((profileRes.data?.raw_text ?? null) as string | null)?.trim() || null;
         const facts = (factsRes.data ?? []) as Array<{
           section: BriefSectionId;
           value: string;
@@ -72,17 +73,31 @@ export const Route = createFileRoute("/api/brief-chat")({
         const knownSections = new Set(facts.map((f) => f.section));
         const missingSpine = BRIEF_SPINE.filter((s) => !knownSections.has(s.id));
 
+        // Detect "thin" structured extraction so the model knows to lean on raw text.
+        const extractedIsThin = !extracted || (() => {
+          const e = extracted as Record<string, unknown>;
+          const roles = Array.isArray(e.roles) ? e.roles.length : 0;
+          const skills = Array.isArray(e.skills) ? e.skills.length : 0;
+          const headline = typeof e.headline === "string" ? e.headline.trim().length : 0;
+          return roles === 0 && skills === 0 && headline === 0;
+        })();
+
         const groundingBlock = [
-          extracted
+          extracted && !extractedIsThin
             ? `IMPORTED CONTEXT (from resume/LinkedIn — DO NOT re-ask):\n${JSON.stringify(extracted, null, 2)}`
-            : "IMPORTED CONTEXT: (none — the executive hasn't imported a resume or LinkedIn yet)",
+            : extracted
+              ? "IMPORTED CONTEXT: structured extraction was thin — use RAW RESUME TEXT below as the source of truth for work_experience."
+              : "IMPORTED CONTEXT: (none — the executive hasn't imported a resume or LinkedIn yet)",
+          rawResumeText
+            ? `RAW RESUME TEXT (verbatim — use to anchor work_experience with specific roles, companies, dates, and outcomes; never quote it outside that section):\n${rawResumeText.slice(0, 6000)}`
+            : "",
           facts.length
             ? `BRIEF FACTS LOCKED IN SO FAR:\n${facts.map((f) => `- ${f.section}: ${f.value}`).join("\n")}`
             : "BRIEF FACTS LOCKED IN SO FAR: (none)",
           missingSpine.length
             ? `SPINE DIMENSIONS STILL TO COVER:\n${missingSpine.map((s) => `- ${s.id}: ${s.hint}`).join("\n")}`
             : "SPINE DIMENSIONS STILL TO COVER: (all covered — call finish_brief if ready)",
-        ].join("\n\n");
+        ].filter(Boolean).join("\n\n");
 
         const isFirstTurn = (messages as UIMessage[]).filter((m) => m.role === "assistant").length === 0;
         const factsCount = facts.length;
