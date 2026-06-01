@@ -10,7 +10,7 @@ type AuthState = {
   session: Session | null;
   roles: AppRole[];
   memberStatus: MemberStatus;
-  approvedVia: "admin" | "payment" | null;
+  approvedVia: "admin" | "payment" | "brief" | null;
   loading: boolean;
   isAuthenticated: boolean;
   isAdmin: boolean;
