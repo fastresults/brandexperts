@@ -85,6 +85,29 @@ function BrandBriefPage() {
     }
   };
 
+  const canUpdate = facts.length >= MIN_FACTS_TO_FINALIZE && !finished;
+
+  const handleUpdateBrief = async () => {
+    if (updating) return;
+    setUpdating(true);
+    try {
+      const res = await regenerateFn();
+      if (!res?.ok && res?.reason === "insufficient") {
+        toast.error(`Answer a few more sections first (${res.have}/${res.need}).`);
+        return;
+      }
+      await brief.refetch();
+      toast.success("Brief updated");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Couldn't update your brief");
+      console.error(err);
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+
+
 
   // Auth-aware transport: attach the bearer token to /api/brief-chat.
   const [transport, setTransport] = useState<DefaultChatTransport<UIMessage> | null>(null);
