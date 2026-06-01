@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
-import { Send, Loader2, RefreshCw, CheckCircle2 } from "lucide-react";
+import { Send, Loader2, RefreshCw, CheckCircle2, Copy, Download } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { getFounderProfile } from "@/lib/discovery.functions";
@@ -173,7 +173,7 @@ function ChatPane({
                   </div>
                 ) : (
                   <div className="max-w-[85%] text-foreground/90">
-                    <Markdown>{text}</Markdown>
+                    <Markdown variant="chat">{text}</Markdown>
                   </div>
                 )}
               </li>
@@ -236,28 +236,87 @@ function ChatPane({
 }
 
 function FinishedView({ markdown, onReopen }: { markdown: string; onReopen: () => void | Promise<void> }) {
+  const [copied, setCopied] = useState(false);
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(markdown);
+      setCopied(true);
+      toast.success("Brief copied to clipboard");
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error("Couldn't copy to clipboard");
+    }
+  };
+
+  const download = () => {
+    const blob = new Blob([markdown], { type: "text/markdown;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `brand-brief-${new Date().toISOString().slice(0, 10)}.md`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+
   return (
-    <div className="mx-auto max-w-3xl space-y-6 p-4 md:p-8">
-      <div className="flex items-center gap-2 text-primary">
-        <CheckCircle2 className="h-5 w-5" />
-        <span className="text-sm font-medium uppercase tracking-wide">Brand brief ready</span>
-      </div>
-      <h1 className="text-3xl font-semibold tracking-tight">Your Brand Operating System Brief</h1>
-      <article className="rounded-2xl border border-white/10 bg-card/60 p-6">
-        <Markdown>{markdown}</Markdown>
+    <div className="mx-auto max-w-4xl space-y-10 px-4 py-8 md:px-6 md:py-12">
+      {/* Header strip */}
+      <header className="flex flex-wrap items-end justify-between gap-4 border-b border-white/10 pb-6">
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium uppercase tracking-wider text-primary">
+            <CheckCircle2 className="h-3.5 w-3.5" />
+            Brand brief ready
+          </div>
+          <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
+            Your Brand Operating System
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Assembled from your intake conversation · always available in your dashboard
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => void copy()}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs font-medium hover:bg-white/5"
+          >
+            <Copy className="h-3.5 w-3.5" /> {copied ? "Copied" : "Copy markdown"}
+          </button>
+          <button
+            type="button"
+            onClick={download}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs font-medium hover:bg-white/5"
+          >
+            <Download className="h-3.5 w-3.5" /> Download .md
+          </button>
+          <button
+            type="button"
+            onClick={() => void onReopen()}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs font-medium hover:bg-white/5"
+          >
+            <RefreshCw className="h-3.5 w-3.5" /> Keep refining
+          </button>
+        </div>
+      </header>
+
+      {/* The document */}
+      <article className="rounded-2xl border border-white/10 bg-card/40 px-6 py-10 shadow-sm md:px-12 md:py-14">
+        <Markdown variant="document">{markdown}</Markdown>
       </article>
 
-      <BrandAlignmentPanel />
-
-      <div className="flex justify-end">
-        <button
-          type="button"
-          onClick={() => void onReopen()}
-          className="inline-flex items-center gap-2 rounded-lg border border-white/10 px-3 py-2 text-sm hover:bg-white/5"
-        >
-          <RefreshCw className="h-4 w-4" /> Keep refining
-        </button>
-      </div>
+      {/* Workshop alignment block, clearly separated */}
+      <section className="space-y-3">
+        <div className="space-y-1">
+          <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Applied to the workshop
+          </div>
+          <h2 className="text-2xl font-semibold tracking-tight">How your brief shapes what we build in the room</h2>
+        </div>
+        <BrandAlignmentPanel />
+      </section>
     </div>
   );
 }
