@@ -8,6 +8,7 @@ import { SiteHeader } from "@/components/site/Header";
 import { SiteFooter } from "@/components/site/Footer";
 import { submitFounderApplication } from "@/lib/applications.functions";
 import { ArrowRight, CheckCircle2, Sparkles, TicketPercent } from "lucide-react";
+import { useEvent } from "@/lib/use-event";
 
 // Keep in sync with HomeSelection — TBD with founder.
 const FINALIST_DISCOUNT_PCT = 40;
