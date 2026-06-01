@@ -1,16 +1,25 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { generateText, Output } from "ai";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
 import {
   BRIEF_SPINE,
+  BRIEF_SECTION_BY_ID,
+  type AlignmentItem,
+  type BriefAlignment,
   type BriefFact,
   type BriefSectionId,
   type BriefSummary,
 } from "@/lib/brand-brief";
+import { VALUE_ROWS } from "@/lib/value-grid";
 
 const SECTION_IDS = BRIEF_SPINE.map((s) => s.id) as [BriefSectionId, ...BriefSectionId[]];
 const SectionEnum = z.enum(SECTION_IDS);
+const DELIVERABLE_KEYS = VALUE_ROWS.map((r) => r.key) as [string, ...string[]];
+const DeliverableKeyEnum = z.enum(DELIVERABLE_KEYS);
+
 
 // ----- Read -----
 
