@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
-import { getMyBrief } from "@/lib/brief.functions";
+import { getBrandBrief } from "@/lib/brand-brief.functions";
 import { getMyFiling } from "@/lib/filing.functions";
 import { getMyWorkflow } from "@/lib/userPipeline.functions";
 import { getMyCohort } from "@/lib/cohort.functions";
@@ -17,12 +17,12 @@ export const Route = createFileRoute("/_authenticated/dashboard/")({
 });
 
 function TodayPage() {
-  const briefFn = useServerFn(getMyBrief);
+  const briefFn = useServerFn(getBrandBrief);
   const filingFn = useServerFn(getMyFiling);
   const wfFn = useServerFn(getMyWorkflow);
   const cohortFn = useServerFn(getMyCohort);
 
-  const brief = useQuery({ queryKey: ["my", "brief"], queryFn: () => briefFn() });
+  const brief = useQuery({ queryKey: ["brand-brief"], queryFn: () => briefFn() });
   const filing = useQuery({ queryKey: ["my", "filing"], queryFn: () => filingFn() });
   const wf = useQuery({ queryKey: ["my", "workflow"], queryFn: () => wfFn() });
   const cohort = useQuery({ queryKey: ["my", "cohort"], queryFn: () => cohortFn(), staleTime: 60_000 });
@@ -35,19 +35,17 @@ function TodayPage() {
   }, []);
 
   const state = getWorkshopMode(new Date(), cohort.data?.cohort ?? null);
-  const summaryDone = !!brief.data?.summaryCompletedAt;
-  const rawScore = brief.data?.brief?.completeness_score ?? 0;
-  const briefTotal = 10;
+  const summaryDone = !!brief.data?.summary?.completed_at;
+  const rawScore = brief.data?.progress?.completed ?? 0;
+  const briefTotal = Math.max(brief.data?.progress?.total ?? 0, 1);
   const briefScore = summaryDone ? briefTotal : rawScore;
-  const briefReady = summaryDone || rawScore >= 6;
+  const briefReady = summaryDone || !!brief.data?.progress?.allComplete;
   const filingReady = !!filing.data?.filing?.llc_name;
   const items = wf.data?.items ?? [];
   const generated = items.filter((i) => i.generated).length;
   const total = items.length;
-  const firstName = (brief.data?.brief?.one_line_pitch || "").split(" ")[0] || null;
-
-
-  const pitch = brief.data?.brief?.one_line_pitch ?? null;
+  const firstName = null;
+  const pitch = null;
 
   return (
     <div className="space-y-8">
