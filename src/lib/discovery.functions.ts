@@ -121,11 +121,19 @@ export const extractFounderFromText = createServerFn({ method: "POST" })
 
     let extracted: ExtractedFounder = ExtractedFounderSchema.parse({});
 
+    const isThin = (e: ExtractedFounder) =>
+      (e.roles?.length ?? 0) === 0 &&
+      (e.skills?.length ?? 0) === 0 &&
+      (e.wins?.length ?? 0) === 0 &&
+      !(e.headline && e.headline.trim().length > 0);
+
     if (textForModel.length >= 20) {
       const model = createLovableAiGatewayProvider(apiKey)("google/gemini-3-flash-preview");
       const prompt = [
         "You are extracting an executive's professional profile from text they provided, for use in a personal-brand strategy session.",
         "Be faithful to the source — do not invent. If a field isn't present, leave it empty/default.",
+        "",
+        "CRITICAL: If the TEXT clearly contains a work history (titles, company names, dates, accomplishments) you MUST populate `roles` with as many entries as the source supports (title, company, years), and populate `headline`, `wins`, and `skills`. Returning an empty object when the source is a real resume is a failure.",
         "",
         "In addition to the factual fields, infer three brand-brief priors (treated by downstream as DRAFTS, not facts):",
         "- domain_guess: one sentence naming the specific field/category this person is positioned to own (e.g. 'operational turnarounds in regulated healthcare'). Avoid generic words like 'leadership' or 'strategy' alone. Leave empty if the source is too thin.",
@@ -147,12 +155,45 @@ export const extractFounderFromText = createServerFn({ method: "POST" })
         .filter(Boolean)
         .join("\n");
 
-      const { output } = await generateText({
-        model,
-        output: Output.object({ schema: ExtractedFounderSchema }),
-        prompt,
-      });
-      extracted = output as ExtractedFounder;
+      try {
+        const { output } = await generateText({
+          model,
+          output: Output.object({ schema: ExtractedFounderSchema }),
+          prompt,
+        });
+        extracted = output as ExtractedFounder;
+      } catch (err) {
+        console.error("[extractFounderFromText] primary extraction failed", err);
+      }
+
+      // Retry once with a tighter, role-focused prompt if the first pass came back empty.
+      if (isThin(extracted) && textForModel.length >= 500) {
+        try {
+          const retryPrompt = [
+            "Extract this person's roles and credentials from the resume text below. The source IS a real resume — do NOT return an empty object.",
+            "Populate at minimum: headline (one line, their professional identity), roles[] (every distinct role you can find with title, company, years), wins[] (3–8 signature outcomes), skills[] (concrete capabilities), industries[] (sectors they've worked in).",
+            "Be faithful — copy company names and titles verbatim from the source.",
+            "",
+            "RESUME TEXT:",
+            textForModel,
+          ].join("\n");
+          const { output } = await generateText({
+            model,
+            output: Output.object({ schema: ExtractedFounderSchema }),
+            prompt: retryPrompt,
+          });
+          const retried = output as ExtractedFounder;
+          if (!isThin(retried)) extracted = retried;
+        } catch (err) {
+          console.error("[extractFounderFromText] retry extraction failed", err);
+        }
+      }
+
+      if (isThin(extracted)) {
+        noteToUser =
+          noteToUser ??
+          "We saved your resume text. The strategist will read it directly in the next message.";
+      }
     } else if (data.linkedin_url) {
       // LinkedIn-only path: we can't scrape, but we still save the URL and let them continue.
       noteToUser =
@@ -175,7 +216,12 @@ export const extractFounderFromText = createServerFn({ method: "POST" })
         { onConflict: "user_id" },
       );
     if (error) throw new Error(error.message);
-    return { extracted, note: noteToUser };
+    return {
+      extracted,
+      note: noteToUser,
+      structured_ok: !isThin(extracted),
+      has_raw_text: (resolvedRawText?.length ?? 0) >= 20,
+    };
   });
 
 // ===================== Market profile =====================
