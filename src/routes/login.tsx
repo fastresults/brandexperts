@@ -32,7 +32,7 @@ function LoginPage() {
   useEffect(() => {
     if (loading) return;
     if (isAuthenticated) {
-      const fallback = isAdmin ? "/admin" : isApprovedMember ? "/dashboard" : "/welcome";
+      const fallback = isAdmin ? "/admin" : "/dashboard";
       navigate({ to: redirect ?? fallback, replace: true });
     }
   }, [isAuthenticated, isAdmin, isApprovedMember, loading, navigate, redirect]);
