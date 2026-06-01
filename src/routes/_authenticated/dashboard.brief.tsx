@@ -4,11 +4,11 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
-import { Send, Loader2, RefreshCw, CheckCircle2, Copy, Download, RotateCcw, Pencil, Sparkles, Package } from "lucide-react";
+import { Send, Loader2, RefreshCw, CheckCircle2, Copy, Download, RotateCcw, Pencil, Sparkles, Package, ChevronDown, FileText, FileType2, FileCode2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { getFounderProfile } from "@/lib/discovery.functions";
-import { getBrandBrief, regenerateBriefSummary, reopenBrandBrief, resetBrandBrief, reviseBrandBrief, exportCompletePackage } from "@/lib/brand-brief.functions";
+import { getBrandBrief, regenerateBriefSummary, reopenBrandBrief, resetBrandBrief, reviseBrandBrief, exportCompletePackage, exportCompletePackageDocx, exportCompletePackagePdf } from "@/lib/brand-brief.functions";
 import { MIN_FACTS_TO_FINALIZE } from "@/lib/brief-format";
 import {
   AlertDialog,
@@ -30,6 +30,16 @@ import { Markdown } from "@/components/brief/Markdown";
 import { parseBrief } from "@/lib/brief-parser";
 import { LedgerBrief } from "@/components/brief/LedgerBrief";
 import { BriefProgress, type BriefProgressData } from "@/components/brief/BriefProgress";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { markdownToPlainText } from "@/lib/complete-package-formats";
 
 export const Route = createFileRoute("/_authenticated/dashboard/brief")({
   component: BrandBriefPage,
@@ -349,13 +359,16 @@ function ChatPane({
   );
 }
 
+type PackageFormat = "copy-md" | "copy-txt" | "dl-md" | "dl-txt" | "dl-docx" | "dl-pdf";
+
 function FinishedView({ markdown, onReopen, onReset }: { markdown: string; onReopen: () => void | Promise<void>; onReset: () => void | Promise<void> }) {
   // FinishedView uses Keep refining (onReopen) and Clear everything (onReset).
   // Revise-with-retention only makes sense on the in-progress view, so it's not exposed here.
   const [copied, setCopied] = useState(false);
-  const [packaging, setPackaging] = useState(false);
-  const [packageCopied, setPackageCopied] = useState(false);
+  const [busyFormat, setBusyFormat] = useState<PackageFormat | null>(null);
   const exportPackage = useServerFn(exportCompletePackage);
+  const exportPackageDocx = useServerFn(exportCompletePackageDocx);
+  const exportPackagePdf = useServerFn(exportCompletePackagePdf);
 
   const copy = async () => {
     try {
@@ -380,41 +393,73 @@ function FinishedView({ markdown, onReopen, onReset }: { markdown: string; onReo
     URL.revokeObjectURL(url);
   };
 
-  const copyCompletePackage = async () => {
-    if (packaging) return;
-    setPackaging(true);
+  const sizeLabel = (n: number) =>
+    n < 1024
+      ? `${n} B`
+      : n < 1024 * 1024
+      ? `${(n / 1024).toFixed(1)} KB`
+      : `${(n / 1024 / 1024).toFixed(2)} MB`;
+
+  const triggerBlobDownload = (data: Blob | Uint8Array, filename: string, mimeType: string) => {
+    const blob = data instanceof Blob ? data : new Blob([data as BlobPart], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  const base64ToBytes = (b64: string): Uint8Array => {
+    const bin = atob(b64);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return bytes;
+  };
+
+  const handleExport = async (format: PackageFormat) => {
+    if (busyFormat) return;
+    setBusyFormat(format);
     try {
-      const { markdown: pkg, filename } = await exportPackage();
-      const sizeLabel =
-        pkg.length < 1024
-          ? `${pkg.length} B`
-          : pkg.length < 1024 * 1024
-          ? `${(pkg.length / 1024).toFixed(1)} KB`
-          : `${(pkg.length / 1024 / 1024).toFixed(2)} MB`;
-      try {
-        await navigator.clipboard.writeText(pkg);
-        setPackageCopied(true);
-        toast.success(`Complete package copied — ${sizeLabel} on your clipboard`);
-        setTimeout(() => setPackageCopied(false), 2500);
-      } catch {
-        // Clipboard blocked (permissions, insecure context, payload too large) — fall back to download.
-        const blob = new Blob([pkg], { type: "text/markdown;charset=utf-8" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
-        toast.success(`Clipboard blocked — downloaded the package (${sizeLabel}) instead`);
+      if (format === "copy-md" || format === "copy-txt" || format === "dl-md" || format === "dl-txt") {
+        const { markdown: pkg, filename } = await exportPackage();
+        const content = format === "copy-txt" || format === "dl-txt" ? markdownToPlainText(pkg) : pkg;
+        const ext = format === "copy-txt" || format === "dl-txt" ? "txt" : "md";
+        const mime = ext === "txt" ? "text/plain;charset=utf-8" : "text/markdown;charset=utf-8";
+        const outName = filename.replace(/\.md$/, `.${ext}`);
+
+        if (format === "copy-md" || format === "copy-txt") {
+          try {
+            await navigator.clipboard.writeText(content);
+            toast.success(`Complete package copied — ${sizeLabel(content.length)} on your clipboard`);
+          } catch {
+            triggerBlobDownload(new Blob([content], { type: mime }), outName, mime);
+            toast.success(`Clipboard blocked — downloaded the package (${sizeLabel(content.length)}) instead`);
+          }
+        } else {
+          triggerBlobDownload(new Blob([content], { type: mime }), outName, mime);
+          toast.success(`Downloaded ${outName} (${sizeLabel(content.length)})`);
+        }
+      } else if (format === "dl-docx") {
+        const { base64, filename, mimeType } = await exportPackageDocx();
+        const bytes = base64ToBytes(base64);
+        triggerBlobDownload(bytes, filename, mimeType);
+        toast.success(`Downloaded ${filename} (${sizeLabel(bytes.byteLength)})`);
+      } else if (format === "dl-pdf") {
+        const { base64, filename, mimeType } = await exportPackagePdf();
+        const bytes = base64ToBytes(base64);
+        triggerBlobDownload(bytes, filename, mimeType);
+        toast.success(`Downloaded ${filename} (${sizeLabel(bytes.byteLength)})`);
       }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Couldn't build the complete package");
     } finally {
-      setPackaging(false);
+      setBusyFormat(null);
     }
   };
+
 
 
   const sections = parseBrief(markdown);
@@ -450,16 +495,60 @@ function FinishedView({ markdown, onReopen, onReset }: { markdown: string; onReo
           >
             <Download className="h-3.5 w-3.5" /> Download .md
           </button>
-          <button
-            type="button"
-            onClick={() => void copyCompletePackage()}
-            disabled={packaging}
-            title="Copy a single markdown document with every source, every answer, and the final brief to your clipboard"
-            className="inline-flex items-center gap-2 rounded-md border border-primary/30 bg-primary/10 px-3.5 py-2 text-xs font-semibold text-primary transition-colors hover:bg-primary/20 disabled:opacity-60"
-          >
-            {packaging ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Package className="h-3.5 w-3.5" />}
-            {packaging ? "Building package…" : packageCopied ? "Copied" : "Copy complete package"}
-          </button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                disabled={busyFormat !== null}
+                title="Copy or download a single document with every source, every answer, and the final brief"
+                className="inline-flex items-center gap-2 rounded-md border border-primary/30 bg-primary/10 px-3.5 py-2 text-xs font-semibold text-primary transition-colors hover:bg-primary/20 disabled:opacity-60"
+              >
+                {busyFormat ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Package className="h-3.5 w-3.5" />}
+                {busyFormat ? "Building package…" : "Export complete package"}
+                <ChevronDown className="h-3.5 w-3.5 opacity-70" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-60">
+              <DropdownMenuLabel>Copy to clipboard</DropdownMenuLabel>
+              <DropdownMenuGroup>
+                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); void handleExport("copy-md"); }}>
+                  <Copy className="mr-2 h-4 w-4" />
+                  <span>Markdown</span>
+                  {busyFormat === "copy-md" && <Loader2 className="ml-auto h-3.5 w-3.5 animate-spin" />}
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); void handleExport("copy-txt"); }}>
+                  <Copy className="mr-2 h-4 w-4" />
+                  <span>Plain text</span>
+                  {busyFormat === "copy-txt" && <Loader2 className="ml-auto h-3.5 w-3.5 animate-spin" />}
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel>Download</DropdownMenuLabel>
+              <DropdownMenuGroup>
+                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); void handleExport("dl-md"); }}>
+                  <FileCode2 className="mr-2 h-4 w-4" />
+                  <span>Markdown (.md)</span>
+                  {busyFormat === "dl-md" && <Loader2 className="ml-auto h-3.5 w-3.5 animate-spin" />}
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); void handleExport("dl-txt"); }}>
+                  <FileText className="mr-2 h-4 w-4" />
+                  <span>Plain text (.txt)</span>
+                  {busyFormat === "dl-txt" && <Loader2 className="ml-auto h-3.5 w-3.5 animate-spin" />}
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); void handleExport("dl-docx"); }}>
+                  <FileType2 className="mr-2 h-4 w-4" />
+                  <span>Word (.docx)</span>
+                  {busyFormat === "dl-docx" && <Loader2 className="ml-auto h-3.5 w-3.5 animate-spin" />}
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); void handleExport("dl-pdf"); }}>
+                  <FileText className="mr-2 h-4 w-4" />
+                  <span>PDF (.pdf)</span>
+                  {busyFormat === "dl-pdf" && <Loader2 className="ml-auto h-3.5 w-3.5 animate-spin" />}
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           <button
             type="button"
             onClick={() => void onReopen()}
