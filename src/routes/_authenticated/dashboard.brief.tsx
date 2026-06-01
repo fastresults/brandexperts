@@ -137,10 +137,12 @@ function ChatPane({
     scrollerRef.current?.scrollTo({ top: scrollerRef.current.scrollHeight, behavior: "smooth" });
   }, [messages]);
 
-  // Kick off the conversation if empty.
+  // Kick off the conversation if empty. The user message is a hidden trigger
+  // that won't render — only the assistant's greeting shows.
+  const KICKOFF = "__kickoff__";
   useEffect(() => {
     if (messages.length === 0 && status === "ready") {
-      void sendMessage({ text: "Let's begin." });
+      void sendMessage({ text: KICKOFF });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
@@ -157,6 +159,8 @@ function ChatPane({
               .join("");
             if (!text) return null;
             const isUser = m.role === "user";
+            // Hide the kickoff trigger from the transcript.
+            if (isUser && text.trim() === KICKOFF) return null;
             return (
               <li key={m.id} className={isUser ? "flex justify-end" : ""}>
                 {isUser ? (
