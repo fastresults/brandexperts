@@ -243,7 +243,7 @@ export const regenerateBriefAlignment = createServerFn({ method: "POST" })
         throw error;
       }
 
-      if (error.finishReason === "length" || error.finishReason === "max_tokens") {
+      if (error.finishReason === "length") {
         throw new Error("The alignment draft was truncated. Please try again.");
       }
 
