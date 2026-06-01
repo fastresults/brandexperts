@@ -30,6 +30,16 @@ import { Markdown } from "@/components/brief/Markdown";
 import { parseBrief } from "@/lib/brief-parser";
 import { LedgerBrief } from "@/components/brief/LedgerBrief";
 import { BriefProgress, type BriefProgressData } from "@/components/brief/BriefProgress";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { markdownToPlainText } from "@/lib/complete-package-formats";
 
 export const Route = createFileRoute("/_authenticated/dashboard/brief")({
   component: BrandBriefPage,
