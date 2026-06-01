@@ -119,3 +119,25 @@ export const deleteCohort = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true as const };
   });
+
+export const setCohortStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z.object({
+      id: z.string().min(1),
+      status: z.enum(["open", "filling", "sold_out"]),
+    }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await ensureSuperAdmin(context.userId);
+    const { error } = await supabaseAdmin
+      .from("cohorts" as never)
+      .update({
+        status: data.status,
+        seats_left: data.status === "sold_out" ? 0 : null,
+        updated_at: new Date().toISOString(),
+      } as never)
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true as const };
+  });

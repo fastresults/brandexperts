@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
-import { listCohorts, upsertCohort, deleteCohort } from "@/lib/cohorts.functions";
+import { listCohorts, upsertCohort, deleteCohort, setCohortStatus } from "@/lib/cohorts.functions";
 import { DEFAULT_VENUE, DEFAULT_PRICING, formatPriceCents, type Cohort } from "@/lib/cohorts";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -117,6 +117,7 @@ function CohortsAdminPage() {
   const listFn = useServerFn(listCohorts);
   const upsertFn = useServerFn(upsertCohort);
   const deleteFn = useServerFn(deleteCohort);
+  const setStatusFn = useServerFn(setCohortStatus);
 
   const { data: cohorts = [], isLoading } = useQuery({
     queryKey: ["cohorts"],
@@ -180,6 +181,16 @@ function CohortsAdminPage() {
     mutationFn: (id: string) => deleteFn({ data: { id } }),
     onSuccess: () => {
       toast.success("Cohort deleted");
+      qc.invalidateQueries({ queryKey: ["cohorts"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const toggleSoldOut = useMutation({
+    mutationFn: (vars: { id: string; soldOut: boolean }) =>
+      setStatusFn({ data: { id: vars.id, status: vars.soldOut ? "sold_out" : "open" } }),
+    onSuccess: (_d, vars) => {
+      toast.success(vars.soldOut ? "Marked sold out" : "Reopened");
       qc.invalidateQueries({ queryKey: ["cohorts"] });
     },
     onError: (e: Error) => toast.error(e.message),
@@ -277,13 +288,25 @@ function CohortsAdminPage() {
                   </td>
 
                   <td className="px-4 py-3">
-                    <span className={`rounded-full px-2 py-0.5 text-xs ${
-                      c.status === "sold_out" ? "bg-white/5 text-muted-foreground" :
-                      c.status === "filling" ? "bg-amber-400/15 text-amber-300" :
-                      "bg-emerald-400/15 text-emerald-300"
-                    }`}>
-                      {c.status === "sold_out" ? "Sold out" : c.status === "filling" ? "Filling" : "Open"}
-                    </span>
+                    <div className="flex flex-col gap-1.5">
+                      <span className={`inline-block w-fit rounded-full px-2 py-0.5 text-xs ${
+                        c.status === "sold_out" ? "bg-white/5 text-muted-foreground" :
+                        c.status === "filling" ? "bg-amber-400/15 text-amber-300" :
+                        "bg-emerald-400/15 text-emerald-300"
+                      }`}>
+                        {c.status === "sold_out" ? "Sold out" : c.status === "filling" ? "Filling" : "Open"}
+                      </span>
+                      <label className="inline-flex cursor-pointer items-center gap-1.5 text-[11px] text-muted-foreground">
+                        <input
+                          type="checkbox"
+                          className="size-3.5 cursor-pointer accent-primary"
+                          checked={c.status === "sold_out"}
+                          disabled={toggleSoldOut.isPending}
+                          onChange={(e) => toggleSoldOut.mutate({ id: c.id, soldOut: e.target.checked })}
+                        />
+                        Sold out (override)
+                      </label>
+                    </div>
                   </td>
                   <td className="px-4 py-3 text-xs leading-relaxed">
                     <div>
