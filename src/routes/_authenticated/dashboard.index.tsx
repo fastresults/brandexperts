@@ -409,13 +409,13 @@ function WalkOutMoment() {
       <div className="text-xs font-medium uppercase tracking-wide text-primary">4:30 PM</div>
       <h1 className="mt-2 text-4xl md:text-5xl font-semibold tracking-tight">You did it 🎉</h1>
       <p className="mt-4 text-lg text-muted-foreground max-w-lg mx-auto">
-        You walked in with an idea. You're walking out with a launched startup and a signed 90-day plan.
+        You walked in with a question. You're walking out with a sharpened brand and a plan you'll actually use.
       </p>
       <Link
-        to="/dashboard/workflow"
+        to="/dashboard/deliverables"
         className="mt-8 inline-flex items-center rounded-xl bg-primary px-6 py-3 text-base font-medium text-primary-foreground hover:opacity-90"
       >
-        Take me to my 90-day plan
+        See your deliverables
       </Link>
     </div>
   );
