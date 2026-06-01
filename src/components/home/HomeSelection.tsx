@@ -51,6 +51,7 @@ export function HomeSelection({ heroBgUrl }: { heroBgUrl?: string | null }) {
 }
 
 function Hero({ heroBgUrl }: { heroBgUrl: string | null }) {
+  const EVENT = useEvent();
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900">
       {heroBgUrl ? (
