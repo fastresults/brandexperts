@@ -40,10 +40,32 @@ export const getBrandBrief = createServerFn({ method: "GET" })
     ]);
     if (factsRes.error) throw new Error(factsRes.error.message);
     if (summaryRes.error) throw new Error(summaryRes.error.message);
-    return {
-      facts: (factsRes.data ?? []) as BriefFact[],
-      summary: (summaryRes.data ?? null) as BriefSummary | null,
+
+    const facts = (factsRes.data ?? []) as BriefFact[];
+    const summary = (summaryRes.data ?? null) as BriefSummary | null;
+
+    const filledIds = new Set(facts.filter((f) => (f.value ?? "").trim().length > 0).map((f) => f.section));
+    const sections = BRIEF_SPINE.map((s, idx) => ({
+      id: s.id,
+      label: s.label,
+      index: idx,
+      completed: filledIds.has(s.id),
+    }));
+    const completed = sections.filter((s) => s.completed).length;
+    const total = sections.length;
+    const nextSection = sections.find((s) => !s.completed) ?? null;
+    const progress = {
+      total,
+      completed,
+      percent: total === 0 ? 0 : Math.round((completed / total) * 100),
+      allComplete: completed === total,
+      currentSectionId: nextSection?.id ?? null,
+      currentSectionLabel: nextSection?.label ?? "Review & finish",
+      currentIndex: nextSection?.index ?? total,
+      sections,
     };
+
+    return { facts, summary, progress };
   });
 
 // ----- Inline edit from the live brief panel -----
