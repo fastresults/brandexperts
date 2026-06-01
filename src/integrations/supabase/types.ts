@@ -148,6 +148,30 @@ export type Database = {
           },
         ]
       }
+      attendee_brief_alignment: {
+        Row: {
+          generated_at: string
+          items: Json
+          model: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          generated_at?: string
+          items?: Json
+          model?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          generated_at?: string
+          items?: Json
+          model?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       attendee_brief_facts: {
         Row: {
           confidence: number
