@@ -13,16 +13,16 @@ import { ArrowRight, Coffee, Clock } from "lucide-react";
 export const Route = createFileRoute("/schedule")({
   head: () => ({
     meta: [
-      { title: "Schedule — Atlanta Startup Workshop" },
+      { title: "Schedule — The Executive Brand Intensive" },
       {
         name: "description",
         content:
-          "The full 8 AM – 4:30 PM workshop: form, customer, offer, build, brand, marketing, and your 90-day launch plan.",
+          "The full 1:00 PM – 4:00 PM afternoon: foundation, voice, signature content, distribution, the compounding system, and a public 90-day commitment.",
       },
-      { property: "og:title", content: "Schedule — Atlanta Startup Workshop" },
+      { property: "og:title", content: "Schedule — The Executive Brand Intensive" },
       {
         property: "og:description",
-        content: "Hour-by-hour breakdown of the one-day workshop in Norcross, GA.",
+        content: "Block-by-block breakdown of the 3-hour intensive in Norcross, GA.",
       },
     ],
   }),
@@ -63,20 +63,20 @@ function SchedulePage() {
             {EVENT.dateLabel} · {EVENT.timeLabel}
           </p>
           <h1 className="text-4xl font-semibold leading-tight tracking-tight md:text-5xl lg:text-6xl">
-            Idea in. <span className="text-gradient-brand">Launch plan out.</span>
+            Profile in. <span className="text-gradient-brand">Publishing system out.</span>
           </h1>
           <p className="mt-4 max-w-2xl text-base text-muted-foreground md:mt-5 md:text-lg">
-            Seven working hours, seven stages, one outcome. Every hour produces something
-            the next hour builds on. By 4:30 PM you have a filing-ready business and a signed,
-            dated 90-day launch plan.
+            Three focused hours, six blocks, one outcome. Every block produces finished assets the
+            next block builds on. By 4:00 PM you have 15 publish-ready brand assets and a 30-min
+            weekly cadence on your calendar.
           </p>
 
           {/* Stat ribbon */}
           <div className="mt-8 grid grid-cols-1 gap-3 border-t border-white/10 pt-6 sm:grid-cols-3 md:mt-10 md:pt-8">
             {[
-              { stat: "7 hrs", label: "working time" },
-              { stat: "7 stages", label: "idea → launch" },
-              { stat: "9 deliverables", label: "in hand by 4:30" },
+              { stat: "3 hrs", label: "working time" },
+              { stat: "6 blocks", label: "foundation → cadence" },
+              { stat: "15 assets", label: "finished by 4:00" },
             ].map((s) => (
               <div
                 key={s.label}
@@ -91,6 +91,7 @@ function SchedulePage() {
           </div>
         </div>
       </section>
+
 
       {/* Day at a glance rail */}
       <section className="border-b border-white/5 py-8">
@@ -259,10 +260,10 @@ function SchedulePage() {
           {/* Footer CTA tile */}
           <div className="mt-16 rounded-2xl border border-white/10 bg-card p-6 text-center md:p-10">
             <h3 className="text-2xl font-semibold tracking-tight md:text-3xl">
-              One day. One door. Twenty seats.
+              One afternoon. One door. Twelve seats.
             </h3>
             <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
-              Idea in at 8 AM. Filing-ready business and a signed 90-day plan out at 4:30 PM.
+              Profile in at 1:00 PM. A brand that ships without you out at 4:00 PM.
             </p>
             <div className="mt-6 flex justify-center">
               <Link
@@ -273,6 +274,7 @@ function SchedulePage() {
               </Link>
             </div>
           </div>
+
         </div>
       </section>
       <SiteFooter />
