@@ -98,6 +98,22 @@ export const reopenBrandBrief = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+// ----- Full reset: wipe brief, facts, and alignment -----
+
+export const resetBrandBrief = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { userId } = context;
+    const [facts, summary, alignment] = await Promise.all([
+      supabaseAdmin.from("attendee_brief_facts").delete().eq("user_id", userId),
+      supabaseAdmin.from("attendee_brief_summary").delete().eq("user_id", userId),
+      supabaseAdmin.from("attendee_brief_alignment").delete().eq("user_id", userId),
+    ]);
+    const err = facts.error || summary.error || alignment.error;
+    if (err) throw new Error(err.message);
+    return { ok: true };
+  });
+
 // ----- Workshop alignment -----
 
 const ALIGNMENT_MODEL = "google/gemini-3-flash-preview";

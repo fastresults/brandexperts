@@ -4,11 +4,22 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
-import { Send, Loader2, RefreshCw, CheckCircle2, Copy, Download } from "lucide-react";
+import { Send, Loader2, RefreshCw, CheckCircle2, Copy, Download, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { getFounderProfile } from "@/lib/discovery.functions";
-import { getBrandBrief, reopenBrandBrief } from "@/lib/brand-brief.functions";
+import { getBrandBrief, reopenBrandBrief, resetBrandBrief } from "@/lib/brand-brief.functions";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { BrandBriefImportCard } from "@/components/brief/BrandBriefImportCard";
 import { MicButton } from "@/components/brief/MicButton";
 import { BrandBriefPanel } from "@/components/brief/BrandBriefPanel";
@@ -27,6 +38,18 @@ function BrandBriefPage() {
   const briefFn = useServerFn(getBrandBrief);
   const profileFn = useServerFn(getFounderProfile);
   const reopenFn = useServerFn(reopenBrandBrief);
+  const resetFn = useServerFn(resetBrandBrief);
+
+  const handleReset = async () => {
+    try {
+      await resetFn();
+      await Promise.all([brief.refetch(), profile.refetch()]);
+      toast.success("Assessment reset — let's start fresh");
+    } catch (err) {
+      toast.error("Couldn't reset the assessment");
+      console.error(err);
+    }
+  };
 
   const brief = useQuery({ queryKey: ["brand-brief"], queryFn: () => briefFn() });
   const profile = useQuery({ queryKey: ["founder-profile"], queryFn: () => profileFn() });
@@ -70,6 +93,7 @@ function BrandBriefPage() {
           await reopenFn();
           await brief.refetch();
         }}
+        onReset={handleReset}
       />
     );
   }
@@ -78,7 +102,10 @@ function BrandBriefPage() {
     <div className="grid h-[calc(100vh-6rem)] grid-cols-1 gap-0 md:grid-cols-[1fr_380px]">
       <div className="flex min-h-0 flex-col">
         <div className="border-b border-white/10 p-4 md:p-5">
-          <h1 className="text-2xl font-semibold tracking-tight">Design your brand operating system</h1>
+          <div className="flex items-start justify-between gap-4">
+            <h1 className="text-2xl font-semibold tracking-tight">Design your brand operating system</h1>
+            <StartOverButton onConfirm={handleReset} variant="link" />
+          </div>
           <p className="mt-1 text-sm text-muted-foreground">
             A conversation with your AI brand strategist. The brief assembles on the right as you go.
           </p>
@@ -237,7 +264,7 @@ function ChatPane({
   );
 }
 
-function FinishedView({ markdown, onReopen }: { markdown: string; onReopen: () => void | Promise<void> }) {
+function FinishedView({ markdown, onReopen, onReset }: { markdown: string; onReopen: () => void | Promise<void>; onReset: () => void | Promise<void> }) {
   const [copied, setCopied] = useState(false);
 
   const copy = async () => {
@@ -303,6 +330,7 @@ function FinishedView({ markdown, onReopen }: { markdown: string; onReopen: () =
           >
             <RefreshCw className="h-3.5 w-3.5" /> Keep refining
           </button>
+          <StartOverButton onConfirm={onReset} variant="ghost" />
         </div>
       </header>
 
@@ -322,5 +350,56 @@ function FinishedView({ markdown, onReopen }: { markdown: string; onReopen: () =
         <BrandAlignmentPanel />
       </section>
     </div>
+  );
+}
+
+function StartOverButton({
+  onConfirm,
+  variant = "ghost",
+}: {
+  onConfirm: () => void | Promise<void>;
+  variant?: "ghost" | "link";
+}) {
+  const [busy, setBusy] = useState(false);
+  const triggerClass =
+    variant === "link"
+      ? "inline-flex shrink-0 items-center gap-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-destructive"
+      : "inline-flex items-center gap-2 rounded-md border border-destructive/30 bg-transparent px-3.5 py-2 text-xs font-semibold text-destructive/90 transition-colors hover:bg-destructive/10 hover:text-destructive";
+
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <button type="button" className={triggerClass} disabled={busy}>
+          <RotateCcw className="h-3.5 w-3.5" /> Start over
+        </button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Reset your brand brief?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This permanently clears your captured facts, generated brief, and workshop alignment.
+            The conversation will start fresh. This can't be undone.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={busy}>Cancel</AlertDialogCancel>
+          <AlertDialogAction
+            disabled={busy}
+            onClick={async (e) => {
+              e.preventDefault();
+              setBusy(true);
+              try {
+                await onConfirm();
+              } finally {
+                setBusy(false);
+              }
+            }}
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          >
+            {busy ? "Resetting…" : "Yes, start over"}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
