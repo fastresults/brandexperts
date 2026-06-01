@@ -8,6 +8,7 @@ import { SiteHeader } from "@/components/site/Header";
 import { SiteFooter } from "@/components/site/Footer";
 import { submitFounderApplication } from "@/lib/applications.functions";
 import { ArrowRight, CheckCircle2, Sparkles, TicketPercent } from "lucide-react";
+import { useEvent } from "@/lib/use-event";
 
 // Keep in sync with HomeSelection — TBD with founder.
 const FINALIST_DISCOUNT_PCT = 40;
@@ -48,6 +49,7 @@ const FormSchema = z.object({
 type FormValues = z.infer<typeof FormSchema>;
 
 export function RegisterSelection() {
+  const EVENT = useEvent();
   const [submitted, setSubmitted] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const submit = useServerFn(submitFounderApplication);
@@ -87,9 +89,8 @@ export function RegisterSelection() {
             <span className="text-gradient-brand">the six.</span>
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground md:mt-5 md:text-lg">
-            Applications close <span className="font-medium text-foreground">June 20, 2026</span>.
             Dozens will apply. Six will be chosen by{" "}
-            <span className="font-medium text-foreground">July 8</span>. Every other applicant
+            <span className="font-medium text-foreground">{EVENT.decisionDateLabel}</span>. Every other applicant
             gets a <span className="font-medium text-foreground">Founder&rsquo;s Discount</span>{" "}
             on the next cohort, sent the same day. Twelve minutes, no fee, no follow-up sales call.
           </p>
@@ -98,7 +99,7 @@ export function RegisterSelection() {
           <ul className="mx-auto mt-8 grid max-w-2xl gap-2 text-left text-sm sm:grid-cols-2">
             {[
               "6 seats · 0 cost · 0 strings",
-              "Decision by July 8 — every applicant hears back",
+              `Decision by ${EVENT.decisionDateLabel} — every applicant hears back`,
               `Not chosen? ${FINALIST_DISCOUNT_PCT}% Founder's Discount, same day`,
               "Adam reads every application personally",
             ].map((b) => (
@@ -118,7 +119,7 @@ export function RegisterSelection() {
       <section className="py-12 md:py-16">
         <div className="mx-auto max-w-2xl px-6">
           {submitted ? (
-            <SuccessCard />
+            <SuccessCard event={EVENT} />
           ) : (
             <form
               onSubmit={onSubmit}
@@ -204,7 +205,7 @@ export function RegisterSelection() {
 
               <Field
                 label="Why this workshop, why now?"
-                hint="What actually changes in your life if you walk out July 23 with a launched startup? Be concrete — money, time, freedom, a person you want to prove something to."
+                hint={`What actually changes in your life if you walk out ${EVENT.shortLabel} with a launched startup? Be concrete — money, time, freedom, a person you want to prove something to.`}
                 error={errors.why_now?.message}
               >
                 <textarea
@@ -235,7 +236,7 @@ export function RegisterSelection() {
                   />
                   <span>
                     <span className="font-medium text-foreground">
-                      I can attend in person on Thursday, July 23, 2026
+                      I can attend in person on {EVENT.dateLabelLong}
                     </span>{" "}
                     at the IGNITE Center in Norcross, GA — the full day (8:00 AM – 4:30 PM).
                   </span>
@@ -268,7 +269,7 @@ export function RegisterSelection() {
                 {!isSubmitting && <ArrowRight className="size-4" />}
               </button>
               <p className="text-center text-xs text-muted-foreground">
-                You&rsquo;ll hear from us by July 8 — either a seat or a Founder&rsquo;s Discount.
+                You&rsquo;ll hear from us by {EVENT.decisionDateLabel} — either a seat or a Founder&rsquo;s Discount.
                 No silent rejections.
               </p>
             </form>
@@ -323,7 +324,7 @@ function Field({
   );
 }
 
-function SuccessCard() {
+function SuccessCard({ event }: { event: ReturnType<typeof useEvent> }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-card p-8 text-center">
       <div className="mx-auto mb-4 inline-flex size-12 items-center justify-center rounded-full bg-hero-gradient">
@@ -332,8 +333,8 @@ function SuccessCard() {
       <h2 className="text-2xl font-semibold tracking-tight">You&rsquo;re in the running.</h2>
       <p className="mt-2 text-muted-foreground">
         We&rsquo;ve got it. Between now and{" "}
-        <span className="font-medium text-foreground">July 8, 2026</span>, Adam is reading every
-        application personally. On July 8 you&rsquo;ll get one of two emails — a seat for July 23,
+        <span className="font-medium text-foreground">{event.decisionDateLabel}</span>, Adam is reading every
+        application personally. On {event.decisionDateLabel} you&rsquo;ll get one of two emails — a seat for {event.shortLabel},
         or a {FINALIST_DISCOUNT_PCT}% Founder&rsquo;s Discount on the next Atlanta cohort. Either
         way, you&rsquo;ll hear from us.
       </p>
@@ -344,7 +345,7 @@ function SuccessCard() {
         </div>
         <p className="text-sm text-muted-foreground">
           The worst outcome here is a {FINALIST_DISCOUNT_PCT}% discount and a front-row seat to
-          watch six Atlanta founders launch in public. Watch the inbox on July 8 — the
+          watch six Atlanta founders launch in public. Watch the inbox on {event.decisionDateLabel} — the
           Founder&rsquo;s Discount is single-use and time-bound.
         </p>
       </div>

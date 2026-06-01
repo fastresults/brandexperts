@@ -124,12 +124,13 @@ function Meta({ icon, label }: { icon: React.ReactNode; label: string }) {
 }
 
 function WhyApplyingIsTheMove() {
+  const EVENT = useEvent();
   const cards = [
     {
       icon: <Flame className="size-5 text-primary" />,
       title: "If you&rsquo;re chosen",
       body:
-        "A free seat on July 23 — roughly " +
+        `A free seat on ${EVENT.shortLabel} — roughly ` +
         PIECEMEAL_VALUE +
         " of brand, web, and launch work built with you in one day, and a signed 90-day plan in your hand before you leave.",
     },
@@ -277,26 +278,30 @@ function WhatYouWalkOut() {
 }
 
 
-const CRITERIA = [
-  {
-    title: "Atlanta-based or relocating",
-    body: "You&rsquo;re building in metro Atlanta — or moving here in the next 90 days.",
-  },
-  {
-    title: "An idea you have been turning over",
-    body: "You don&rsquo;t need revenue. You do need a real idea you can&rsquo;t stop thinking about.",
-  },
-  {
-    title: "Coachable and decisive",
-    body: "You&rsquo;ll make calls in the room — name, offer, pricing — and stick with them past the parking lot.",
-  },
-  {
-    title: "Free on July 23",
-    body: "You can commit the full day, in person, in Norcross. No half-attendance, no Zoom-in.",
-  },
-];
+function buildCriteria(EVENT: ReturnType<typeof useEvent>) {
+  return [
+    {
+      title: "Atlanta-based or relocating",
+      body: "You&rsquo;re building in metro Atlanta — or moving here in the next 90 days.",
+    },
+    {
+      title: "An idea you have been turning over",
+      body: "You don&rsquo;t need revenue. You do need a real idea you can&rsquo;t stop thinking about.",
+    },
+    {
+      title: "Coachable and decisive",
+      body: "You&rsquo;ll make calls in the room — name, offer, pricing — and stick with them past the parking lot.",
+    },
+    {
+      title: `Free on ${EVENT.shortLabel}`,
+      body: "You can commit the full day, in person, in Norcross. No half-attendance, no Zoom-in.",
+    },
+  ];
+}
 
 function WhoWereLookingFor() {
+  const EVENT = useEvent();
+  const CRITERIA = buildCriteria(EVENT);
   return (
     <section className="border-y border-white/5 bg-white/[0.02] py-12 md:py-20">
       <div className="mx-auto max-w-6xl px-6">
@@ -325,16 +330,15 @@ function WhoWereLookingFor() {
   );
 }
 
-const STEPS = [
-  { label: "Applications open", date: "Now" },
-  { label: "Applications close", date: "June 20, 2026" },
-  { label: "Selections announced — six seats emailed", date: "July 8, 2026" },
-  { label: "Founder&rsquo;s Discount emailed to every other applicant", date: "July 8, 2026" },
-  { label: "Workshop day", date: "July 23, 2026" },
-  { label: "90-day follow-through — launches in public", date: "Through October 2026" },
-];
-
 function Timeline() {
+  const EVENT = useEvent();
+  const STEPS = [
+    { label: "Applications open", date: "Now" },
+    { label: "Selections announced — six seats emailed", date: EVENT.decisionDateLabel },
+    { label: "Founder&rsquo;s Discount emailed to every other applicant", date: EVENT.decisionDateLabel },
+    { label: "Workshop day", date: EVENT.dateLabelLong },
+    { label: "90-day follow-through — launches in public", date: "Through the following quarter" },
+  ];
   return (
     <section className="py-12 md:py-20">
       <div className="mx-auto max-w-4xl px-6">
@@ -366,6 +370,7 @@ function Timeline() {
 }
 
 function FinalistOffer() {
+  const EVENT = useEvent();
   return (
     <section className="py-12 md:py-20">
       <div className="mx-auto max-w-5xl px-6">
@@ -385,7 +390,7 @@ function FinalistOffer() {
               <span className="font-medium text-foreground">
                 {FINALIST_DISCOUNT_PCT}% off the next paid Atlanta cohort
               </span>
-              , emailed July 8. The discount activates after the workshop on purpose: you get to
+              , emailed {EVENT.decisionDateLabel}. The discount activates after the workshop on purpose: you get to
               watch the six launch in public — read the case studies, click the live sites, see
               the 90-day numbers — and then decide if you want your turn.
             </p>
@@ -408,7 +413,7 @@ function FinalistOffer() {
             </div>
             <p className="mt-6 text-xs text-muted-foreground">
               Founder&rsquo;s Discount terms are simple — one applicant per email, one use per
-              person, full terms emailed with the code on July 8.
+              person, full terms emailed with the code on {EVENT.decisionDateLabel}.
             </p>
           </div>
         </div>
@@ -478,6 +483,7 @@ function Facilitator() {
 }
 
 function BottomCTA() {
+  const EVENT = useEvent();
   return (
     <section className="border-t border-white/5 py-16 md:py-24">
       <div className="mx-auto max-w-3xl px-6 text-center">
@@ -486,7 +492,7 @@ function BottomCTA() {
           <span className="text-gradient-brand">Yours starts with one form.</span>
         </h2>
         <p className="mt-4 text-base text-muted-foreground md:text-lg">
-          Twelve minutes to apply. Decision by July 8. Either a free seat on July 23 — or a{" "}
+          Twelve minutes to apply. Decision by {EVENT.decisionDateLabel}. Either a free seat on {EVENT.shortLabel} — or a{" "}
           {FINALIST_DISCOUNT_PCT}% Founder&rsquo;s Discount and a front-row seat to the launches.
           There is no version of this where applying costs you.
         </p>
