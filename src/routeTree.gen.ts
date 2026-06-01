@@ -22,6 +22,7 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
+import { Route as ApiBriefChatRouteImport } from './routes/api/brief-chat'
 import { Route as AuthenticatedWelcomeRouteImport } from './routes/_authenticated/welcome'
 import { Route as AuthenticatedPausedRouteImport } from './routes/_authenticated/paused'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -126,6 +127,11 @@ const IndexRoute = IndexRouteImport.update({
 const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
   id: '/email/unsubscribe',
   path: '/email/unsubscribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiBriefChatRoute = ApiBriefChatRouteImport.update({
+  id: '/api/brief-chat',
+  path: '/api/brief-chat',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedWelcomeRoute = AuthenticatedWelcomeRouteImport.update({
@@ -384,6 +390,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/paused': typeof AuthenticatedPausedRoute
   '/welcome': typeof AuthenticatedWelcomeRoute
+  '/api/brief-chat': typeof ApiBriefChatRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/dashboard/brief': typeof AuthenticatedDashboardBriefRoute
   '/dashboard/companion': typeof AuthenticatedDashboardCompanionRoute
@@ -437,6 +444,7 @@ export interface FileRoutesByTo {
   '/unsubscribe': typeof UnsubscribeRoute
   '/paused': typeof AuthenticatedPausedRoute
   '/welcome': typeof AuthenticatedWelcomeRoute
+  '/api/brief-chat': typeof ApiBriefChatRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/dashboard/brief': typeof AuthenticatedDashboardBriefRoute
   '/dashboard/companion': typeof AuthenticatedDashboardCompanionRoute
@@ -494,6 +502,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/_authenticated/paused': typeof AuthenticatedPausedRoute
   '/_authenticated/welcome': typeof AuthenticatedWelcomeRoute
+  '/api/brief-chat': typeof ApiBriefChatRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/_authenticated/dashboard/brief': typeof AuthenticatedDashboardBriefRoute
   '/_authenticated/dashboard/companion': typeof AuthenticatedDashboardCompanionRoute
@@ -550,6 +559,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/paused'
     | '/welcome'
+    | '/api/brief-chat'
     | '/email/unsubscribe'
     | '/dashboard/brief'
     | '/dashboard/companion'
@@ -603,6 +613,7 @@ export interface FileRouteTypes {
     | '/unsubscribe'
     | '/paused'
     | '/welcome'
+    | '/api/brief-chat'
     | '/email/unsubscribe'
     | '/dashboard/brief'
     | '/dashboard/companion'
@@ -659,6 +670,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/paused'
     | '/_authenticated/welcome'
+    | '/api/brief-chat'
     | '/email/unsubscribe'
     | '/_authenticated/dashboard/brief'
     | '/_authenticated/dashboard/companion'
@@ -712,6 +724,7 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   TermsRoute: typeof TermsRoute
   UnsubscribeRoute: typeof UnsubscribeRoute
+  ApiBriefChatRoute: typeof ApiBriefChatRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   ApiPublicHooksPublishDueDeliverablesRoute: typeof ApiPublicHooksPublishDueDeliverablesRoute
@@ -811,6 +824,13 @@ declare module '@tanstack/react-router' {
       path: '/email/unsubscribe'
       fullPath: '/email/unsubscribe'
       preLoaderRoute: typeof EmailUnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/brief-chat': {
+      id: '/api/brief-chat'
+      path: '/api/brief-chat'
+      fullPath: '/api/brief-chat'
+      preLoaderRoute: typeof ApiBriefChatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/welcome': {
@@ -1270,6 +1290,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   TermsRoute: TermsRoute,
   UnsubscribeRoute: UnsubscribeRoute,
+  ApiBriefChatRoute: ApiBriefChatRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   ApiPublicHooksPublishDueDeliverablesRoute:
