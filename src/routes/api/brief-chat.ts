@@ -156,7 +156,7 @@ Begin (or continue) the conversation.`;
                   {
                     user_id: userId,
                     markdown,
-                    spine_coverage,
+                    spine_coverage: coverageMap,
                     completed_at: new Date().toISOString(),
                     updated_at: new Date().toISOString(),
                   },
