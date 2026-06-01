@@ -52,3 +52,19 @@ export type BriefSummary = {
   completed_at: string | null;
   updated_at: string;
 };
+
+export type AlignmentItem = {
+  deliverable_key: string;
+  deliverable_label: string;
+  block_label: string;
+  application_text: string;
+  anchored_sections: BriefSectionId[];
+};
+
+export type BriefAlignment = {
+  items: AlignmentItem[];
+  model: string | null;
+  generated_at: string;
+  updated_at: string;
+};
+
