@@ -13,7 +13,7 @@ import { getHeroBackgroundList } from "@/lib/media.functions";
 
 export const FACILITATOR_NAME = "Adam Anderson";
 export const FACILITATOR_TITLE =
-  "AI-era brand operator · Co-Founder, OPEN Interactive · Has built executive-grade brand systems for Fortune 500s, a sovereign government, and the AI-native frontier.";
+  "30-year brand operator · Co-Founder, OPEN Interactive · Has installed executive brand systems for Fortune 500 boards, a sovereign government, and AI-native operators who couldn't afford to get it wrong.";
 
 export const Route = createFileRoute("/")({
   loader: async ({ context }) => {
@@ -29,17 +29,17 @@ export const Route = createFileRoute("/")({
   },
   head: ({ loaderData }) => ({
     meta: [
-      { title: "The Executive Brand Intensive — One afternoon. A brand that ships without you." },
+      { title: "The Executive Brand Intensive — Install a Brand Operating System in one afternoon." },
       {
         name: "description",
         content:
-          "A 3-hour, hands-on executive personal-brand workshop in Norcross, GA. Only 6 seats per tier. Walk out with a finished bio, a publish-ready Op-Ed, fourteen days of scheduled posts, and a personal brand operating system that runs on a 30-min weekly cadence.",
+          "Three hours at the IGNITE Center in Norcross, GA. Twelve seats. You walk in as a title. You walk out operating a Brand Operating System that publishes in your voice, on its own, for the next 90 days and every quarter after.",
       },
-      { property: "og:title", content: "The Executive Brand Intensive — One afternoon. 15 finished assets." },
+      { property: "og:title", content: "The Executive Brand Intensive — Install a Brand Operating System in one afternoon." },
       {
         property: "og:description",
         content:
-          "July 23, 2026 · IGNITE Center, Norcross, GA. Three focused hours. Six blocks. Fifteen finished brand assets and a publishing system that runs itself — led by a 30-year operator who's built brand systems for Fortune 500s and a sovereign government.",
+          "July 23, 2026 · IGNITE Center, Norcross, GA. Twelve seats. Installed by a 30-year operator who's built brand systems for Fortune 500 boards, a sovereign government, and the AI-native frontier — for clients who couldn't afford to get it wrong.",
       },
     ],
     links: loaderData?.heroBgUrl
@@ -86,21 +86,21 @@ function NotACourseBanner() {
             </span>
             <div>
               <p className="text-[11px] md:text-xs uppercase tracking-[0.18em] font-semibold text-gradient-brand">
-                Most programs sell a framework. This one ships the assets.
+                The market is flooded with courses and ghostwriters. Neither survives an AI-era executive's calendar.
               </p>
               <h2 className="mt-2 text-xl font-semibold text-white/70 leading-tight md:text-xl">
-                Walk in with a title. Walk out with assets shipped, posts scheduled, and a system that produces in your voice.
+                You're not buying a curriculum. You're getting a system installed — in your voice, in one room, in three hours.
               </h2>
               <p className="mt-2 text-sm text-white/55 leading-relaxed md:text-sm">
-                Not a course, not a ghostwriter retainer, not another framework deck. In one focused afternoon you build the operating system of an executive brand — voice, bios, Op-Ed, POV post, framework carousel, newsletter, keynote opener, 30-day calendar — plus a 90-day arc already on auto-publish. You arrive with a profile. You leave with a publishing engine. <span className="text-white/40">(Hard costs — scheduler/newsletter subscriptions, premium AI tier, any paid distribution — aren't covered by the workshop fee.)</span>
+                A course gives you knowledge you don't have time to apply. A ghostwriter gives you a dependency you can't scale. The Brand Operating System gives you a self-running asset — 15 finished pieces leave the room with you, and a 30-minute weekly cadence keeps the engine producing without rebuilding it. <span className="text-white/40">(Hard costs — scheduler/newsletter subscriptions, premium AI tier, paid distribution — aren't covered by the workshop fee.)</span>
               </p>
 
             </div>
           </div>
           <div className="flex flex-col gap-2 md:flex-col md:items-end md:gap-2 md:shrink-0">
-            <BannerChip icon={<Hammer className="size-3.5" />} label="Shipped in the room, not assigned as homework" />
-            <BannerChip icon={<Timer className="size-3.5" />} label="Three hours. One executive. Fifteen finished assets." />
-            <BannerChip icon={<Check className="size-3.5" />} label="Real published work + a 30-min weekly cadence" />
+            <BannerChip icon={<Hammer className="size-3.5" />} label="Installed in the room — not assigned as homework" />
+            <BannerChip icon={<Timer className="size-3.5" />} label="Runs on 30 minutes a week — not your willpower" />
+            <BannerChip icon={<Check className="size-3.5" />} label="Outlives the workshop — quarter after quarter" />
 
           </div>
         </div>
@@ -135,24 +135,21 @@ function Hero({ heroBgUrl }: { heroBgUrl: string | null }) {
       <div className="absolute inset-0 bg-background/0" />
       <div className="relative mx-auto max-w-6xl px-6 py-16 md:py-24 lg:py-32">
         <p className="mb-5 text-xs uppercase tracking-[0.18em] text-white/80 md:mb-6 md:text-sm md:tracking-[0.2em]">
-          One afternoon. One executive. One launched personal brand operating system.
+          For executives whose résumé no longer does the work it used to.
         </p>
         <h1 className="max-w-3xl text-4xl font-semibold leading-[1.08] tracking-tight text-white md:text-5xl lg:text-7xl">
-          Walk in with a title. <br />
-          Walk out <span className="italic">with a brand that ships without you</span>.
+          While AI flattens everyone else, <span className="italic">you install a Brand Operating System that compounds in your name</span>.
         </h1>
         <p className="mt-5 max-w-2xl text-base text-white/90 md:mt-6 md:text-lg">
-          Three focused hours at the IGNITE Center in Norcross, GA.{" "}
+          One afternoon at the IGNITE Center in Norcross, GA.{" "}
           <span className="font-medium text-white">
-            You bring the bio, posts, and headshot — we build the publishing system, not a template.
+            You walk in as a title. You walk out operating a system that publishes in your voice, on your calendar, without you in the loop —
           </span>{" "}
-          By the closing hour you'll have a finished bio, a publish-ready Op-Ed, fourteen days of
-          scheduled social, a 90-day newsletter arc, and an operating manual that runs on a
-          30-min weekly cadence.
+          for the next 90 days and every quarter after.
         </p>
         <p className="mt-4 max-w-2xl text-sm text-white/85 md:text-base">
-          The fastest path we know from blank profile to a brand that compounds — in one afternoon,
-          with the next 90 days already on the calendar.
+          Built by the operator who's installed brand systems for Fortune 500 boards, a sovereign
+          government, and the AI-native frontier — for clients who couldn't afford to get it wrong.
         </p>
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4 md:mt-10">
@@ -222,36 +219,36 @@ function FacilitatorSection() {
                 </div>
               </div>
               <div className="mt-4 text-base leading-snug opacity-95">
-                30 years building brand systems. One afternoon installing yours.
+                30 years installing brand systems. One afternoon installing yours.
               </div>
             </div>
           </div>
           <div>
             <h2 className="mb-2 text-sm uppercase tracking-[0.2em] text-muted-foreground">
-              Who's in the room with you
+              Who installs it
             </h2>
             <p className="text-2xl font-semibold tracking-tight md:text-3xl lg:text-4xl">
               {FACILITATOR_NAME} —{" "}
-              <span className="text-gradient-brand">at your table for the afternoon.</span>
+              <span className="text-gradient-brand">30 years building the brand systems other people teach about.</span>
             </p>
             <p className="mt-3 text-sm uppercase tracking-[0.15em] text-muted-foreground">
               {FACILITATOR_TITLE}
             </p>
             <p className="mt-5 text-muted-foreground">
-              Adam is one of the few practitioners fluent across three rooms most consultants
-              never enter together — Fortune 500 boardrooms (Citigroup, Mayo Clinic, 3M, Disney),
-              sovereign cabinet ministries (seven years embedded with the Federation of St. Kitts &
-              Nevis, branding its national investor program and producing five Caribbean Investment
-              Summits), and the AI-native product trenches (shipping five SaaS platforms with the
-              same toolchain he runs in this workshop).
+              Adam is one of a handful of operators fluent in three rooms that almost never overlap —
+              Fortune 500 boardrooms (Citigroup, Mayo Clinic, 3M, Disney), sovereign cabinet ministries
+              (seven years embedded with the Federation of St. Kitts & Nevis, branding its national investor
+              program and producing five Caribbean Investment Summits), and the AI-native product trenches
+              (five SaaS platforms shipped with the toolchain he installs in this room).
             </p>
             <p className="mt-3 text-muted-foreground">
-              He's installed executive brand systems for clients who couldn't afford to get it
-              wrong. He knows exactly what it takes to go from a stale LinkedIn profile to a brand
-              that compounds — and he installs that system, in your voice, in three hours.
+              He's spent the last two years compressing what used to take a 90-day agency engagement into a
+              single afternoon — because the executives he works with don't have 90 days, and AI no longer
+              leaves room to wait. When he installs your Brand Operating System, he's installing the same
+              operating model he runs on himself.
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
-              <TagChip>Built brand systems for Fortune 500s</TagChip>
+              <TagChip>Installed brand systems for Fortune 500 boards</TagChip>
               <TagChip>Branded a sovereign nation's flagship program</TagChip>
               <TagChip>Shipped 5 AI-native SaaS products</TagChip>
               <TagChip>Produced 5 international summits</TagChip>
@@ -273,21 +270,21 @@ function TagChip({ children }: { children: React.ReactNode }) {
 
 function WalkInWalkOut() {
   const walkIn = [
-    "A bio that has been stale for 18 months (or 5 years)",
-    "A LinkedIn About that reads like everyone else's in your category",
-    "Four half-written drafts in Notes that will never get published",
-    "A vague intention to \"post more\" and zero system to do it",
-    "A ghostwriter retainer you keep thinking about cancelling",
+    "A bio written for a job you no longer hold",
+    "A LinkedIn About indistinguishable from three peers in your category",
+    "Thinking that only lives in DMs, back-channels, and unsent drafts",
+    "A vague resolution to \"post more\" that hasn't survived a single board week",
+    "A ghostwriter line item you can't justify to your CFO",
   ];
   return (
     <section className="py-12 md:py-20">
       <div className="mx-auto max-w-6xl px-6">
         <h2 className="mb-2 text-xs uppercase tracking-[0.18em] text-muted-foreground md:text-sm md:tracking-[0.2em]">
-          The transformation
+          What three hours actually changes
         </h2>
         <p className="mb-8 max-w-3xl text-2xl font-semibold leading-tight tracking-tight md:mb-10 md:text-4xl">
-          What changes between{" "}
-          <span className="text-gradient-brand">1:00 PM and 4:00 PM</span>.
+          Between{" "}
+          <span className="text-gradient-brand">1:00 PM and 4:00 PM</span>, your brand stops being a side project and starts being infrastructure.
         </p>
         <div className="grid gap-5 md:grid-cols-[1fr_1.4fr] md:gap-6">
           <div className="rounded-3xl border border-white/10 bg-card/50 p-6 md:p-8">
@@ -366,16 +363,16 @@ function WhatYouLeaveWith() {
     <section className="border-y border-white/5 py-12 md:py-20">
       <div className="mx-auto max-w-6xl px-6">
         <h2 className="mb-2 text-xs uppercase tracking-[0.18em] text-muted-foreground md:text-sm md:tracking-[0.2em]">
-          15 finished assets · shipped in 3 hours
+          15 finished assets · one installed system · zero homework
         </h2>
         <p className="mb-3 max-w-3xl text-3xl font-semibold tracking-tight md:text-4xl">
-          Every asset is the kind of thing executives normally pay specialists to produce.{" "}
+          Each of these is what an executive normally pays a specialist firm to produce —{" "}
           <span className="text-gradient-brand">
-            Assembled in a single afternoon, locked to your voice, ready to ship.
+            except yours leave the room locked to your voice, on the same afternoon.
           </span>
         </p>
         <p className="mb-10 max-w-2xl text-base text-muted-foreground md:text-lg">
-          Three groups. Five assets each. Every one finished in the room.
+          Three modules of the Brand Operating System. Five assets per module. Every one shipped in the room, every one yours to run.
         </p>
         <div className="grid gap-4 md:grid-cols-3">
           {WALKOUT_PHASES.map((p) => (
@@ -530,13 +527,13 @@ function BottomCTA() {
           />
           <div className="relative max-w-3xl text-white">
             <h2 className="text-3xl font-semibold leading-tight tracking-tight md:text-4xl lg:text-5xl">
-              {seatsWord(EVENT.capacity * 2)} seats. One afternoon. A brand that ships on its own from here on out.
+              {seatsWord(EVENT.capacity * 2)} seats. One afternoon. A Brand Operating System that outruns the AI flood.
             </h2>
             <p className="mt-4 text-base text-white/90 md:mt-5 md:text-lg">
               If you've been waiting for the right week to finally show up publicly, this is the
-              afternoon you stop waiting. Bring the bio, posts, and headshot. We'll bring the
-              operator, the room, and the publishing system that runs in your voice long after you
-              leave.
+              afternoon you stop waiting — and stop being one of the executives AI is quietly making
+              interchangeable. Bring the bio, the posts, and the headshot. We bring the operator,
+              the room, and the system that produces in your name long after you leave.
             </p>
             <div className="mt-7 md:mt-8">
               <Link
@@ -566,44 +563,44 @@ type WalkoutPhase = {
 const WALKOUT_PHASES: WalkoutPhase[] = [
   {
     n: 1,
-    label: "Group 1 · Brand Foundation",
-    title: "Brand foundation — locked, in your voice",
-    intro: "By the first break, your positioning is locked and the AI writes as you.",
-    runAtHome: "Paste the new About into LinkedIn before Block 3 starts.",
+    label: "Module 1 · Foundation installed",
+    title: "Foundation installed — locked, in your voice",
+    intro: "By the first break, your positioning is locked and the AI writes as you — not as a generic LinkedIn voice.",
+    runAtHome: "Paste the new About into LinkedIn before Block 3 begins.",
     items: [
-      { name: "Brand Blueprint", desc: "Positioning statement, 3 content pillars, target audience, and proof points — the anchor every future asset inherits from." },
-      { name: "Brand Assessment Report", desc: "Sourced gap analysis vs. peers in your category, with prioritized white space you can credibly own." },
-      { name: "Voice Profile", desc: "Captured tone, vocabulary, cadence, and sentence rhythm — the firewall against generic AI tone." },
-      { name: "Three Bios (50w / 150w / 350w)", desc: "Copy/paste ready for LinkedIn About, speaker pages, press kits, podcast intros, and board bios." },
-      { name: "Executive Headshot Set", desc: "Multiple on-brand variations from one source photo — LinkedIn, press, speaking decks, podcast tiles." },
+      { name: "Brand Blueprint", desc: "Positioning, three content pillars, audience, and proof points — the anchor every future asset inherits from." },
+      { name: "Brand Assessment Report", desc: "Sourced gap analysis vs. peers in your category, with the white space you can credibly own." },
+      { name: "Voice Profile", desc: "Your tone, vocabulary, cadence, and rhythm — captured as the firewall against generic AI output." },
+      { name: "Three Bios (50w / 150w / 350w)", desc: "Copy-paste ready for LinkedIn, speaker pages, press kits, podcast intros, and board bios." },
+      { name: "Executive Headshot Set", desc: "On-brand variations from one source photo — LinkedIn, press, speaking decks, podcast tiles." },
     ],
   },
   {
     n: 2,
-    label: "Group 2 · Day-One Assets",
-    title: "Publish-ready content — three jobs, three formats",
-    intro: "By the second hour, three publish-ready pieces are sitting in your folder.",
+    label: "Module 2 · Authority assets published",
+    title: "Authority assets — published, not promised",
+    intro: "By the second hour, three publish-ready pieces are sitting in your folder — every one of them yours, none of them ghostwritten.",
     runAtHome: "Publish the POV post today — before you leave Block 6.",
     items: [
-      { name: "Op-Ed / Thought leadership article", desc: "800–1,200 words on your #1 pillar — the kind of piece editors and conference programmers actually open." },
-      { name: "POV Post", desc: "Contrarian, conversation-starting, LinkedIn and X ready — designed for comments, not likes." },
-      { name: "Framework Carousel", desc: "7 slides of your proprietary methodology — the format that gets bookmarked, saved, and cited." },
-      { name: "Keynote Opener + Q&A talking points", desc: "Same idea repurposed for the stage and for executive Q&A prep." },
-      { name: "Newsletter Issue", desc: "Same idea repurposed for subscribers, complete with subject line and preview text." },
+      { name: "Op-Ed / Thought leadership article", desc: "800–1,200 words on your #1 pillar — the kind editors and conference programmers actually open." },
+      { name: "POV Post", desc: "Contrarian, conversation-starting, LinkedIn and X ready — engineered for comments, not vanity likes." },
+      { name: "Framework Carousel", desc: "Seven slides of your proprietary methodology — the format that gets bookmarked, saved, and cited." },
+      { name: "Keynote Opener + Q&A talking points", desc: "Same idea, repurposed for the stage and for executive Q&A prep." },
+      { name: "Newsletter Issue", desc: "Same idea, repurposed for subscribers — subject line, preview text, and body included." },
     ],
   },
   {
     n: 3,
-    label: "Group 3 · Compounding System",
-    title: "The compounding system — runs without you",
-    intro: "By 4:00 PM, the next 90 days are already on auto-publish.",
+    label: "Module 3 · The system running without you",
+    title: "The Brand Operating System — running without you",
+    intro: "By 4:00 PM, the next 90 days are on auto-publish and the cadence to keep it producing fits inside one weekly coffee.",
     runAtHome: "Run the 30-min weekly cadence: review · capture · approve.",
     items: [
-      { name: "30-Day Authority Sprint", desc: "Sequenced day-by-day around pillar #1, ready to execute starting tomorrow." },
-      { name: "90-Day Newsletter Arc", desc: "Outline of the next quarter's issues — themes, through-lines, and order." },
+      { name: "30-Day Authority Sprint", desc: "Day-by-day sequence around pillar #1, ready to execute starting tomorrow." },
+      { name: "90-Day Newsletter Arc", desc: "The next quarter's issues — themes, through-lines, and publishing order." },
       { name: "Two Weeks of Scheduled Social Posts", desc: "Auto-publishing from day one across the platforms you actually use." },
       { name: "Reusable Content Presets", desc: "One per pillar — every future draft auto-aligns to brand without re-explaining context." },
-      { name: "Personal Brand Operating Manual (PDF)", desc: "Your playbook for running this yourself — weekly 30-min cadence, content-trigger map, metrics that matter." },
+      { name: "Brand Operating System Playbook (PDF)", desc: "The operating manual — 30-min weekly cadence, content-trigger map, and the metrics that actually matter." },
     ],
   },
 ];
