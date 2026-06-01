@@ -76,9 +76,9 @@ export const DEFAULT_VENUE = {
 } as const;
 
 export const DEFAULT_PRICING = {
-  foundersPriceCents: 19700,
+  foundersPriceCents: 29700,
   foundersSeats: 4,
-  cohortPriceCents: 29700,
+  cohortPriceCents: 39700,
   cohortSeats: 8,
 } as const;
 
