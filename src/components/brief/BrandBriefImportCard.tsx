@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Upload, Link2, Loader2, FileText, Check, X } from "lucide-react";
+import { Upload, Link2, Loader2, FileText, Check, X, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import {
   createResumeUploadUrl,
   extractFounderFromText,
+  reextractFounderProfile,
 } from "@/lib/discovery.functions";
 
 type Props = {
