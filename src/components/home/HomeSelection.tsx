@@ -370,7 +370,7 @@ function Timeline() {
 }
 
 function FinalistOffer() {
-  return (
+  const EVENT = useEvent();
     <section className="py-12 md:py-20">
       <div className="mx-auto max-w-5xl px-6">
         <div className="relative overflow-hidden rounded-3xl border border-primary/30 bg-card p-8 md:p-12">
