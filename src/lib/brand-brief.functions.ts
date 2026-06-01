@@ -467,6 +467,17 @@ export const regenerateBriefSummary = createServerFn({ method: "POST" })
       );
     if (upErr) throw new Error(upErr.message);
 
+    // Auto-approve member access now that the brief is finalized.
+    await supabaseAdmin
+      .from("profiles")
+      .update({
+        member_status: "approved",
+        approved_at: nowIso,
+        approved_via: "brief",
+      })
+      .eq("user_id", userId)
+      .neq("member_status", "approved");
+
     return { ok: true as const };
   });
 
