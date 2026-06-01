@@ -28,6 +28,7 @@ import type { BriefFact } from "@/lib/brand-brief";
 import { Markdown } from "@/components/brief/Markdown";
 import { parseBrief } from "@/lib/brief-parser";
 import { LedgerBrief } from "@/components/brief/LedgerBrief";
+import { BriefProgress, type BriefProgressData } from "@/components/brief/BriefProgress";
 
 export const Route = createFileRoute("/_authenticated/dashboard/brief")({
   component: BrandBriefPage,
