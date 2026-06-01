@@ -28,6 +28,21 @@ export function BrandBriefImportCard({ importedHeadline, onImported }: Props) {
   const [busy, setBusy] = useState(false);
   const [collapsed, setCollapsed] = useState(!!importedHeadline);
 
+  const onReread = async () => {
+    setBusy(true);
+    try {
+      const res = await reextractFn({});
+      if (!res.ok) toast.message(res.note ?? "Nothing to re-read yet.");
+      else if (res.structured_ok) toast.success("Re-read complete. The AI has fresh signal.");
+      else toast.message("Re-read done — the strategist will read the resume directly.");
+      await onImported();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Couldn't re-read");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   if (collapsed) {
     return (
       <div className="flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-card/60 p-3 text-sm">
@@ -37,13 +52,25 @@ export function BrandBriefImportCard({ importedHeadline, onImported }: Props) {
             Context loaded{importedHeadline ? `: ${importedHeadline}` : ""}. The AI will use it.
           </span>
         </div>
-        <button
-          type="button"
-          onClick={() => setCollapsed(false)}
-          className="text-xs text-muted-foreground hover:text-foreground"
-        >
-          Add more
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={onReread}
+            disabled={busy}
+            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground disabled:opacity-50"
+            title="Re-run the AI extractor against your stored resume text"
+          >
+            {busy ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3" />}
+            Re-read resume
+          </button>
+          <button
+            type="button"
+            onClick={() => setCollapsed(false)}
+            className="text-xs text-muted-foreground hover:text-foreground"
+          >
+            Add more
+          </button>
+        </div>
       </div>
     );
   }
