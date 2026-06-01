@@ -4,6 +4,11 @@ import { useServerFn } from "@tanstack/react-start";
 import { getMyRecentRuns } from "@/lib/recentRuns.functions";
 import { Sparkle, ChevronUp } from "lucide-react";
 
+type RecentRunStep = {
+  deliverable_key: string;
+  status: string;
+};
+
 // Subtle bottom-right pill that shows the AI working in the background.
 // Pings every few seconds during the workshop.
 export function AIWorklogPill() {
@@ -16,7 +21,7 @@ export function AIWorklogPill() {
   const [open, setOpen] = useState(false);
   const [pulse, setPulse] = useState(false);
 
-  const steps = data?.steps ?? [];
+  const steps: RecentRunStep[] = data?.steps ?? [];
   const inFlight = steps.filter((s) => s.status === "running" || s.status === "pending");
   const recentlyDone = steps.filter((s) => s.status === "completed").slice(0, 3);
 
