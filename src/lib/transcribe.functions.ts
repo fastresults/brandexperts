@@ -10,34 +10,35 @@ export const transcribeAudio = createServerFn({ method: "POST" })
       throw new Error("Expected FormData");
     }
     const audio = input.get("audio");
-    if (!(audio instanceof File) && !(audio instanceof Blob)) {
+    if (audio === null || typeof audio === "string") {
       throw new Error("Missing 'audio' file in form data");
     }
-    if (audio.size === 0) {
+    const blob = audio as Blob;
+    if (blob.size === 0) {
       throw new Error("Audio file is empty");
     }
-    if (audio.size > MAX_BYTES) {
+    if (blob.size > MAX_BYTES) {
       throw new Error("Audio file exceeds 25 MB");
     }
-    return { audio: audio as Blob };
+    const filename =
+      typeof (audio as File).name === "string" && (audio as File).name.length > 0
+        ? (audio as File).name
+        : "recording.webm";
+    return { audio: blob, filename };
   })
   .handler(async ({ data }) => {
     const apiKey = process.env.ELEVENLABS_API_KEY;
     if (!apiKey) {
       return {
         text: "",
-        error: "Voice input is not configured. Connect the ElevenLabs integration in Lovable Cloud.",
+        error:
+          "Voice input is not configured. Connect the ElevenLabs integration in Lovable Cloud.",
       };
     }
 
     try {
-      const filename =
-        (data.audio as File).name && (data.audio as File).name.length > 0
-          ? (data.audio as File).name
-          : "recording.webm";
-
       const upstream = new FormData();
-      upstream.append("file", data.audio, filename);
+      upstream.append("file", data.audio, data.filename);
       upstream.append("model_id", "scribe_v2");
       upstream.append("tag_audio_events", "false");
       upstream.append("diarize", "false");
