@@ -18,13 +18,18 @@ export function LedgerBrief({ sections }: { sections: ParsedBrief }) {
 
   const showVoice =
     sections.voice &&
-    (sections.voice.tone ||
+    (sections.voice.summary ||
+      sections.voice.tone ||
       sections.voice.cadence ||
       sections.voice.vocabulary ||
       sections.voice.openers ||
       sections.voice.neverSoundsLike);
 
-  const showLeftCol = showVoice || sections.themes.length > 0;
+  const showWorkExperience =
+    sections.workExperience &&
+    (sections.workExperience.summary || sections.workExperience.roles.length > 0);
+
+  const showLeftCol = sections.themes.length > 0;
   const showRightCol =
     sections.channels || sections.outcomeGoal || sections.nonNegotiables;
 
