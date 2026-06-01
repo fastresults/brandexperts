@@ -47,6 +47,8 @@ function TodayPage() {
   const firstName = null;
   const pitch = null;
 
+  const facts = brief.data?.facts ?? [];
+
   return (
     <div className="space-y-8">
       {state.mode === "before" && (
@@ -56,6 +58,7 @@ function TodayPage() {
           briefTotal={briefTotal}
           firstName={firstName}
           pitch={pitch}
+          facts={facts}
         />
       )}
       {state.mode === "during" && (
@@ -65,7 +68,7 @@ function TodayPage() {
         <AfterMode state={state} generated={generated} total={total} briefReady={briefReady} filingReady={filingReady} />
       )}
       {state.mode === "none" && (
-        <NoCohortMode briefScore={briefScore} briefTotal={briefTotal} pitch={pitch} />
+        <NoCohortMode briefScore={briefScore} briefTotal={briefTotal} pitch={pitch} facts={facts} />
       )}
     </div>
   );
@@ -79,12 +82,14 @@ function BeforeMode({
   briefTotal,
   firstName,
   pitch,
+  facts,
 }: {
   state: WorkshopState;
   briefScore: number;
   briefTotal: number;
   firstName: string | null;
   pitch: string | null;
+  facts: import("@/lib/brand-brief").BriefFact[];
 }) {
   const cohort = state.cohort!;
   const briefDone = briefScore >= briefTotal;
@@ -138,9 +143,10 @@ function BeforeMode({
       {/* The one next thing */}
       {briefDone ? (
         <BriefCompleteCard
+          facts={facts}
           pitch={pitch}
           secondary={{ to: "/dashboard/day", label: "What to bring →" }}
-          footnote="You're all set for Saturday. Just show up."
+          footnote="You're all set. Just show up."
         />
       ) : (
         <NextActionCard
@@ -357,7 +363,7 @@ function AfterMode({
 
 // ============ Fallback — no cohort assigned ============
 
-function NoCohortMode({ briefScore, briefTotal, pitch }: { briefScore: number; briefTotal: number; pitch: string | null }) {
+function NoCohortMode({ briefScore, briefTotal, pitch, facts }: { briefScore: number; briefTotal: number; pitch: string | null; facts: import("@/lib/brand-brief").BriefFact[] }) {
   const done = briefScore >= briefTotal;
   return (
     <>
@@ -369,8 +375,9 @@ function NoCohortMode({ briefScore, briefTotal, pitch }: { briefScore: number; b
       </p>
       {done ? (
         <BriefCompleteCard
+          facts={facts}
           pitch={pitch}
-          secondary={{ to: "/dashboard/workflow", label: "Browse the 25 deliverables →" }}
+          secondary={{ to: "/dashboard/workflow", label: "Browse the 15 deliverables →" }}
           footnote="No workshop date yet — we'll be in touch soon."
         />
       ) : (
