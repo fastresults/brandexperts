@@ -110,6 +110,16 @@ function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
+          {errorMsg && (
+            <div role="alert" className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+              {errorMsg}
+            </div>
+          )}
+          {infoMsg && (
+            <div className="rounded-md border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-600 dark:text-emerald-400">
+              {infoMsg}
+            </div>
+          )}
           <Button type="submit" className="w-full" disabled={submitting}>
             {submitting ? "Signing in..." : "Sign in"}
           </Button>
@@ -127,20 +137,29 @@ function LoginPage() {
 }
 
 function ForgotPasswordLink({ email }: { email: string }) {
+  const [busy, setBusy] = useState(false);
   const handle = async () => {
-    if (!email) {
-      toast.error("Enter your email above first");
+    const trimmed = email.trim();
+    if (!trimmed) {
+      toast.error("Enter your email above first, then click Forgot?");
       return;
     }
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    setBusy(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(trimmed, {
       redirectTo: window.location.origin + "/reset-password",
     });
+    setBusy(false);
     if (error) toast.error(error.message);
-    else toast.success("Check your email for a reset link");
+    else toast.success(`Reset link sent to ${trimmed}. Check your inbox (and spam).`);
   };
   return (
-    <button type="button" onClick={handle} className="text-xs text-muted-foreground underline">
-      Forgot?
+    <button
+      type="button"
+      onClick={handle}
+      disabled={busy}
+      className="text-xs text-muted-foreground underline disabled:opacity-50"
+    >
+      {busy ? "Sending…" : "Forgot?"}
     </button>
   );
 }
