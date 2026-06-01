@@ -25,7 +25,7 @@ function SignupPage() {
   useEffect(() => {
     if (loading) return;
     if (isAuthenticated) {
-      const to = isAdmin ? "/admin" : isApprovedMember ? "/dashboard" : "/welcome";
+      const to = isAdmin ? "/admin" : "/dashboard";
       navigate({ to, replace: true });
     }
   }, [isAuthenticated, isAdmin, isApprovedMember, loading, navigate]);
