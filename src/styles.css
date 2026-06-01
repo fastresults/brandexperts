@@ -67,6 +67,10 @@
   --brand-magenta: oklch(0.62 0.27 350);
   --brand-violet: oklch(0.55 0.27 295);
 
+  /* Header — tinted toward the hero's blue end to bridge the gradient */
+  --header-bg: oklch(0.18 0.035 255 / 0.78);
+  --header-border: oklch(0.78 0.14 75 / 0.12);
+
   --gradient-hero: linear-gradient(
     115deg,
     #d8941e 0%,
