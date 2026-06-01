@@ -390,52 +390,145 @@ function FinishedView({ markdown, onReopen, onReset }: { markdown: string; onReo
   );
 }
 
-function StartOverButton({
-  onConfirm,
+function ReviseActions({
+  onRevise,
+  onReset,
+  hasAnswers,
   variant = "ghost",
 }: {
-  onConfirm: () => void | Promise<void>;
+  onRevise?: () => void | Promise<void>;
+  onReset: () => void | Promise<void>;
+  hasAnswers: boolean;
   variant?: "ghost" | "link";
 }) {
+  const [open, setOpen] = useState(false);
+  const [confirmingWipe, setConfirmingWipe] = useState(false);
   const [busy, setBusy] = useState(false);
+
+  // If there are no answers yet, only expose Clear everything (no revise to do).
+  const showRevise = hasAnswers && !!onRevise;
+  const label = showRevise ? "Revise answers" : "Clear everything";
+  const Icon = showRevise ? Pencil : RotateCcw;
+
   const triggerClass =
     variant === "link"
-      ? "inline-flex shrink-0 items-center gap-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-destructive"
-      : "inline-flex items-center gap-2 rounded-md border border-destructive/30 bg-transparent px-3.5 py-2 text-xs font-semibold text-destructive/90 transition-colors hover:bg-destructive/10 hover:text-destructive";
+      ? "inline-flex shrink-0 items-center gap-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
+      : "inline-flex items-center gap-2 rounded-md border border-white/10 bg-transparent px-3.5 py-2 text-xs font-semibold text-foreground/80 transition-colors hover:bg-muted/40 hover:text-foreground";
+
+  const handleRevise = async () => {
+    if (!onRevise) return;
+    setBusy(true);
+    try {
+      await onRevise();
+      setOpen(false);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleWipe = async () => {
+    setBusy(true);
+    try {
+      await onReset();
+      setOpen(false);
+      setConfirmingWipe(false);
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
-    <AlertDialog>
+    <AlertDialog
+      open={open}
+      onOpenChange={(o) => {
+        setOpen(o);
+        if (!o) setConfirmingWipe(false);
+      }}
+    >
       <AlertDialogTrigger asChild>
-        <button type="button" className={triggerClass} disabled={busy}>
-          <RotateCcw className="h-3.5 w-3.5" /> Start over
+        <button type="button" className={triggerClass}>
+          <Icon className="h-3.5 w-3.5" /> {label}
         </button>
       </AlertDialogTrigger>
       <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Reset your brand brief?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This permanently clears your captured facts, generated brief, and workshop alignment.
-            The conversation will start fresh. This can't be undone.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel disabled={busy}>Cancel</AlertDialogCancel>
-          <AlertDialogAction
-            disabled={busy}
-            onClick={async (e) => {
-              e.preventDefault();
-              setBusy(true);
-              try {
-                await onConfirm();
-              } finally {
-                setBusy(false);
-              }
-            }}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-          >
-            {busy ? "Resetting…" : "Yes, start over"}
-          </AlertDialogAction>
-        </AlertDialogFooter>
+        {!confirmingWipe ? (
+          <>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                {showRevise ? "Revise your brand brief?" : "Clear your brand brief?"}
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                {showRevise
+                  ? "Your prior answers are kept. The strategist will walk you through each one so you can keep, refine, or replace it. Your generated brief and workshop alignment will be regenerated. You can also edit any section directly on the right panel."
+                  : "This permanently deletes every answer, the generated brief, and the workshop alignment. This can't be undone."}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              {showRevise ? (
+                <button
+                  type="button"
+                  onClick={() => setConfirmingWipe(true)}
+                  className="text-xs font-medium text-muted-foreground underline-offset-4 hover:text-destructive hover:underline"
+                  disabled={busy}
+                >
+                  Or clear everything and start blank
+                </button>
+              ) : (
+                <span />
+              )}
+              <div className="flex items-center gap-2">
+                <AlertDialogCancel disabled={busy}>Cancel</AlertDialogCancel>
+                {showRevise ? (
+                  <AlertDialogAction
+                    disabled={busy}
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      await handleRevise();
+                    }}
+                  >
+                    {busy ? "Loading…" : "Yes, revise"}
+                  </AlertDialogAction>
+                ) : (
+                  <AlertDialogAction
+                    disabled={busy}
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      await handleWipe();
+                    }}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    {busy ? "Clearing…" : "Yes, clear everything"}
+                  </AlertDialogAction>
+                )}
+              </div>
+            </AlertDialogFooter>
+          </>
+        ) : (
+          <>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Clear everything and start blank?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This permanently deletes every answer you've given, the generated brief, and the workshop alignment.
+                You'll begin the conversation from zero. This can't be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={busy} onClick={() => setConfirmingWipe(false)}>
+                Back
+              </AlertDialogCancel>
+              <AlertDialogAction
+                disabled={busy}
+                onClick={async (e) => {
+                  e.preventDefault();
+                  await handleWipe();
+                }}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {busy ? "Clearing…" : "Yes, delete everything"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </>
+        )}
       </AlertDialogContent>
     </AlertDialog>
   );
