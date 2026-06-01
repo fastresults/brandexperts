@@ -53,6 +53,7 @@ function BrandBriefPage() {
   const resetFn = useServerFn(resetBrandBrief);
   const reviseFn = useServerFn(reviseBrandBrief);
   const regenerateFn = useServerFn(regenerateBriefSummary);
+  const { refreshAccount } = useAuth();
   const [updating, setUpdating] = useState(false);
 
   const brief = useQuery({ queryKey: ["brand-brief"], queryFn: () => briefFn() });
