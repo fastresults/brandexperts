@@ -20,6 +20,14 @@ const FilingInput = z.object({
   business_purpose: z.string().trim().max(2000).optional().nullable(),
 });
 
+// Strip `ssn_full` before returning to the client — only `ssn_last4` is exposed
+// for display. The full SSN is write-only via updateMyFiling.
+function redactFiling<T extends Record<string, any> | null>(row: T): T {
+  if (!row) return row;
+  const { ssn_full: _omit, ...rest } = row as Record<string, any>;
+  return rest as T;
+}
+
 export const getMyFiling = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
@@ -37,9 +45,9 @@ export const getMyFiling = createServerFn({ method: "GET" })
         .select("*")
         .single();
       if (insErr) throw new Error(insErr.message);
-      return { filing: ins };
+      return { filing: redactFiling(ins) };
     }
-    return { filing: data };
+    return { filing: redactFiling(data) };
   });
 
 export const updateMyFiling = createServerFn({ method: "POST" })
