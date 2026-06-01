@@ -1,70 +1,53 @@
-## What I missed
+## Goal
 
-The DB and the `PRICING` / `cohorts` source-of-truth are correct ($297 / $397, first Wednesday of each month from Aug 2026). But large portions of the site still use **hardcoded copy** from the original spec — they never read from the live cohort. The screenshot is one symptom; an audit found many more.
+Elevate the body copy across every public-facing page to award-winning, personal-branding-operator caliber — grounded in the 10 tangible benefits you provided (defensible voice, compounding authority, boardroom-grade prep, elevation of every touchpoint, speed on cultural moments, ghostwriter-tax elimination, compounding inbound, knowledge base that appreciates, insulation against AI commoditization, 30-min weekly cadence).
 
-## Audit results (everything still hardcoded)
+## Hard constraints
 
-### Homepage — `src/routes/index.tsx`
-- L36: "…Twelve seats…" in hero description
-- L42: "**July 23, 2026** · IGNITE Center…Twelve seats" in OG/twitter description
-- L163, 175, 437: `{EVENT.capacity * 2} seats` — multiplies an already‑halved public count, prints "12 seats" instead of the intended public count
-- L533: `seatsWord(EVENT.capacity * 2)` in the closing CTA
-- L546: "Reserve your seat for **July 23**"
+- Do NOT change any pills, eyebrow chips, badges, or headlines (h1/h2/h3 hero lines).
+- Do NOT touch dates, seat counts, pricing — keep `useEvent()` / `EVENT.*` dynamic values intact.
+- Do NOT change layout, structure, components, or routing.
+- Preserve the persuasion architecture (contrarian opener, disqualifier, time-compression, scarcity, operator authority, value-stack, public-commitment close).
+- Frontend / copy only — no logic, no schema, no server functions.
 
-### Selection page — `src/components/home/HomeSelection.tsx`
-- 7 hardcoded mentions of "July 23, 2026" / "July 23" / "July 8" (decision date)
-- Day‑of label and timeline both pinned to Thursday July 23
+## Pages and components in scope
 
-### Register page — `src/components/register/RegisterSelection.tsx`
-- Validation message, checkbox label, hint copy, and confirmation paragraph all reference "Thursday, July 23, 2026" / "July 8"
+Public routes:
+- `src/routes/index.tsx` (home)
+- `src/routes/facilitator.tsx` + all `src/components/facilitator/*`
+- `src/routes/register.tsx` + `src/components/register/RegisterSelection.tsx`
+- `src/routes/schedule.tsx`
+- `src/routes/contact.tsx`
 
-### Schedule page — `src/routes/schedule.tsx`
-- L263: "One afternoon. One door. **Twelve seats.**"
+Public components:
+- `src/components/home/HomeSelection.tsx` (paragraph copy, criteria descriptions, step descriptions, timeline blurbs, finalist-offer body, bottom-CTA paragraph)
+- `src/components/home/ArtOfThePossible.tsx` (body paragraphs only)
+- `src/components/value/ValueGrid.tsx`, `PricingTiers.tsx`, `CohortPicker.tsx`, `TotalsBar.tsx` (descriptions, sub-labels, item explanations — not card titles)
+- `src/components/site/Footer.tsx` (tagline / descriptive lines only)
 
-### Admin
-- `_authenticated/_admin/admin.site.tsx` L107: event card description "…Free. **July 23, 2026.**"
-- `_authenticated/_admin/admin.applications.$id.tsx` L134: canned reply email body hardcodes "July 23, 2026"
+Out of scope: `_authenticated/*`, admin, dashboard, brief/voice/brand/media tools, auth pages (login/signup/reset-password), legal (privacy/terms), email templates, unsubscribe.
 
-### Emails
-- `lib/email-templates/inquiry-reply.tsx` L50: sample body "next selection cohort opens **July 15**"
+## Approach
 
-### Memory
-- `mem://index.md` still says "Pricing: Founders **$197 / Cohort $297**" and "Capacity: 12 internal → 6 public seats per tier" — both stale after the pricing change.
+1. Read every file in scope to inventory existing body copy and identify which strings are headline/pill vs. body. Treat anything rendered inside h1/h2/h3, `Badge`, eyebrow span, or pill component as off-limits.
+2. For each body string, rewrite it through the lens of the most-relevant benefit(s) from your 10. Map roughly:
+   - Hero/intro paragraphs → #1 defensible voice + #9 insulation against commoditization
+   - "What you'll walk out with" / value grids → #2 compounding authority + #4 elevation of touchpoints + #10 30-min cadence
+   - "Who this is for" / disqualifier → #1, #6 (ghostwriter tax), #7 (inbound)
+   - Timeline / in-the-room copy → #3 boardroom-grade prep + #5 speed-to-market
+   - Pricing / value-stack support copy → #6 ghostwriter tax + #8 knowledge base appreciates
+   - Final CTA / commitment close → meta-benefit (attention defaults to authentic signal)
+3. Keep the operator-authority voice (Citi/Mayo/3M/Disney + Caribbean government + 5 summits) and Adam's facilitator framing on `facilitator.tsx`.
+4. Tone rules: specific over generic, concrete over abstract, second-person ("you"), no hype words ("revolutionary", "game-changing"), no em-dash overuse, no AI-tells. Each rewritten paragraph must earn its line — cut anything that doesn't.
+5. Length: match or shorten existing copy; never inflate. If a paragraph currently is 2 sentences, the replacement is ≤ 2 sentences.
+6. After edits, grep for the original phrases to confirm nothing was missed, and visually confirm pills/headlines are untouched.
 
-### Seat‑count math bug
-`EVENT.capacity` already runs `toPublicSeats(foundersSeats + cohortSeats)` = `round((4+8)/2) = 6`. Every `EVENT.capacity * 2` therefore renders **12**, undoing the "show half" rule and double‑counting against the documented intent of "6 public seats per tier". Decision needed (see Question 1).
+## Technical notes
 
-## Plan
+- All edits are surgical `code--line_replace` calls on string literals inside JSX — no component restructuring.
+- Anything wrapped in `EVENT.*`, `useEvent()`, `cohort.*`, or dynamic interpolation stays as-is; only the static prose around it changes.
+- No new dependencies, no new files.
 
-1. **Centralize date + seat formatting.** Add two helpers in `src/lib/schedule-data.ts` (or extend `useEvent`): `formatEventDateLong(cohort)` → "Wednesday, August 5, 2026", and `publicSeatLabel(cohort)` (returns the agreed public total). Every page imports these instead of hardcoding.
+## Deliverable
 
-2. **Homepage `src/routes/index.tsx`.** Replace L36/L42 descriptions to drop "July 23" and "Twelve seats" — derive from `EVENT` in the route's `head()` (loader can read the next cohort). Replace all `EVENT.capacity * 2` with the new `publicSeatLabel`. Replace L546 "Reserve your seat for July 23" with the dynamic date.
-
-3. **`HomeSelection.tsx`.** Accept the next cohort as a prop (or call `useEvent()` inside). Replace every "July 23, 2026" / "July 23" / "Thursday, July 23, 2026" with dynamic values. The "decision by July 8" date becomes `cohortDate − 15 days` (derived helper).
-
-4. **`RegisterSelection.tsx`.** Same treatment: dynamic date in validation message, checkbox, hint, confirmation copy.
-
-5. **`schedule.tsx`** L263: replace "Twelve seats." with the dynamic seat label.
-
-6. **Admin surfaces.**
-   - `admin.site.tsx` event card description → read next cohort.
-   - `admin.applications.$id.tsx` canned reply → template the date from the application's `cohort_id` row.
-
-7. **Emails.** `inquiry-reply.tsx` sample body → use the next open cohort date pulled when the template renders.
-
-8. **Verify DB once more.** Confirm `cohorts` rows: Jun 17 + Jul 15 (kept), then Aug 5, Sep 2, Oct 7, Nov 4, Dec 2 / Jan 6, Feb 3, Mar 3, Apr 7, May 5; prices `29700` / `39700`. (Already correct from prior turn — included as a verification step, not a change.)
-
-9. **Update `mem://index.md`** Core block: pricing to "Founders $297 / Cohort $397", and clarify the public seat rule once Question 1 is answered.
-
-10. **Visual QA.** Reload `/`, `/register`, `/schedule`, `/admin/site`, `/admin/applications/<id>`; confirm every previously‑hardcoded mention now reads the live cohort and that the seat label is consistent everywhere.
-
-## Out of scope
-
-- Changing the seat‑count *math* itself (only the display label) unless Question 1 calls for it.
-- Touching June 17 (sold out) and July 15 (filling) cohort dates.
-
-## Questions before I build
-
-1. **Seat label.** Right now `EVENT.capacity * 2` prints **12** total public seats (which is internal 4+8). The earlier intent in memory was "6 public seats per tier" → 12 public total, but the helper `toPublicSeats` rounds 4+8 to **6** public total. Which do you want shown on the site: **12 seats** (current rendered value), **6 seats** (what `toPublicSeats` actually returns), or something else like **"12 seats · 6 per tier"**?
-2. **"Decision date" copy.** Selection cohort copy says "Decision by July 8" (15 days before July 23). Keep the same 15‑day offset for every future cohort, or pick a fixed rule (e.g., "10 days before")?
-3. **July 15 cohort (currently "filling").** Leave its date as Jul 15, or also move it to the nearest first Wednesday (Jul 1, 2026)?
+A single build-mode pass that rewrites body copy across the files above, leaving pills, headlines, dates, seats, pricing, and structure identical. I'll list the edited files at the end.
