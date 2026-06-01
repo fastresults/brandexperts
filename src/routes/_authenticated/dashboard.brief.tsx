@@ -7,6 +7,7 @@ import { DefaultChatTransport, type UIMessage } from "ai";
 import { Send, Loader2, RefreshCw, CheckCircle2, Copy, Download, RotateCcw, Pencil, Sparkles, Package, ChevronDown, FileText, FileType2, FileCode2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
 import { getFounderProfile } from "@/lib/discovery.functions";
 import { getBrandBrief, regenerateBriefSummary, reopenBrandBrief, resetBrandBrief, reviseBrandBrief, exportCompletePackage, exportCompletePackageDocx, exportCompletePackagePdf } from "@/lib/brand-brief.functions";
 import { MIN_FACTS_TO_FINALIZE } from "@/lib/brief-format";
