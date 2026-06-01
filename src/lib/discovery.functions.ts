@@ -456,3 +456,35 @@ export const createResumeUploadUrl = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { path, token: signed.token, signedUrl: signed.signedUrl };
   });
+
+// Re-run the AI extractor against the user's previously stored raw_text.
+// Lets the UI offer a "Re-read resume" affordance if the first pass came back thin.
+export const reextractFounderProfile = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context;
+    const { data: prof, error: profErr } = await supabase
+      .from("attendee_founder_profile" as never)
+      .select("raw_text, source, source_file_path, linkedin_url")
+      .eq("user_id", userId)
+      .maybeSingle();
+    if (profErr) throw new Error(profErr.message);
+    const p = (prof ?? null) as Record<string, unknown> | null;
+    const rawText = typeof p?.raw_text === "string" ? (p.raw_text as string) : "";
+    if (!rawText || rawText.trim().length < 20) {
+      return {
+        ok: false as const,
+        note: "No saved resume text to re-read. Upload a resume or paste a bio first.",
+      };
+    }
+    const source = (p?.source as "resume" | "linkedin" | "manual" | undefined) ?? "resume";
+    const res = await extractFounderFromText({
+      data: {
+        source,
+        source_file_path: (p?.source_file_path as string | null) ?? null,
+        linkedin_url: (p?.linkedin_url as string | null) ?? null,
+        raw_text: rawText,
+      },
+    });
+    return { ok: true as const, ...res };
+  });
