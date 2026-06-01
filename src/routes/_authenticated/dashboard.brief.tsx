@@ -137,15 +137,19 @@ function ChatPane({
     scrollerRef.current?.scrollTo({ top: scrollerRef.current.scrollHeight, behavior: "smooth" });
   }, [messages]);
 
-  // Kick off the conversation if empty. The user message is a hidden trigger
-  // that won't render — only the assistant's greeting shows.
+  // Kick off the conversation exactly once per mount. Guarded by a ref so
+  // StrictMode re-runs and status churn (ready → submitted → ready) can't
+  // re-fire it and produce a duplicate opening message.
   const KICKOFF = "__kickoff__";
+  const kickedRef = useRef(false);
   useEffect(() => {
-    if (messages.length === 0 && status === "ready") {
+    if (kickedRef.current) return;
+    if (status === "ready" && messages.length === 0) {
+      kickedRef.current = true;
       void sendMessage({ text: KICKOFF });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status]);
+  }, [status, messages.length]);
 
   const busy = status === "submitted" || status === "streaming";
 
