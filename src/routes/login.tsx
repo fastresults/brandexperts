@@ -1,5 +1,5 @@
-import { createFileRoute, Link, Navigate, useSearch } from "@tanstack/react-router";
-import { useState, type FormEvent } from "react";
+import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
+import { useEffect, useState, type FormEvent } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
@@ -22,17 +22,20 @@ export const Route = createFileRoute("/login")({
 });
 
 function LoginPage() {
-  const { isAuthenticated, isAdmin, isApprovedMember, loading } = useAuth();
+  const { isAuthenticated, isAdmin, loading } = useAuth();
   const { redirect } = useSearch({ from: "/login" });
+  const navigate = useNavigate();
   const safeRedirect = redirect && !redirect.startsWith("/login") && !redirect.startsWith("/signup") ? redirect : undefined;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  if (!loading && isAuthenticated) {
-    const fallback = isAdmin ? "/admin" : "/dashboard";
-    return <Navigate to={safeRedirect ?? fallback} replace />;
-  }
+  useEffect(() => {
+    if (!loading && isAuthenticated) {
+      const fallback = isAdmin ? "/admin" : "/dashboard";
+      navigate({ to: safeRedirect ?? fallback, replace: true });
+    }
+  }, [loading, isAuthenticated, isAdmin, safeRedirect, navigate]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -45,6 +48,7 @@ function LoginPage() {
     }
     toast.success("Signed in");
   };
+
 
   const handleGoogle = async () => {
     const result = await lovable.auth.signInWithOAuth("google", {
