@@ -93,6 +93,7 @@ export function BrandBriefImportCard({ importedHeadline, onImported }: Props) {
         data: { source: "resume", source_file_path: path, raw_text: null, linkedin_url: null },
       });
       if (res?.note) toast.message(res.note);
+      else if (res?.structured_ok === false) toast.message("Resume saved. The strategist will read it directly in the next message.");
       else toast.success("Resume read. The AI now knows your background.");
       await onImported();
       setCollapsed(true);
