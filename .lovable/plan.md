@@ -1,21 +1,31 @@
-## Pricing update: $1,500 / $2,500 → $197 / $297
+## Problem
 
-Founders tier = $197, Cohort tier = $297. Updates code defaults and all existing cohort rows so the admin UI, public pricing UI, and database match.
+The site header CTA still reads **"Reserve seat — from $679"** (hardcoded in `src/components/site/Header.tsx:36`). It was not updated when the tier prices changed to $197 / $297, so it contradicts the live pricing across the rest of the app.
 
-### Database (migration via supabase tool)
-Update all 12 cohort rows in `public.cohorts`:
-- `founders_price_cents`: 150000 → 19700
-- `cohort_price_cents`: 250000 → 29700
+## Audit results
 
-### Code defaults
-- `src/lib/cohorts.ts` → `DEFAULT_PRICING`: `foundersPriceCents: 19700`, `cohortPriceCents: 29700` (used when admin creates a new cohort)
-- `src/lib/value-grid.ts` → `PRICING`: `founders.price: 197`, `cohort.price: 297` (used by `TotalsBar` "from $197 / $297 after first N seats")
+Searched the codebase for hardcoded price strings (`$679`, `$1,500`, `$2,500`, `150000`, `250000`, etc.):
 
-### What stays the same
-- Seat counts (founders 4 / cohort 8 internal; 6 public each tier — unchanged)
-- Schema, validators (max `10_000_00` covers $197/$297), admin form structure
-- Value-grid market-cost ranges (those are agency comparables, not our price)
-- The unrelated `1500` matches (zod max chars, address "1500 Indian Trail", 1500ms timeout)
+- ✅ `src/lib/value-grid.ts` `PRICING` → already 197 / 297
+- ✅ `src/lib/cohorts.ts` `DEFAULT_PRICING` → already 19700 / 29700
+- ✅ DB `public.cohorts` (all 12 rows) → already 19700 / 29700
+- ❌ `src/components/site/Header.tsx:36` → **hardcoded "$679"** (the bug in the screenshot)
+- ✅ `src/components/value/TotalsBar.tsx` → reads from `PRICING` (dynamic)
+- ✅ `src/components/value/PricingTiers.tsx` → reads `cohort.foundersPriceCents` (dynamic)
+- ✅ `src/lib/business-ideas.ts` price mentions → unrelated demo content, not workshop pricing
 
-### After apply
-Admin → Cohorts will show $197 / $297 per row; home/register pricing cards and TotalsBar will show "from $197", "$297 after first 6 seats".
+## Fix
+
+Update `src/components/site/Header.tsx` so the CTA price is driven by the same `PRICING` source of truth instead of a hardcoded string:
+
+```ts
+import { PRICING } from "@/lib/value-grid";
+...
+const ctaFull = isFreeCohort
+  ? "Apply — free cohort"
+  : `Reserve seat — from $${PRICING.founders.price}`;
+```
+
+Result: header reads **"Reserve seat — from $197"** and will auto-track any future tier change.
+
+No DB changes, no other UI changes — every other surface already reflects $197 / $297.
