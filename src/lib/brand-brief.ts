@@ -2,6 +2,7 @@
 
 export type BriefSectionId =
   | "identity_credibility"
+  | "work_experience"
   | "domain"
   | "expertise"
   | "signature_pov"
