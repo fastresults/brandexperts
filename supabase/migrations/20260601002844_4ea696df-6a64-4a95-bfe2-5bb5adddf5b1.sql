@@ -1,0 +1,1 @@
+UPDATE public.cohorts SET start_time = '13:00:00', end_time = '16:00:00', founders_price_cents = 150000, cohort_price_cents = 250000, founders_seats = 4, cohort_seats = 8;

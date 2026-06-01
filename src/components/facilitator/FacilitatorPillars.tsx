@@ -1,13 +1,13 @@
 import { motion } from "framer-motion";
-import { Brain, Rocket, Megaphone, Globe, Shuffle, Users, type LucideIcon } from "lucide-react";
+import { Brain, Megaphone, Zap, Shuffle, Globe, Users, type LucideIcon } from "lucide-react";
 
 const PILLARS: { icon: LucideIcon; title: string; desc: string }[] = [
-  { icon: Brain, title: "Practitioner-first AI fluency", desc: "Nothing taught in the room is theoretical. Every prompt, pattern, and workflow is one Adam ran in production this week." },
-  { icon: Rocket, title: "Compressed time-to-launch", desc: "Frameworks pulled from shipping five AI-native SaaS products solo — the same playbook that turns weeks of build into days." },
-  { icon: Megaphone, title: "Narrative that compounds", desc: "Brand systems engineered to gain authority over time, not chase the algorithm — drawn from four decades of Fortune 500 and sovereign storytelling." },
-  { icon: Globe, title: "Global operating range", desc: "Strategy stress-tested with Citigroup boardrooms, OECS heads of government, and the St. Kitts–Nevis pavilion at Expo 2020 Dubai." },
-  { icon: Shuffle, title: "Real-time transformation lens", desc: "Not a retrospective on what worked in 2019. A live read on what the frontier looks like the week you walk into the room." },
-  { icon: Users, title: "Executive-caliber delivery", desc: "A facilitator who has briefed prime ministers, CMOs, and conference mainstages. No wasted words, no filler slides." },
+  { icon: Brain, title: "Voice that survives the AI tone trap", desc: "The single biggest reason AI-assisted executive content gets ignored is generic voice. Adam built the capture pattern that makes the model write as you, not for you." },
+  { icon: Megaphone, title: "Authority engineering, not follower hacks", desc: "Brand systems built to gain authority over time — drawn from four decades of Fortune 500 storytelling and seven years inside a sovereign communications office." },
+  { icon: Zap, title: "Three hours of finished work, not theory", desc: "Nothing taught in the room is a slideware concept. Every prompt, preset, and workflow is one Adam ran in production this week building exec brands at scale." },
+  { icon: Shuffle, title: "One idea → five channels", desc: "The repurposing engine most executives never operationalize because they don't have a team. Adam replaces the team with the system, live, in the room." },
+  { icon: Globe, title: "Global operating range", desc: "Strategy stress-tested with Citigroup boardrooms, OECS heads of government, and the St. Kitts–Nevis pavilion at Expo 2020 Dubai. The exec rooms he's earned trust in look like yours." },
+  { icon: Users, title: "Executive-caliber delivery", desc: "A facilitator who has briefed prime ministers, CMOs, and conference mainstages. No wasted words, no filler slides, no homework." },
 ];
 
 export function FacilitatorPillars() {

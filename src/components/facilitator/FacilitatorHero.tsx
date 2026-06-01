@@ -29,17 +29,17 @@ export function FacilitatorHero() {
       {/* Headline column — keeps the existing left primary border */}
       <div className="order-2 md:order-1 md:flex-1 border-l-4 border-primary pl-6">
         <p className="mb-3 text-xs uppercase tracking-[0.18em] text-muted-foreground md:text-sm md:tracking-[0.2em]">
-          Workshop Facilitator & AI Strategist
+          Executive Brand Facilitator & AI Strategist
         </p>
         <h1 className="text-4xl font-semibold leading-tight tracking-tight text-foreground md:text-5xl lg:text-6xl">
           Adam Anderson
           <br />
-          doesn't teach theory.
+          doesn't write your brand.
           <br />
-          He teaches what works.
+          He installs the system that does.
         </h1>
         <p className="mt-4 max-w-2xl text-base text-muted-foreground md:mt-5 md:text-lg">
-          One of the few practitioners fluent across three rooms most consultants never enter together — Fortune 500 boardrooms, sovereign cabinet ministries, and the AI-native product trenches. Workshops translate that fluency into skills you can deploy Monday morning.
+          One of the few practitioners fluent across three rooms most consultants never enter together — Fortune 500 boardrooms, sovereign cabinet ministries, and the AI-native product trenches. This workshop translates that fluency into an executive brand operating system you walk out owning, in your voice, ready to publish from Monday.
         </p>
       </div>
     </motion.section>

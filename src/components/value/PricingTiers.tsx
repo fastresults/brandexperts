@@ -4,12 +4,12 @@ import type { CohortAvailability } from "@/lib/cohort-availability.functions";
 import { Check, ArrowRight, Lock } from "lucide-react";
 
 const PERKS = [
-  "8-hour build day with Adam Anderson",
-  "All 25 deliverables, finished in the room",
-  "Complete 4-page website — branded, written, SEO-configured, delivered live within 2 weeks",
-  "Catered lunch + coffee + working tables",
-  "Take-home digital packet (every file, every link)",
-  "30-day follow-up email check-ins",
+  "3-hour afternoon intensive with Adam Anderson",
+  "All 15 finished assets, shipped in the room",
+  "Voice profile, three bios, executive headshot set",
+  "Op-Ed, POV post, framework carousel — publish-ready",
+  "Newsletter, keynote opener, 14 days of scheduled social",
+  "Personal Brand Operating Manual (PDF) — yours to keep",
 ];
 
 export function PricingTiers({

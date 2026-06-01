@@ -32,21 +32,22 @@ import { RegisterSelection } from "@/components/register/RegisterSelection";
 export const Route = createFileRoute("/register")({
   head: () => ({
     meta: [
-      { title: "Reserve your seat — Ignite Business Launch Workshop" },
+      { title: "Reserve your seat — The Executive Brand Intensive" },
       {
         name: "description",
         content:
-          "One day. A formed business, a built website, a printed marketing kit, and a signed 90-day launch plan.",
+          "One afternoon. A locked Brand Blueprint, three bios, an Op-Ed, a POV post, a framework carousel, a newsletter, a keynote opener, and a publishing system that runs on a 30-min weekly cadence.",
       },
-      { property: "og:title", content: "Reserve your seat — Ignite Business Launch Workshop" },
+      { property: "og:title", content: "Reserve your seat — The Executive Brand Intensive" },
       {
         property: "og:description",
-        content: "Walk in with an idea. Walk out with a business.",
+        content: "Walk in with a title. Walk out with a brand that ships without you.",
       },
     ],
   }),
   component: RegisterPage,
 });
+
 
 const FormSchema = z.object({
   name: z.string().trim().min(1, "Please enter your name").max(120),
@@ -183,15 +184,16 @@ function RegisterDefault() {
       <section className="border-b border-white/5 py-12 md:py-20">
         <div className="mx-auto max-w-5xl px-6">
           <p className="mb-3 text-xs uppercase tracking-[0.18em] text-muted-foreground md:text-sm md:tracking-[0.2em]">
-            Monthly cohorts · IGNITE Center at Greater Atlanta Christian School, Norcross GA
+            Quarterly cohorts · IGNITE Center at Greater Atlanta Christian School, Norcross GA
           </p>
           <h1 className="text-4xl font-semibold leading-tight tracking-tight md:text-5xl lg:text-6xl">
-            Walk in with an idea.{" "}
-            <span className="text-gradient-brand">Walk out with a business.</span>
+            Walk in with a title.{" "}
+            <span className="text-gradient-brand">Walk out with a brand that ships without you.</span>
           </h1>
           <p className="mt-4 max-w-2xl text-base text-muted-foreground md:mt-5 md:text-lg">
-            One 8-hour build day. 25 finished deliverables. A formed business, a built website,
-            a printed marketing kit, and a signed 90-day launch plan — all done in the room.
+            One 3-hour afternoon intensive. 15 finished brand assets. A locked Brand Blueprint, an
+            Op-Ed, a newsletter, a keynote opener, fourteen days of scheduled social, and a 30-min
+            weekly cadence on your calendar — all done in the room.
           </p>
           <div className="mt-5 flex flex-col gap-2 text-sm text-muted-foreground sm:flex-row sm:flex-wrap sm:gap-4 md:mt-6">
             <span className="inline-flex items-center gap-2">
@@ -201,7 +203,7 @@ function RegisterDefault() {
               <CalendarDays className="size-4" /> {EVENT.timeLabel}
             </span>
             <span className="inline-flex items-center gap-2">
-              <ShieldCheck className="size-4" /> Founder-led, build-as-you-go
+              <ShieldCheck className="size-4" /> Practitioner-led, work-product driven
             </span>
           </div>
 
@@ -220,10 +222,10 @@ function RegisterDefault() {
               What you actually walk out with
             </p>
             <h2 className="text-3xl font-semibold leading-tight tracking-tight md:text-4xl lg:text-5xl">
-              Every deliverable. <span className="text-muted-foreground">What it would cost. What it would take.</span>
+              Every asset. <span className="text-muted-foreground">What an agency charges. What it would take you.</span>
             </h2>
             <p className="mt-3 text-muted-foreground">
-              Conservative market rates and DIY hours, deliverable by deliverable. No fluff.
+              Conservative agency rates and DIY hours, asset by asset. A comparable engagement runs $15K–$40K over 6–10 weeks.
             </p>
           </div>
           <ValueGrid />
@@ -245,8 +247,9 @@ function RegisterDefault() {
               <span className="text-gradient-brand">
                 {formatPriceCents(selectedCohort.foundersPriceCents)}
               </span>
-              . All 25 deliverables included.
+              . All 15 finished assets included.
             </h2>
+
             {availability && !cohortSoldOut && (() => {
               const pubFoundersCap = toPublicSeats(selectedCohort.foundersSeats);
               const pubCohortCap = toPublicSeats(selectedCohort.cohortSeats);

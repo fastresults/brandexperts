@@ -15,8 +15,8 @@ export function buildEvent(cohort: Cohort) {
   const venueAddress = `${cohort.venueAddress}, ${cohort.venueCity}, ${cohort.venueRegion} ${cohort.venuePostal}`;
   return {
     dateLabel: cohort.dateLabel,
-    timeLabel: "8:00 AM – 4:30 PM ET",
-    durationLabel: "8 hours 30 minutes",
+    timeLabel: "1:00 PM – 4:00 PM ET",
+    durationLabel: "3 hours",
     venueName: cohort.venueName,
     address: venueAddress,
     venueCity: cohort.venueCity,
@@ -49,53 +49,39 @@ export const FLOW_STAGES = STAGES.map((s) => ({
   afterWorkshop: s.afterWorkshop,
 }));
 
-// Schedule = check-in + 6 stages + 2 breaks, working time = 360 min.
+// Schedule = 6 blocks + 1 short stretch break across a 3-hour afternoon.
 const stageBlock = (n: number, time: string): Session => {
   const s = STAGES[n - 1];
   return {
     time,
     duration: s.duration,
     stage: s.n,
-    title: `${s.title}`,
+    title: s.title,
     description: s.summary,
     kind: "session",
   };
 };
 
 export const SCHEDULE: Session[] = [
+  stageBlock(1, "1:00 PM"),
+  stageBlock(2, "1:30 PM"),
+  stageBlock(3, "2:00 PM"),
   {
-    time: "8:00 AM",
-    duration: "30 min",
-    title: "Check-in & kickoff",
-    description: "Coffee, intros, set up your laptop, share your idea in one sentence.",
-    kind: "session",
-  },
-  stageBlock(1, "8:30 AM"),
-  stageBlock(2, "9:30 AM"),
-  stageBlock(3, "10:30 AM"),
-  {
-    time: "11:30 AM",
-    duration: "30 min",
-    title: "Catered lunch & discussion",
-    description: "Lunch is provided. Eat together, swap notes, and talk through what you're building with the group and instructors.",
+    time: "2:45 PM",
+    duration: "5 min",
+    title: "Stretch reset",
+    description: "Quick stand-up, refill, regroup — then back into the build.",
     kind: "break",
   },
-  stageBlock(4, "12:00 PM"),
-  stageBlock(5, "1:00 PM"),
+  stageBlock(4, "2:50 PM"),
+  stageBlock(5, "3:35 PM"),
+  stageBlock(6, "4:00 PM"),
   {
-    time: "2:15 PM",
-    duration: "15 min",
-    title: "Coffee reset",
-    description: "Quick stretch, refill, regroup.",
-    kind: "break",
-  },
-  stageBlock(6, "2:30 PM"),
-  stageBlock(7, "3:30 PM"),
-  {
-    time: "4:30 PM",
+    time: "4:05 PM",
     duration: "—",
-    title: "Close — signed launch plan in hand",
-    description: "You walk out with a formed business and a signed 90-day plan.",
+    title: "Close — commitments stated, cadence on the calendar",
+    description:
+      "You walk out with three public commitments, a recurring 30-min calendar block, and a brand that ships without you from here.",
     kind: "break",
   },
 ];
