@@ -1,322 +1,233 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { getMyBrief, updateBriefField, summarizeBriefBlock } from "@/lib/brief.functions";
-import { summarizeFounderProfile, summarizeMarketProfile } from "@/lib/discovery.functions";
-import { BRIEF_FIELDS } from "@/lib/workflow";
-import {
-  BRIEF_BLOCKS,
-  QA_BLOCKS,
-  TOTAL_BRIEF_STEPS,
-  blockForFieldIndex,
-  firstIndexOfBlock,
-  isLastFieldOfBlock,
-  type BriefBlock,
-} from "@/lib/brief-blocks";
-import { VoiceField } from "@/components/voice/VoiceField";
-import { BlockCheckpoint } from "@/components/brief/BlockCheckpoint";
-import { BriefReview } from "@/components/brief/BriefReview";
-import { FounderBlock } from "@/components/brief/FounderBlock";
-import { MarketBlock } from "@/components/brief/MarketBlock";
-import { ChevronLeft, ChevronRight, Check } from "lucide-react";
+import { useChat } from "@ai-sdk/react";
+import { DefaultChatTransport, type UIMessage } from "ai";
+import { Send, Loader2, RefreshCw, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
-import { z } from "zod";
-
-const briefSearchSchema = z.object({
-  review: z.coerce.number().optional(),
-});
+import { supabase } from "@/integrations/supabase/client";
+import { getFounderProfile } from "@/lib/discovery.functions";
+import { getBrandBrief, reopenBrandBrief } from "@/lib/brand-brief.functions";
+import { BrandBriefImportCard } from "@/components/brief/BrandBriefImportCard";
+import { BrandBriefPanel } from "@/components/brief/BrandBriefPanel";
+import type { BriefFact } from "@/lib/brand-brief";
 
 export const Route = createFileRoute("/_authenticated/dashboard/brief")({
-  component: BriefWizard,
-  validateSearch: briefSearchSchema,
-  head: () => ({ meta: [{ title: "My startup — Startup Labs" }] }),
+  component: BrandBriefPage,
+  head: () => ({ meta: [{ title: "Your brand brief — Brand Experts" }] }),
 });
 
-type Mode = "question" | "checkpoint" | "founder" | "market" | "review";
+function BrandBriefPage() {
+  const briefFn = useServerFn(getBrandBrief);
+  const profileFn = useServerFn(getFounderProfile);
+  const reopenFn = useServerFn(reopenBrandBrief);
 
-function BriefWizard() {
-  const getFn = useServerFn(getMyBrief);
-  const saveFn = useServerFn(updateBriefField);
-  const summarizeQaFn = useServerFn(summarizeBriefBlock);
-  const summarizeFounderFn = useServerFn(summarizeFounderProfile);
-  const summarizeMarketFn = useServerFn(summarizeMarketProfile);
-  const navigate = useNavigate();
-  const search = Route.useSearch();
-  const { data, refetch } = useQuery({ queryKey: ["my", "brief"], queryFn: () => getFn() });
-  const [values, setValues] = useState<Record<string, string>>({});
-  const [idx, setIdx] = useState(0);
-  const [mode, setMode] = useState<Mode>("question");
-  const [checkpointBlock, setCheckpointBlock] = useState<BriefBlock | null>(null);
-  const [initialized, setInitialized] = useState(false);
-  const [editingFromReview, setEditingFromReview] = useState(false);
+  const brief = useQuery({ queryKey: ["brand-brief"], queryFn: () => briefFn() });
+  const profile = useQuery({ queryKey: ["founder-profile"], queryFn: () => profileFn() });
 
+  const facts = (brief.data?.facts ?? []) as BriefFact[];
+  const summary = brief.data?.summary ?? null;
+  const finished = !!summary?.completed_at;
+
+  // Auth-aware transport: attach the bearer token to /api/brief-chat.
+  const [transport, setTransport] = useState<DefaultChatTransport<UIMessage> | null>(null);
   useEffect(() => {
-    if (!data?.brief) return;
-    const init: Record<string, string> = {};
-    for (const f of BRIEF_FIELDS) init[f.key] = (data.brief[f.key as keyof typeof data.brief] as string) ?? "";
-    setValues(init);
-    if (initialized) return;
-    const firstEmpty = BRIEF_FIELDS.findIndex((f) => !init[f.key]);
-    const allDone = firstEmpty === -1;
-    if (allDone || search.review === 1) {
-      setMode("review");
-    } else {
-      setIdx(firstEmpty);
-    }
-    setInitialized(true);
-  }, [data, initialized, search.review]);
+    let cancelled = false;
+    supabase.auth.getSession().then(({ data }) => {
+      if (cancelled) return;
+      const token = data.session?.access_token;
+      setTransport(
+        new DefaultChatTransport({
+          api: "/api/brief-chat",
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        }),
+      );
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
-  const total = BRIEF_FIELDS.length;
-  const current = BRIEF_FIELDS[idx];
-  const value = values[current.key] ?? "";
-  const answeredCount = useMemo(
-    () => BRIEF_FIELDS.filter((f) => (values[f.key] ?? "").trim().length > 0).length,
-    [values],
-  );
-
-  const founderBlock = BRIEF_BLOCKS.find((b) => b.kind === "founder")!;
-  const marketBlock = BRIEF_BLOCKS.find((b) => b.kind === "market")!;
-
-  // Approximate step number across all 5 blocks
-  const stepNumber = useMemo(() => {
-    let n = 0;
-    if (mode === "question") {
-      n = idx + 1;
-      const currentBlock = blockForFieldIndex(idx);
-      for (const b of QA_BLOCKS) if (b.id < currentBlock.id) n += 1;
-    } else if (mode === "checkpoint" && checkpointBlock) {
-      n = 0;
-      for (const b of QA_BLOCKS) {
-        n += b.fieldKeys.length;
-        if (b.id === checkpointBlock.id) { n += 1; break; }
-        n += 1;
-      }
-      // founder / market checkpoints
-      if (checkpointBlock.kind === "founder") n = BRIEF_FIELDS.length + QA_BLOCKS.length + 2;
-      if (checkpointBlock.kind === "market") n = TOTAL_BRIEF_STEPS;
-    } else if (mode === "founder") {
-      n = BRIEF_FIELDS.length + QA_BLOCKS.length + 1;
-    } else if (mode === "market") {
-      n = BRIEF_FIELDS.length + QA_BLOCKS.length + 3;
-    }
-    return n;
-  }, [mode, checkpointBlock, idx]);
-
-  const save = async (key: string) => {
-    try {
-      await saveFn({ data: { field: key as never, value: values[key] ?? "" } });
-      refetch();
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Save failed");
-    }
-  };
-
-  const goNext = async () => {
-    await save(current.key);
-    if (editingFromReview) {
-      setEditingFromReview(false);
-      setMode("review");
-      return;
-    }
-    const endingBlock = isLastFieldOfBlock(idx);
-    if (endingBlock) {
-      setCheckpointBlock(endingBlock);
-      setMode("checkpoint");
-      return;
-    }
-    if (idx < total - 1) setIdx(idx + 1);
-  };
-
-  const continueFromCheckpoint = () => {
-    if (!checkpointBlock) return;
-    // QA → next QA, or into founder block after last QA
-    if (checkpointBlock.kind === "qa") {
-      const nextQa = QA_BLOCKS.find((b) => b.id === checkpointBlock.id + 1);
-      if (nextQa) {
-        setIdx(firstIndexOfBlock(nextQa.id));
-        setMode("question");
-        setCheckpointBlock(null);
-      } else {
-        setMode("founder");
-        setCheckpointBlock(null);
-      }
-      return;
-    }
-    if (checkpointBlock.kind === "founder") {
-      setMode("market");
-      setCheckpointBlock(null);
-      return;
-    }
-    if (checkpointBlock.kind === "market") {
-      toast.success("All done. Your AI has the full picture.");
-      navigate({ to: "/dashboard" });
-    }
-  };
-
-  const editFromCheckpoint = () => {
-    if (!checkpointBlock) return;
-    if (checkpointBlock.kind === "qa") {
-      setIdx(firstIndexOfBlock(checkpointBlock.id));
-      setMode("question");
-    } else if (checkpointBlock.kind === "founder") {
-      setMode("founder");
-    } else if (checkpointBlock.kind === "market") {
-      setMode("market");
-    }
-    setCheckpointBlock(null);
-  };
-
-  const goBack = () => {
-    if (idx > 0) setIdx(idx - 1);
-  };
-
-  if (mode === "review") {
+  if (!transport) {
     return (
-      <div className="mx-auto max-w-2xl">
-        <BriefReview
-          values={values}
-          onEdit={(i) => {
-            setEditingFromReview(true);
-            setCheckpointBlock(null);
-            setIdx(i);
-            setMode("question");
-          }}
-          onContinueDiscovery={() => {
-            setMode("founder");
-            setCheckpointBlock(null);
-          }}
-        />
+      <div className="flex h-[60vh] items-center justify-center text-sm text-muted-foreground">
+        <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading your strategist…
       </div>
     );
   }
 
+  if (finished) {
+    return (
+      <FinishedView
+        markdown={summary.markdown}
+        onReopen={async () => {
+          await reopenFn();
+          await brief.refetch();
+        }}
+      />
+    );
+  }
+
   return (
-    <div className="mx-auto max-w-2xl">
-      <div className="flex items-center justify-between">
-        <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          {mode === "checkpoint" && checkpointBlock
-            ? `Checkpoint · ${checkpointBlock.title}`
-            : mode === "founder"
-              ? "About you"
-              : mode === "market"
-                ? "Your market & model"
-                : `Question ${idx + 1} of ${total}`}
-        </div>
-        <div className="text-xs text-muted-foreground tabular-nums">
-          {answeredCount}/{total} answered
-        </div>
-      </div>
-      <div className="mt-2 h-1.5 rounded-full bg-muted/30 overflow-hidden">
-        <div
-          className="h-full bg-primary transition-all duration-500"
-          style={{ width: `${Math.min(100, (stepNumber / TOTAL_BRIEF_STEPS) * 100)}%` }}
-        />
-      </div>
-
-      {mode === "checkpoint" && checkpointBlock ? (
-        <div className="mt-10">
-          <BlockCheckpoint
-            block={checkpointBlock}
-            blockIndex={checkpointBlock.id}
-            totalBlocks={BRIEF_BLOCKS.length}
-            summarize={
-              checkpointBlock.kind === "qa"
-                ? () => summarizeQaFn({ data: { block: checkpointBlock.id as 1 | 2 | 3 } })
-                : checkpointBlock.kind === "founder"
-                  ? () => summarizeFounderFn()
-                  : () => summarizeMarketFn()
-            }
-            cacheKey={[checkpointBlock.kind, checkpointBlock.id]}
-            onContinue={continueFromCheckpoint}
-            onEdit={editFromCheckpoint}
-          />
-        </div>
-      ) : mode === "founder" ? (
-        <FounderBlock
-          onDone={() => {
-            setCheckpointBlock(founderBlock);
-            setMode("checkpoint");
-          }}
-        />
-      ) : mode === "market" ? (
-        <MarketBlock
-          onDone={() => {
-            setCheckpointBlock(marketBlock);
-            setMode("checkpoint");
-          }}
-        />
-      ) : (
-        <>
-          <div className="mt-10 space-y-6">
-            <h1 className="text-3xl md:text-4xl font-semibold tracking-tight leading-tight">
-              {current.label}
-            </h1>
-            <p className="text-muted-foreground">
-              You can talk instead of type. Tap the mic, just speak naturally.
-            </p>
-
-            <VoiceField
-              label=""
-              value={value}
-              onChange={(v) => setValues((s) => ({ ...s, [current.key]: v }))}
-              placeholder={current.placeholder}
-              multiline={current.multiline}
-              context={current.label}
+    <div className="grid h-[calc(100vh-6rem)] grid-cols-1 gap-0 md:grid-cols-[1fr_380px]">
+      <div className="flex min-h-0 flex-col">
+        <div className="border-b border-white/10 p-4 md:p-5">
+          <h1 className="text-2xl font-semibold tracking-tight">Design your brand operating system</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            A conversation with your AI brand strategist. The brief assembles on the right as you go.
+          </p>
+          <div className="mt-4">
+            <BrandBriefImportCard
+              importedHeadline={
+                (profile.data?.profile as { extracted?: { headline?: string } } | null)?.extracted?.headline ?? null
+              }
+              onImported={async () => {
+                await Promise.all([profile.refetch(), brief.refetch()]);
+              }}
             />
           </div>
+        </div>
 
-          <div className="mt-10 flex items-center justify-between gap-3">
-            <button
-              onClick={goBack}
-              disabled={idx === 0}
-              className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed min-h-[44px]"
-            >
-              <ChevronLeft className="h-4 w-4" /> Back
-            </button>
-            <button
-              onClick={goNext}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-6 py-3 text-base font-medium text-primary-foreground hover:opacity-90 min-h-[44px]"
-            >
-              {idx === total - 1 ? (
-                <>I'm done <Check className="h-4 w-4" /></>
-              ) : (
-                <>Next <ChevronRight className="h-4 w-4" /></>
-              )}
-            </button>
-          </div>
+        <ChatPane
+          transport={transport}
+          onToolDone={() => {
+            brief.refetch();
+          }}
+        />
+      </div>
 
-          <div className="mt-12">
-            <div className="text-xs uppercase tracking-wide text-muted-foreground mb-2">Jump to any question</div>
-            <div className="flex flex-wrap gap-1.5">
-              {BRIEF_FIELDS.map((f, i) => {
-                const answered = (values[f.key] ?? "").trim().length > 0;
-                const active = i === idx;
-                return (
-                  <button
-                    key={f.key}
-                    onClick={() => {
-                      setMode("question");
-                      setCheckpointBlock(null);
-                      setIdx(i);
-                    }}
-                    className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-medium transition ${
-                      active
-                        ? "bg-primary text-primary-foreground"
-                        : answered
-                          ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/30"
-                          : "bg-muted/30 text-muted-foreground hover:bg-muted/50"
-                    }`}
-                    title={f.label}
-                  >
-                    {i + 1}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </>
-      )}
+      <BrandBriefPanel facts={facts} onChanged={() => brief.refetch()} />
+    </div>
+  );
+}
+
+function ChatPane({
+  transport,
+  onToolDone,
+}: {
+  transport: DefaultChatTransport<UIMessage>;
+  onToolDone: () => void;
+}) {
+  const { messages, sendMessage, status } = useChat({
+    transport,
+    onError: (e) => toast.error(e.message || "Chat failed"),
+    onFinish: () => onToolDone(),
+  });
+  const [input, setInput] = useState("");
+  const scrollerRef = useRef<HTMLDivElement>(null);
+
+  // Refresh the brief panel as tool calls stream in.
+  useEffect(() => {
+    onToolDone();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages.length]);
+
+  useEffect(() => {
+    scrollerRef.current?.scrollTo({ top: scrollerRef.current.scrollHeight, behavior: "smooth" });
+  }, [messages]);
+
+  // Kick off the conversation if empty.
+  useEffect(() => {
+    if (messages.length === 0 && status === "ready") {
+      void sendMessage({ text: "Let's begin." });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status]);
+
+  const busy = status === "submitted" || status === "streaming";
+
+  return (
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div ref={scrollerRef} className="flex-1 overflow-y-auto p-4 md:p-6">
+        <ul className="mx-auto max-w-2xl space-y-4">
+          {messages.map((m) => {
+            const text = m.parts
+              .map((p) => (p.type === "text" ? p.text : ""))
+              .join("");
+            if (!text) return null;
+            const isUser = m.role === "user";
+            return (
+              <li key={m.id} className={isUser ? "flex justify-end" : ""}>
+                <div
+                  className={
+                    isUser
+                      ? "max-w-[85%] rounded-2xl rounded-br-sm bg-primary px-4 py-2 text-sm text-primary-foreground"
+                      : "max-w-[85%] text-sm leading-relaxed text-foreground/90 whitespace-pre-wrap"
+                  }
+                >
+                  {text}
+                </div>
+              </li>
+            );
+          })}
+          {busy && (
+            <li className="text-sm text-muted-foreground">
+              <Loader2 className="inline h-3.5 w-3.5 animate-spin" /> Thinking…
+            </li>
+          )}
+        </ul>
+      </div>
+
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          const text = input.trim();
+          if (!text || busy) return;
+          setInput("");
+          void sendMessage({ text });
+        }}
+        className="border-t border-white/10 p-3 md:p-4"
+      >
+        <div className="mx-auto flex max-w-2xl items-end gap-2 rounded-2xl border border-white/10 bg-background/60 p-2">
+          <textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                (e.currentTarget.form as HTMLFormElement | null)?.requestSubmit();
+              }
+            }}
+            rows={1}
+            placeholder="Type your answer… (Enter to send, Shift+Enter for a new line)"
+            className="max-h-40 flex-1 resize-none bg-transparent px-2 py-1.5 text-sm outline-none"
+            disabled={busy}
+          />
+          <button
+            type="submit"
+            disabled={busy || !input.trim()}
+            className="rounded-xl bg-primary p-2 text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+            aria-label="Send"
+          >
+            <Send className="h-4 w-4" />
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+function FinishedView({ markdown, onReopen }: { markdown: string; onReopen: () => void | Promise<void> }) {
+  return (
+    <div className="mx-auto max-w-3xl space-y-6 p-4 md:p-8">
+      <div className="flex items-center gap-2 text-primary">
+        <CheckCircle2 className="h-5 w-5" />
+        <span className="text-sm font-medium uppercase tracking-wide">Brand brief ready</span>
+      </div>
+      <h1 className="text-3xl font-semibold tracking-tight">Your Brand Operating System Brief</h1>
+      <article className="prose prose-invert max-w-none whitespace-pre-wrap rounded-2xl border border-white/10 bg-card/60 p-6 text-sm leading-relaxed">
+        {markdown}
+      </article>
+      <div className="flex justify-end">
+        <button
+          type="button"
+          onClick={() => void onReopen()}
+          className="inline-flex items-center gap-2 rounded-lg border border-white/10 px-3 py-2 text-sm hover:bg-white/5"
+        >
+          <RefreshCw className="h-4 w-4" /> Keep refining
+        </button>
+      </div>
     </div>
   );
 }
