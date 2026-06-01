@@ -109,6 +109,7 @@ function BrandBriefPage() {
         return;
       }
       await brief.refetch();
+      await refreshAccount();
       toast.success("Brief updated");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Couldn't update your brief");
