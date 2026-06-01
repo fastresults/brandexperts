@@ -4,11 +4,11 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
-import { Send, Loader2, RefreshCw, CheckCircle2, Copy, Download, RotateCcw, Pencil, Sparkles } from "lucide-react";
+import { Send, Loader2, RefreshCw, CheckCircle2, Copy, Download, RotateCcw, Pencil, Sparkles, Package } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { getFounderProfile } from "@/lib/discovery.functions";
-import { getBrandBrief, regenerateBriefSummary, reopenBrandBrief, resetBrandBrief, reviseBrandBrief } from "@/lib/brand-brief.functions";
+import { getBrandBrief, regenerateBriefSummary, reopenBrandBrief, resetBrandBrief, reviseBrandBrief, exportCompletePackage } from "@/lib/brand-brief.functions";
 import { MIN_FACTS_TO_FINALIZE } from "@/lib/brief-format";
 import {
   AlertDialog,
