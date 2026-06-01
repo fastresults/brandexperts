@@ -38,6 +38,18 @@ function BrandBriefPage() {
   const briefFn = useServerFn(getBrandBrief);
   const profileFn = useServerFn(getFounderProfile);
   const reopenFn = useServerFn(reopenBrandBrief);
+  const resetFn = useServerFn(resetBrandBrief);
+
+  const handleReset = async () => {
+    try {
+      await resetFn();
+      await Promise.all([brief.refetch(), profile.refetch()]);
+      toast.success("Assessment reset — let's start fresh");
+    } catch (err) {
+      toast.error("Couldn't reset the assessment");
+      console.error(err);
+    }
+  };
 
   const brief = useQuery({ queryKey: ["brand-brief"], queryFn: () => briefFn() });
   const profile = useQuery({ queryKey: ["founder-profile"], queryFn: () => profileFn() });
