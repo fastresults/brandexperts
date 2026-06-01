@@ -250,7 +250,7 @@ Send your next message now. Short. One question. No lists.`;
           }),
           finish_brief: tool({
             description:
-              "Call ONCE when the brief is rich enough for a ghostwriter, publicist, and content strategist. The `markdown` arg MUST follow the FINAL-BRIEF FORMAT skeleton from the system prompt exactly: H1 title, blockquote positioning line, H2 sections (Executive snapshot, Identity & credibility, Audience & transformation, Signature point of view, Origin arc, Voice, Signature themes, Channels & cadence, Outcome goal & non-negotiables, Workshop alignment), `---` dividers between major blocks, short prose paragraphs, and bullets only in Signature themes. Also include a coverage map.",
+              "Call ONCE when the brief is rich enough for a ghostwriter, publicist, and content strategist. The `markdown` arg MUST follow the FINAL-BRIEF FORMAT skeleton from the system prompt exactly: H1 title, blockquote positioning line, H2 sections (Executive snapshot, Identity & credibility, Work experience, Domain, Audience & transformation, Signature point of view, Origin arc, Voice, Signature themes, Channels & cadence, Outcome goal & non-negotiables, Workshop alignment), `---` dividers between major blocks, short prose paragraphs, and bullets only in Work experience and Signature themes. Also include a coverage map.",
             inputSchema: z.object({
               markdown: z.string().min(50).max(8000),
               spine_coverage: z
