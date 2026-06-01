@@ -495,16 +495,60 @@ function FinishedView({ markdown, onReopen, onReset }: { markdown: string; onReo
           >
             <Download className="h-3.5 w-3.5" /> Download .md
           </button>
-          <button
-            type="button"
-            onClick={() => void copyCompletePackage()}
-            disabled={packaging}
-            title="Copy a single markdown document with every source, every answer, and the final brief to your clipboard"
-            className="inline-flex items-center gap-2 rounded-md border border-primary/30 bg-primary/10 px-3.5 py-2 text-xs font-semibold text-primary transition-colors hover:bg-primary/20 disabled:opacity-60"
-          >
-            {packaging ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Package className="h-3.5 w-3.5" />}
-            {packaging ? "Building package…" : packageCopied ? "Copied" : "Copy complete package"}
-          </button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                disabled={busyFormat !== null}
+                title="Copy or download a single document with every source, every answer, and the final brief"
+                className="inline-flex items-center gap-2 rounded-md border border-primary/30 bg-primary/10 px-3.5 py-2 text-xs font-semibold text-primary transition-colors hover:bg-primary/20 disabled:opacity-60"
+              >
+                {busyFormat ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Package className="h-3.5 w-3.5" />}
+                {busyFormat ? "Building package…" : "Export complete package"}
+                <ChevronDown className="h-3.5 w-3.5 opacity-70" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-60">
+              <DropdownMenuLabel>Copy to clipboard</DropdownMenuLabel>
+              <DropdownMenuGroup>
+                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); void handleExport("copy-md"); }}>
+                  <Copy className="mr-2 h-4 w-4" />
+                  <span>Markdown</span>
+                  {busyFormat === "copy-md" && <Loader2 className="ml-auto h-3.5 w-3.5 animate-spin" />}
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); void handleExport("copy-txt"); }}>
+                  <Copy className="mr-2 h-4 w-4" />
+                  <span>Plain text</span>
+                  {busyFormat === "copy-txt" && <Loader2 className="ml-auto h-3.5 w-3.5 animate-spin" />}
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel>Download</DropdownMenuLabel>
+              <DropdownMenuGroup>
+                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); void handleExport("dl-md"); }}>
+                  <FileCode2 className="mr-2 h-4 w-4" />
+                  <span>Markdown (.md)</span>
+                  {busyFormat === "dl-md" && <Loader2 className="ml-auto h-3.5 w-3.5 animate-spin" />}
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); void handleExport("dl-txt"); }}>
+                  <FileText className="mr-2 h-4 w-4" />
+                  <span>Plain text (.txt)</span>
+                  {busyFormat === "dl-txt" && <Loader2 className="ml-auto h-3.5 w-3.5 animate-spin" />}
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); void handleExport("dl-docx"); }}>
+                  <FileType2 className="mr-2 h-4 w-4" />
+                  <span>Word (.docx)</span>
+                  {busyFormat === "dl-docx" && <Loader2 className="ml-auto h-3.5 w-3.5 animate-spin" />}
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); void handleExport("dl-pdf"); }}>
+                  <FileText className="mr-2 h-4 w-4" />
+                  <span>PDF (.pdf)</span>
+                  {busyFormat === "dl-pdf" && <Loader2 className="ml-auto h-3.5 w-3.5 animate-spin" />}
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           <button
             type="button"
             onClick={() => void onReopen()}
