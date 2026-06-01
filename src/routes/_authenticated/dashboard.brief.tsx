@@ -14,6 +14,7 @@ import { MicButton } from "@/components/brief/MicButton";
 import { BrandBriefPanel } from "@/components/brief/BrandBriefPanel";
 import { BrandAlignmentPanel } from "@/components/brief/BrandAlignmentPanel";
 import type { BriefFact } from "@/lib/brand-brief";
+import { Markdown } from "@/components/brief/Markdown";
 
 export const Route = createFileRoute("/_authenticated/dashboard/brief")({
   component: BrandBriefPage,
@@ -158,15 +159,15 @@ function ChatPane({
             const isUser = m.role === "user";
             return (
               <li key={m.id} className={isUser ? "flex justify-end" : ""}>
-                <div
-                  className={
-                    isUser
-                      ? "max-w-[85%] rounded-2xl rounded-br-sm bg-primary px-4 py-2 text-sm text-primary-foreground"
-                      : "max-w-[85%] text-sm leading-relaxed text-foreground/90 whitespace-pre-wrap"
-                  }
-                >
-                  {text}
-                </div>
+                {isUser ? (
+                  <div className="max-w-[85%] rounded-2xl rounded-br-sm bg-primary px-4 py-2 text-sm text-primary-foreground whitespace-pre-wrap">
+                    {text}
+                  </div>
+                ) : (
+                  <div className="max-w-[85%] text-foreground/90">
+                    <Markdown>{text}</Markdown>
+                  </div>
+                )}
               </li>
             );
           })}
@@ -231,8 +232,8 @@ function FinishedView({ markdown, onReopen }: { markdown: string; onReopen: () =
         <span className="text-sm font-medium uppercase tracking-wide">Brand brief ready</span>
       </div>
       <h1 className="text-3xl font-semibold tracking-tight">Your Brand Operating System Brief</h1>
-      <article className="prose prose-invert max-w-none whitespace-pre-wrap rounded-2xl border border-white/10 bg-card/60 p-6 text-sm leading-relaxed">
-        {markdown}
+      <article className="rounded-2xl border border-white/10 bg-card/60 p-6">
+        <Markdown>{markdown}</Markdown>
       </article>
 
       <BrandAlignmentPanel />
