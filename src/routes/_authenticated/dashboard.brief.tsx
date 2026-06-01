@@ -401,7 +401,7 @@ function FinishedView({ markdown, onReopen, onReset }: { markdown: string; onReo
       : `${(n / 1024 / 1024).toFixed(2)} MB`;
 
   const triggerBlobDownload = (data: Blob | Uint8Array, filename: string, mimeType: string) => {
-    const blob = data instanceof Blob ? data : new Blob([data], { type: mimeType });
+    const blob = data instanceof Blob ? data : new Blob([data as BlobPart], { type: mimeType });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
