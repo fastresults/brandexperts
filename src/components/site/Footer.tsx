@@ -11,7 +11,7 @@ export function SiteFooter() {
           <span>· Norcross, GA</span>
         </div>
         <div className="flex flex-col items-center gap-1 md:flex-row md:gap-4">
-          <span>© {new Date().getFullYear()} · One afternoon. A brand that ships without you.</span>
+          <span>© {new Date().getFullYear()} · One afternoon. A brand operating system that outlives it.</span>
           <Link
             to="/contact"
             className="underline-offset-4 hover:text-foreground hover:underline"

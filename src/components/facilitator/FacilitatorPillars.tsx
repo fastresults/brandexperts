@@ -2,12 +2,12 @@ import { motion } from "framer-motion";
 import { Brain, Megaphone, Zap, Shuffle, Globe, Users, type LucideIcon } from "lucide-react";
 
 const PILLARS: { icon: LucideIcon; title: string; desc: string }[] = [
-  { icon: Brain, title: "Voice that survives the AI tone trap", desc: "The single biggest reason AI-assisted executive content gets ignored is generic voice. Adam built the capture pattern that makes the model write as you, not for you." },
-  { icon: Megaphone, title: "Authority engineering, not follower hacks", desc: "Brand systems built to gain authority over time — drawn from four decades of Fortune 500 storytelling and seven years inside a sovereign communications office." },
-  { icon: Zap, title: "Three hours of finished work, not theory", desc: "Nothing taught in the room is a slideware concept. Every prompt, preset, and workflow is one Adam ran in production this week building exec brands at scale." },
-  { icon: Shuffle, title: "One idea → five channels", desc: "The repurposing engine most executives never operationalize because they don't have a team. Adam replaces the team with the system, live, in the room." },
-  { icon: Globe, title: "Global operating range", desc: "Strategy stress-tested with Citigroup boardrooms, OECS heads of government, and the St. Kitts–Nevis pavilion at Expo 2020 Dubai. The exec rooms he's earned trust in look like yours." },
-  { icon: Users, title: "Executive-caliber delivery", desc: "A facilitator who has briefed prime ministers, CMOs, and conference mainstages. No wasted words, no filler slides, no homework." },
+  { icon: Brain, title: "Voice that survives the AI tone trap", desc: "The single biggest reason AI-assisted executive content gets ignored is that it sounds like ChatGPT in a blazer. Adam built the capture pattern that makes the model write as you at scale — the only structural moat left in a feed flooded with sameness." },
+  { icon: Megaphone, title: "Authority engineering, not follower hacks", desc: "Brand systems engineered to compound — every well-formed insight becomes ten authority assets, and inbound stops being something you chase and starts being something you receive. Drawn from four decades of Fortune 500 storytelling and seven years inside a sovereign communications office." },
+  { icon: Zap, title: "Three hours of finished work, not theory", desc: "Nothing taught in the room is a slideware concept. Every prompt, preset, and workflow is one Adam ran in production this week — for executives whose calendars don't survive a week-long draft-review-revise loop." },
+  { icon: Shuffle, title: "One idea → five channels", desc: "The repurposing engine most executives never operationalize because they don't have a team. Adam replaces the comms team with a system you own — live, in the room, in your voice." },
+  { icon: Globe, title: "Boardroom-grade prep on demand", desc: "Strategy and prep workflows stress-tested with Citigroup boardrooms, OECS heads of government, and the St. Kitts–Nevis pavilion at Expo 2020 Dubai. Walk into any meeting already knowing the company's strategy, recent moves, and pressure points — in 90 seconds, not a junior analyst's week." },
+  { icon: Users, title: "Executive-caliber delivery", desc: "A facilitator who has briefed prime ministers, CMOs, and conference mainstages. No wasted words, no filler slides, no homework — and nothing assigned that doesn't ship before you leave the room." },
 ];
 
 export function FacilitatorPillars() {

@@ -66,9 +66,7 @@ function SchedulePage() {
             Profile in. <span className="text-gradient-brand">Publishing system out.</span>
           </h1>
           <p className="mt-4 max-w-2xl text-base text-muted-foreground md:mt-5 md:text-lg">
-            Three focused hours, six blocks, one outcome. Every block produces finished assets the
-            next block builds on. By 4:00 PM you have 15 publish-ready brand assets and a 30-min
-            weekly cadence on your calendar.
+            Three focused hours, six blocks, one outcome. Every block ships finished work the next block builds on — no homework, no draft-review-revise loop, no week-long wait between insight and publication. By 4:00 PM you walk out with 15 publish-ready assets and a 30-minute weekly cadence already on your calendar.
           </p>
 
           {/* Stat ribbon */}
@@ -263,7 +261,7 @@ function SchedulePage() {
               One afternoon. One door. {EVENT.totalSeats} seats.
             </h3>
             <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
-              Profile in at 1:00 PM. A brand that ships without you out at 4:00 PM.
+              Walk in at 1:00 PM as a title on a slide. Walk out at 4:00 PM operating the system every other executive in your category will spend the next quarter trying to assemble.
             </p>
             <div className="mt-6 flex justify-center">
               <Link
