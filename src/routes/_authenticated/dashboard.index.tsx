@@ -375,10 +375,11 @@ function NoCohortMode({ briefScore, briefTotal, pitch }: { briefScore: number; b
       ) : (
         <NextActionCard
           eyebrow="Start here"
-          title={briefScore === 0 ? "Answer 10 quick questions about your startup." : "Pick up where you left off."}
-          description={`You're ${briefScore} of ${briefTotal} done.`}
-          primary={{ to: "/dashboard/brief", label: briefScore === 0 ? "Start" : "Keep going" }}
+          title={briefScore === 0 ? "Design your brand operating system." : "Pick up where you left off."}
+          description="Have a short conversation with your AI brand strategist. Upload a resume or LinkedIn to skip the warm-up."
+          primary={{ to: "/dashboard/brief", label: briefScore === 0 ? "Start the conversation" : "Continue" }}
         />
+
       )}
     </>
   );
