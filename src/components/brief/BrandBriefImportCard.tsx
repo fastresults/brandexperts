@@ -20,6 +20,7 @@ type Props = {
 export function BrandBriefImportCard({ importedHeadline, onImported }: Props) {
   const signFn = useServerFn(createResumeUploadUrl);
   const extractFn = useServerFn(extractFounderFromText);
+  const reextractFn = useServerFn(reextractFounderProfile);
 
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [bio, setBio] = useState("");
