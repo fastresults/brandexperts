@@ -194,7 +194,29 @@ export function LedgerBrief({ sections }: { sections: ParsedBrief }) {
         </section>
       )}
 
-      {/* Voice + Themes / Channels + Outcome — two columns */}
+      {/* Voice — featured full-width card */}
+      {showVoice && sections.voice && (
+        <section className="rounded-xl border border-white/5 bg-muted/20 p-10 md:col-span-12">
+          <SectionMark n={num()} title="Voice profile" />
+          {sections.voice.summary && (
+            <p className="mb-8 max-w-3xl text-xl font-light italic leading-relaxed text-foreground/90">
+              {sections.voice.summary}
+            </p>
+          )}
+          <dl className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
+            <VoiceField label="Tone" value={sections.voice.tone} />
+            <VoiceField label="Cadence" value={sections.voice.cadence} />
+            <VoiceField label="Vocabulary" value={sections.voice.vocabulary} />
+            <VoiceField label="Sample openers" value={sections.voice.openers} />
+            <VoiceField
+              label="Never sounds like"
+              value={sections.voice.neverSoundsLike}
+            />
+          </dl>
+        </section>
+      )}
+
+      {/* Themes / Channels + Outcome — two columns */}
       {(showLeftCol || showRightCol) && (
         <>
           <section
@@ -204,29 +226,6 @@ export function LedgerBrief({ sections }: { sections: ParsedBrief }) {
                 : "space-y-10 md:col-span-12"
             }
           >
-            {showVoice && sections.voice && (
-              <div>
-                <SectionMark n={num()} title="Voice" />
-                <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <VoiceField label="Tone" value={sections.voice.tone} />
-                  <VoiceField label="Cadence" value={sections.voice.cadence} />
-                  <VoiceField
-                    label="Vocabulary"
-                    value={sections.voice.vocabulary}
-                  />
-                  <VoiceField
-                    label="Sample openers"
-                    value={sections.voice.openers}
-                  />
-                  <VoiceField
-                    label="Never sounds like"
-                    value={sections.voice.neverSoundsLike}
-                    full
-                  />
-                </dl>
-              </div>
-            )}
-
             {sections.themes.length > 0 && (
               <div>
                 <SectionMark n={num()} title="Signature themes" />
