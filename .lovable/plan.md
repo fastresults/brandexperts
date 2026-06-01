@@ -1,29 +1,61 @@
-# Fix: strategist dumps everything in one giant message
+# Fix: duplicate opener + verbatim parroting
 
-The page scrolled to y=2310 on the first assistant turn — that's a wall of text, not a conversation. Root cause is in the system prompt: the OPENING block tells the model to greet, set expectations, mirror imported context in 2–3 lines, AND ask the first question, all in one turn. Gemini happily expands that into a full briefing dump (probably with bullet lists per spine section).
+Two distinct bugs producing the two near-identical messages you're seeing.
 
-## Fix
+## Bug 1 — Duplicate kickoff (UI)
 
-Tighten `src/routes/api/brief-chat.ts` system prompt with hard caps that beat the model's tendency to over-explain:
+`src/routes/_authenticated/dashboard.brief.tsx` has:
 
-1. **Hard length cap, stated up front and repeated**: "EVERY message ≤ 60 words. EVERY message ends in EXACTLY ONE question. Never preview future questions. Never list more than one section per turn. No bullet lists of questions. No headings."
+```
+useEffect(() => {
+  if (messages.length === 0 && status === "ready") {
+    void sendMessage({ text: KICKOFF });
+  }
+}, [status]);
+```
 
-2. **Split the opening into two turns**, not one:
-   - Turn 1 (greeting only): 1–2 short sentences. Sets expectation ("About 10 min. I'll ask one thing at a time."). Ends with the FIRST question (identity & credibility), with 1 short example. That's it.
-   - If imported context exists: Turn 1 mirrors in ONE sentence ("I see you led ops at X — want me to use that as your starting credibility?") and waits for yes/no. No 3-line bios.
+This fires more than once: React StrictMode in dev re-mounts effects, and `status` cycles `ready → submitted → streaming → ready`, re-triggering the check. By the time the second run reads `messages.length`, the optimistic user message may not yet be in `messages`, so the guard passes and a second `__kickoff__` is sent — producing two assistant greetings.
 
-3. **Ban the spine dump**. Add: "NEVER list the spine, the plan, or what's coming next. NEVER say 'we'll also cover…'. The right panel shows progress; your job is the next question only."
+**Fix:** guard with a `useRef<boolean>` so the kickoff sends exactly once per component mount, regardless of effect re-runs or status churn.
 
-4. **Examples format**: when offering 2–3 examples, write them inline as a short "(for example: A, B, or C)" — NOT as a bulleted list. Bullet lists make the message feel like a form.
+```
+const kickedRef = useRef(false);
+useEffect(() => {
+  if (kickedRef.current) return;
+  if (status === "ready" && messages.length === 0) {
+    kickedRef.current = true;
+    void sendMessage({ text: KICKOFF });
+  }
+}, [status, messages.length]);
+```
 
-5. **Reinforce one-question constraint with a self-check**: "Before sending, count question marks in your message. If more than 1, rewrite."
+## Bug 2 — Model copies my example verbatim (prompt)
 
-6. **Remove the "Begin (or continue) the conversation." closer** — it invites a wind-up. Replace with: "Send your next message now. Short. One question. No lists."
+In `src/routes/api/brief-chat.ts` the OPENING block contains a literal sample sentence ("Hey — I'm your strategist for the next ~10 minutes…"). Gemini treats it as a script. Same risk on the imported-context line, the voice question, the workshop_alignment closer, and the finishing line.
+
+**Fix — replace scripts with ingredients + anti-copy rule.** System prompt changes only:
+
+1. Add to HARD RULES: "NEVER copy any example sentence from this prompt verbatim. Examples describe shape, not script. Compose your own words every time. In particular, do NOT use the phrases 'I'm your strategist', 'next 10 minutes', or 'when someone introduces you in a room full of strangers' — find your own opening."
+
+2. **OPENING** — strip the canned sentences. Replace with constraints:
+   - Max 2 short sentences + 1 question.
+   - One human hello (no boilerplate, no time estimate — the page header already says "~10 minutes").
+   - One question on identity & credibility, phrased fresh. Vary the angle across attempts (the bio they're proudest of, the credential people quote back, the line that lands when a host introduces them, the result they're known for). Do NOT default to the "room of strangers" angle.
+
+3. **Imported-context branch** — say "Mirror one specific thing from the imported context in your own words (one sentence), then ask if it should anchor their credibility or get sharpened. Use your own phrasing."
+
+4. **Voice question** — replace the literal template with the ingredients (two paths: 3 tone words + 3 anti-tone words, OR a 2–3 sentence writing sample; ask which they prefer). Phrase fresh.
+
+5. **workshop_alignment closer** — replace the literal line with: "Frame it as the final question. Reference the 15 in-room deliverables and ask which 2–3 they want to walk out with. Phrase fresh."
+
+6. **Finishing line** — replace the literal "Got what I need…" with: "Send one short line announcing you're assembling the brief now. Your words, not mine."
 
 ## Files
 
-- `src/routes/api/brief-chat.ts` — system prompt only. No code/logic changes elsewhere.
+- `src/routes/_authenticated/dashboard.brief.tsx` — add `kickedRef` guard around the kickoff effect.
+- `src/routes/api/brief-chat.ts` — system prompt edits per above. No logic changes.
 
 ## What I'm not changing
 
-- The spine, the UI, the kickoff token mechanism, the model. Just the prompt discipline.
+- The hard caps (≤60 words, exactly 1 question, no lists).
+- Spine, model, UI structure, kickoff token mechanism.
