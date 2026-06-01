@@ -35,14 +35,17 @@ function TodayPage() {
   }, []);
 
   const state = getWorkshopMode(new Date(), cohort.data?.cohort ?? null);
-  const briefScore = brief.data?.brief?.completeness_score ?? 0;
+  const summaryDone = !!brief.data?.summaryCompletedAt;
+  const rawScore = brief.data?.brief?.completeness_score ?? 0;
   const briefTotal = 10;
-  const briefReady = briefScore >= 6;
+  const briefScore = summaryDone ? briefTotal : rawScore;
+  const briefReady = summaryDone || rawScore >= 6;
   const filingReady = !!filing.data?.filing?.llc_name;
   const items = wf.data?.items ?? [];
   const generated = items.filter((i) => i.generated).length;
   const total = items.length;
   const firstName = (brief.data?.brief?.one_line_pitch || "").split(" ")[0] || null;
+
 
   const pitch = brief.data?.brief?.one_line_pitch ?? null;
 
