@@ -121,6 +121,7 @@ export function BrandBriefImportCard({ importedHeadline, onImported }: Props) {
         },
       });
       if (res?.note) toast.message(res.note);
+      else if (res?.structured_ok === false) toast.message("Saved. The strategist will read it directly.");
       else toast.success("Got it. The AI will use this.");
       await onImported();
       setCollapsed(true);
