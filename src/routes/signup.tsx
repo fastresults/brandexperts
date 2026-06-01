@@ -1,5 +1,5 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState, type FormEvent } from "react";
+import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
+import { useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/hooks/use-auth";
@@ -15,7 +15,6 @@ export const Route = createFileRoute("/signup")({
 
 function SignupPage() {
   const { isAuthenticated, isAdmin, isApprovedMember, loading } = useAuth();
-  const navigate = useNavigate();
   const safeRedirect = isAdmin ? "/admin" : "/dashboard";
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -23,12 +22,9 @@ function SignupPage() {
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
 
-  useEffect(() => {
-    if (loading) return;
-    if (isAuthenticated) {
-      navigate({ to: safeRedirect, replace: true });
-    }
-  }, [isAuthenticated, isAdmin, isApprovedMember, loading, navigate, safeRedirect]);
+  if (!loading && isAuthenticated) {
+    return <Navigate to={safeRedirect} replace />;
+  }
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
