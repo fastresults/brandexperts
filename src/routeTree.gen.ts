@@ -37,6 +37,7 @@ import { Route as AuthenticatedDashboardFilesRouteImport } from './routes/_authe
 import { Route as AuthenticatedDashboardDocumentsRouteImport } from './routes/_authenticated/dashboard.documents'
 import { Route as AuthenticatedDashboardDeliverablesRouteImport } from './routes/_authenticated/dashboard.deliverables'
 import { Route as AuthenticatedDashboardDayRouteImport } from './routes/_authenticated/dashboard.day'
+import { Route as AuthenticatedDashboardCompanionRouteImport } from './routes/_authenticated/dashboard.companion'
 import { Route as AuthenticatedDashboardBriefRouteImport } from './routes/_authenticated/dashboard.brief'
 import { Route as AuthenticatedAdminAdminIndexRouteImport } from './routes/_authenticated/_admin/admin.index'
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
@@ -210,6 +211,12 @@ const AuthenticatedDashboardDayRoute =
     path: '/day',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const AuthenticatedDashboardCompanionRoute =
+  AuthenticatedDashboardCompanionRouteImport.update({
+    id: '/companion',
+    path: '/companion',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
 const AuthenticatedDashboardBriefRoute =
   AuthenticatedDashboardBriefRouteImport.update({
     id: '/brief',
@@ -372,6 +379,7 @@ export interface FileRoutesByFullPath {
   '/welcome': typeof AuthenticatedWelcomeRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/dashboard/brief': typeof AuthenticatedDashboardBriefRoute
+  '/dashboard/companion': typeof AuthenticatedDashboardCompanionRoute
   '/dashboard/day': typeof AuthenticatedDashboardDayRoute
   '/dashboard/deliverables': typeof AuthenticatedDashboardDeliverablesRoute
   '/dashboard/documents': typeof AuthenticatedDashboardDocumentsRoute
@@ -423,6 +431,7 @@ export interface FileRoutesByTo {
   '/welcome': typeof AuthenticatedWelcomeRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/dashboard/brief': typeof AuthenticatedDashboardBriefRoute
+  '/dashboard/companion': typeof AuthenticatedDashboardCompanionRoute
   '/dashboard/day': typeof AuthenticatedDashboardDayRoute
   '/dashboard/deliverables': typeof AuthenticatedDashboardDeliverablesRoute
   '/dashboard/documents': typeof AuthenticatedDashboardDocumentsRoute
@@ -478,6 +487,7 @@ export interface FileRoutesById {
   '/_authenticated/welcome': typeof AuthenticatedWelcomeRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/_authenticated/dashboard/brief': typeof AuthenticatedDashboardBriefRoute
+  '/_authenticated/dashboard/companion': typeof AuthenticatedDashboardCompanionRoute
   '/_authenticated/dashboard/day': typeof AuthenticatedDashboardDayRoute
   '/_authenticated/dashboard/deliverables': typeof AuthenticatedDashboardDeliverablesRoute
   '/_authenticated/dashboard/documents': typeof AuthenticatedDashboardDocumentsRoute
@@ -532,6 +542,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/email/unsubscribe'
     | '/dashboard/brief'
+    | '/dashboard/companion'
     | '/dashboard/day'
     | '/dashboard/deliverables'
     | '/dashboard/documents'
@@ -583,6 +594,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/email/unsubscribe'
     | '/dashboard/brief'
+    | '/dashboard/companion'
     | '/dashboard/day'
     | '/dashboard/deliverables'
     | '/dashboard/documents'
@@ -637,6 +649,7 @@ export interface FileRouteTypes {
     | '/_authenticated/welcome'
     | '/email/unsubscribe'
     | '/_authenticated/dashboard/brief'
+    | '/_authenticated/dashboard/companion'
     | '/_authenticated/dashboard/day'
     | '/_authenticated/dashboard/deliverables'
     | '/_authenticated/dashboard/documents'
@@ -890,6 +903,13 @@ declare module '@tanstack/react-router' {
       path: '/day'
       fullPath: '/dashboard/day'
       preLoaderRoute: typeof AuthenticatedDashboardDayRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/companion': {
+      id: '/_authenticated/dashboard/companion'
+      path: '/companion'
+      fullPath: '/dashboard/companion'
+      preLoaderRoute: typeof AuthenticatedDashboardCompanionRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
     '/_authenticated/dashboard/brief': {
@@ -1161,6 +1181,7 @@ const AuthenticatedDashboardWorkflowRouteWithChildren =
 
 interface AuthenticatedDashboardRouteChildren {
   AuthenticatedDashboardBriefRoute: typeof AuthenticatedDashboardBriefRoute
+  AuthenticatedDashboardCompanionRoute: typeof AuthenticatedDashboardCompanionRoute
   AuthenticatedDashboardDayRoute: typeof AuthenticatedDashboardDayRoute
   AuthenticatedDashboardDeliverablesRoute: typeof AuthenticatedDashboardDeliverablesRoute
   AuthenticatedDashboardDocumentsRoute: typeof AuthenticatedDashboardDocumentsRoute
@@ -1176,6 +1197,7 @@ interface AuthenticatedDashboardRouteChildren {
 const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
   {
     AuthenticatedDashboardBriefRoute: AuthenticatedDashboardBriefRoute,
+    AuthenticatedDashboardCompanionRoute: AuthenticatedDashboardCompanionRoute,
     AuthenticatedDashboardDayRoute: AuthenticatedDashboardDayRoute,
     AuthenticatedDashboardDeliverablesRoute:
       AuthenticatedDashboardDeliverablesRoute,
