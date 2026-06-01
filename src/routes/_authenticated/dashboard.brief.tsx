@@ -92,7 +92,7 @@ function BrandBriefPage() {
         <ChatPane
           transport={transport}
           onToolDone={() => {
-            brief.refetch();
+            void brief.refetch();
           }}
         />
       </div>
