@@ -203,6 +203,12 @@ function ChatPane({
             className="max-h-40 flex-1 resize-none bg-transparent px-2 py-1.5 text-sm outline-none"
             disabled={busy}
           />
+          <MicButton
+            disabled={busy}
+            onTranscript={(text) =>
+              setInput((prev) => (prev ? `${prev.replace(/\s+$/, "")} ${text}` : text))
+            }
+          />
           <button
             type="submit"
             disabled={busy || !input.trim()}
