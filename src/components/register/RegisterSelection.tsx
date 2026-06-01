@@ -236,7 +236,7 @@ export function RegisterSelection() {
                   />
                   <span>
                     <span className="font-medium text-foreground">
-                      I can attend in person on Thursday, July 23, 2026
+                      I can attend in person on {EVENT.dateLabelLong}
                     </span>{" "}
                     at the IGNITE Center in Norcross, GA — the full day (8:00 AM – 4:30 PM).
                   </span>
