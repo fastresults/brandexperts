@@ -28,7 +28,6 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/_admin'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
-import { Route as AuthenticatedDashboardWorkflowRouteImport } from './routes/_authenticated/dashboard.workflow'
 import { Route as AuthenticatedDashboardProfileRouteImport } from './routes/_authenticated/dashboard.profile'
 import { Route as AuthenticatedDashboardMediaRouteImport } from './routes/_authenticated/dashboard.media'
 import { Route as AuthenticatedDashboardMaterialsRouteImport } from './routes/_authenticated/dashboard.materials'
@@ -45,7 +44,6 @@ import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lova
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as ApiPublicHooksPublishDueDeliverablesRouteImport } from './routes/api/public/hooks/publish-due-deliverables'
-import { Route as AuthenticatedDashboardWorkflowKeyRouteImport } from './routes/_authenticated/dashboard.workflow.$key'
 import { Route as AuthenticatedAdminAdminUsersRouteImport } from './routes/_authenticated/_admin/admin.users'
 import { Route as AuthenticatedAdminAdminSiteRouteImport } from './routes/_authenticated/_admin/admin.site'
 import { Route as AuthenticatedAdminAdminReviewRouteImport } from './routes/_authenticated/_admin/admin.review'
@@ -158,12 +156,6 @@ const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
   path: '/lovable/email/suppression',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedDashboardWorkflowRoute =
-  AuthenticatedDashboardWorkflowRouteImport.update({
-    id: '/workflow',
-    path: '/workflow',
-    getParentRoute: () => AuthenticatedDashboardRoute,
-  } as any)
 const AuthenticatedDashboardProfileRoute =
   AuthenticatedDashboardProfileRouteImport.update({
     id: '/profile',
@@ -259,12 +251,6 @@ const ApiPublicHooksPublishDueDeliverablesRoute =
     id: '/api/public/hooks/publish-due-deliverables',
     path: '/api/public/hooks/publish-due-deliverables',
     getParentRoute: () => rootRouteImport,
-  } as any)
-const AuthenticatedDashboardWorkflowKeyRoute =
-  AuthenticatedDashboardWorkflowKeyRouteImport.update({
-    id: '/$key',
-    path: '/$key',
-    getParentRoute: () => AuthenticatedDashboardWorkflowRoute,
   } as any)
 const AuthenticatedAdminAdminUsersRoute =
   AuthenticatedAdminAdminUsersRouteImport.update({
@@ -396,7 +382,6 @@ export interface FileRoutesByFullPath {
   '/dashboard/materials': typeof AuthenticatedDashboardMaterialsRoute
   '/dashboard/media': typeof AuthenticatedDashboardMediaRoute
   '/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
-  '/dashboard/workflow': typeof AuthenticatedDashboardWorkflowRouteWithChildren
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/admin/attendees': typeof AuthenticatedAdminAdminAttendeesRouteWithChildren
@@ -407,7 +392,6 @@ export interface FileRoutesByFullPath {
   '/admin/review': typeof AuthenticatedAdminAdminReviewRoute
   '/admin/site': typeof AuthenticatedAdminAdminSiteRoute
   '/admin/users': typeof AuthenticatedAdminAdminUsersRoute
-  '/dashboard/workflow/$key': typeof AuthenticatedDashboardWorkflowKeyRoute
   '/api/public/hooks/publish-due-deliverables': typeof ApiPublicHooksPublishDueDeliverablesRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -449,7 +433,6 @@ export interface FileRoutesByTo {
   '/dashboard/materials': typeof AuthenticatedDashboardMaterialsRoute
   '/dashboard/media': typeof AuthenticatedDashboardMediaRoute
   '/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
-  '/dashboard/workflow': typeof AuthenticatedDashboardWorkflowRouteWithChildren
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
   '/admin/attendees': typeof AuthenticatedAdminAdminAttendeesRouteWithChildren
@@ -460,7 +443,6 @@ export interface FileRoutesByTo {
   '/admin/review': typeof AuthenticatedAdminAdminReviewRoute
   '/admin/site': typeof AuthenticatedAdminAdminSiteRoute
   '/admin/users': typeof AuthenticatedAdminAdminUsersRoute
-  '/dashboard/workflow/$key': typeof AuthenticatedDashboardWorkflowKeyRoute
   '/api/public/hooks/publish-due-deliverables': typeof ApiPublicHooksPublishDueDeliverablesRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -506,7 +488,6 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/materials': typeof AuthenticatedDashboardMaterialsRoute
   '/_authenticated/dashboard/media': typeof AuthenticatedDashboardMediaRoute
   '/_authenticated/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
-  '/_authenticated/dashboard/workflow': typeof AuthenticatedDashboardWorkflowRouteWithChildren
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/_authenticated/_admin/admin/attendees': typeof AuthenticatedAdminAdminAttendeesRouteWithChildren
@@ -517,7 +498,6 @@ export interface FileRoutesById {
   '/_authenticated/_admin/admin/review': typeof AuthenticatedAdminAdminReviewRoute
   '/_authenticated/_admin/admin/site': typeof AuthenticatedAdminAdminSiteRoute
   '/_authenticated/_admin/admin/users': typeof AuthenticatedAdminAdminUsersRoute
-  '/_authenticated/dashboard/workflow/$key': typeof AuthenticatedDashboardWorkflowKeyRoute
   '/api/public/hooks/publish-due-deliverables': typeof ApiPublicHooksPublishDueDeliverablesRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -562,7 +542,6 @@ export interface FileRouteTypes {
     | '/dashboard/materials'
     | '/dashboard/media'
     | '/dashboard/profile'
-    | '/dashboard/workflow'
     | '/lovable/email/suppression'
     | '/dashboard/'
     | '/admin/attendees'
@@ -573,7 +552,6 @@ export interface FileRouteTypes {
     | '/admin/review'
     | '/admin/site'
     | '/admin/users'
-    | '/dashboard/workflow/$key'
     | '/api/public/hooks/publish-due-deliverables'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
@@ -615,7 +593,6 @@ export interface FileRouteTypes {
     | '/dashboard/materials'
     | '/dashboard/media'
     | '/dashboard/profile'
-    | '/dashboard/workflow'
     | '/lovable/email/suppression'
     | '/dashboard'
     | '/admin/attendees'
@@ -626,7 +603,6 @@ export interface FileRouteTypes {
     | '/admin/review'
     | '/admin/site'
     | '/admin/users'
-    | '/dashboard/workflow/$key'
     | '/api/public/hooks/publish-due-deliverables'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
@@ -671,7 +647,6 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/materials'
     | '/_authenticated/dashboard/media'
     | '/_authenticated/dashboard/profile'
-    | '/_authenticated/dashboard/workflow'
     | '/lovable/email/suppression'
     | '/_authenticated/dashboard/'
     | '/_authenticated/_admin/admin/attendees'
@@ -682,7 +657,6 @@ export interface FileRouteTypes {
     | '/_authenticated/_admin/admin/review'
     | '/_authenticated/_admin/admin/site'
     | '/_authenticated/_admin/admin/users'
-    | '/_authenticated/dashboard/workflow/$key'
     | '/api/public/hooks/publish-due-deliverables'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
@@ -856,13 +830,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailSuppressionRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/dashboard/workflow': {
-      id: '/_authenticated/dashboard/workflow'
-      path: '/workflow'
-      fullPath: '/dashboard/workflow'
-      preLoaderRoute: typeof AuthenticatedDashboardWorkflowRouteImport
-      parentRoute: typeof AuthenticatedDashboardRoute
-    }
     '/_authenticated/dashboard/profile': {
       id: '/_authenticated/dashboard/profile'
       path: '/profile'
@@ -974,13 +941,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/public/hooks/publish-due-deliverables'
       preLoaderRoute: typeof ApiPublicHooksPublishDueDeliverablesRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/dashboard/workflow/$key': {
-      id: '/_authenticated/dashboard/workflow/$key'
-      path: '/$key'
-      fullPath: '/dashboard/workflow/$key'
-      preLoaderRoute: typeof AuthenticatedDashboardWorkflowKeyRouteImport
-      parentRoute: typeof AuthenticatedDashboardWorkflowRoute
     }
     '/_authenticated/_admin/admin/users': {
       id: '/_authenticated/_admin/admin/users'
@@ -1185,21 +1145,6 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
 const AuthenticatedAdminRouteWithChildren =
   AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
 
-interface AuthenticatedDashboardWorkflowRouteChildren {
-  AuthenticatedDashboardWorkflowKeyRoute: typeof AuthenticatedDashboardWorkflowKeyRoute
-}
-
-const AuthenticatedDashboardWorkflowRouteChildren: AuthenticatedDashboardWorkflowRouteChildren =
-  {
-    AuthenticatedDashboardWorkflowKeyRoute:
-      AuthenticatedDashboardWorkflowKeyRoute,
-  }
-
-const AuthenticatedDashboardWorkflowRouteWithChildren =
-  AuthenticatedDashboardWorkflowRoute._addFileChildren(
-    AuthenticatedDashboardWorkflowRouteChildren,
-  )
-
 interface AuthenticatedDashboardRouteChildren {
   AuthenticatedDashboardBriefRoute: typeof AuthenticatedDashboardBriefRoute
   AuthenticatedDashboardCompanionRoute: typeof AuthenticatedDashboardCompanionRoute
@@ -1212,7 +1157,6 @@ interface AuthenticatedDashboardRouteChildren {
   AuthenticatedDashboardMaterialsRoute: typeof AuthenticatedDashboardMaterialsRoute
   AuthenticatedDashboardMediaRoute: typeof AuthenticatedDashboardMediaRoute
   AuthenticatedDashboardProfileRoute: typeof AuthenticatedDashboardProfileRoute
-  AuthenticatedDashboardWorkflowRoute: typeof AuthenticatedDashboardWorkflowRouteWithChildren
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
 }
 
@@ -1230,8 +1174,6 @@ const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
     AuthenticatedDashboardMaterialsRoute: AuthenticatedDashboardMaterialsRoute,
     AuthenticatedDashboardMediaRoute: AuthenticatedDashboardMediaRoute,
     AuthenticatedDashboardProfileRoute: AuthenticatedDashboardProfileRoute,
-    AuthenticatedDashboardWorkflowRoute:
-      AuthenticatedDashboardWorkflowRouteWithChildren,
     AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
   }
 

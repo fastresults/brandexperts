@@ -101,7 +101,7 @@ function AppSidebar({ mode }: { mode: ReturnType<typeof getWorkshopMode>["mode"]
     { to: "/dashboard/materials", label: "Workshop materials", icon: FileDown },
     { to: "/dashboard/day", label: "Workshop day", icon: Calendar, hide: mode === "after" },
     { to: "/dashboard/brief", label: briefDone ? "Brand brief" : "Brand intake", icon: ClipboardList },
-    { to: "/dashboard/workflow", label: "Plan", icon: ListChecks, dimmed: mode === "during" },
+    { to: "/dashboard/deliverables", label: "Deliverables", icon: ListChecks },
     { to: "/dashboard/files", label: "My files", icon: FolderOpen },
     { to: "/dashboard/profile", label: "Account", icon: User },
   ];

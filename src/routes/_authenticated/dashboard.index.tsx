@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { getBrandBrief } from "@/lib/brand-brief.functions";
 import { getMyFiling } from "@/lib/filing.functions";
-import { getMyWorkflow } from "@/lib/userPipeline.functions";
+import { listMyDeliverables } from "@/lib/attendee.functions";
 import { getMyCohort } from "@/lib/cohort.functions";
 import { getWorkshopMode, formatMinutesLeft, FRIENDLY_STAGE, type WorkshopState } from "@/lib/workshop-mode";
 import { ProgressRing } from "@/components/dashboard/ProgressRing";
@@ -19,12 +19,12 @@ export const Route = createFileRoute("/_authenticated/dashboard/")({
 function TodayPage() {
   const briefFn = useServerFn(getBrandBrief);
   const filingFn = useServerFn(getMyFiling);
-  const wfFn = useServerFn(getMyWorkflow);
+  const deliverablesFn = useServerFn(listMyDeliverables);
   const cohortFn = useServerFn(getMyCohort);
 
   const brief = useQuery({ queryKey: ["brand-brief"], queryFn: () => briefFn() });
   const filing = useQuery({ queryKey: ["my", "filing"], queryFn: () => filingFn() });
-  const wf = useQuery({ queryKey: ["my", "workflow"], queryFn: () => wfFn() });
+  const deliverables = useQuery({ queryKey: ["my", "deliverables"], queryFn: () => deliverablesFn() });
   const cohort = useQuery({ queryKey: ["my", "cohort"], queryFn: () => cohortFn(), staleTime: 60_000 });
 
   // Re-render once a minute so the mode and clock stay live
@@ -41,9 +41,9 @@ function TodayPage() {
   const briefScore = summaryDone ? briefTotal : rawScore;
   const briefReady = summaryDone || !!brief.data?.progress?.allComplete;
   const filingReady = !!filing.data?.filing?.llc_name;
-  const items = wf.data?.items ?? [];
-  const generated = items.filter((i) => i.generated).length;
-  const total = items.length;
+  const publishedDeliverables = deliverables.data?.deliverables ?? [];
+  const generated = publishedDeliverables.length;
+  const total = generated;
   const firstName = null;
   const pitch = null;
 
@@ -251,12 +251,12 @@ function DuringMode({ state, generated, total }: { state: WorkshopState; generat
 
         <div className="mt-6 grid gap-3 sm:grid-cols-2">
           <Link
-            to="/dashboard/workflow"
+            to="/dashboard/deliverables"
             className="rounded-xl border border-white/10 bg-card p-4 hover:border-primary/30 transition"
           >
-            <div className="text-sm font-medium">Open this stage's questions</div>
+            <div className="text-sm font-medium">See your deliverables</div>
             <div className="mt-1 text-xs text-muted-foreground">
-              Answer them with your voice — the AI uses them right away.
+              The work your AI strategist is finishing in the room.
             </div>
           </Link>
           <button
@@ -285,32 +285,40 @@ function DuringMode({ state, generated, total }: { state: WorkshopState; generat
 }
 
 function RecentlyFinished() {
-  // Pulled lazily — uses the workflow query already cached
-  const wfFn = useServerFn(getMyWorkflow);
-  const { data } = useQuery({ queryKey: ["my", "workflow"], queryFn: () => wfFn(), refetchInterval: 8000 });
-  const done = (data?.items ?? []).filter((i) => i.generated).slice(-3).reverse();
+  const deliverablesFn = useServerFn(listMyDeliverables);
+  const { data } = useQuery({
+    queryKey: ["my", "deliverables"],
+    queryFn: () => deliverablesFn(),
+    refetchInterval: 8000,
+  });
+  const done = (data?.deliverables ?? []).slice(0, 3);
   if (done.length === 0) return null;
 
   return (
     <section>
       <h2 className="mb-3 text-sm font-medium uppercase tracking-wide text-muted-foreground">Just finished by your AI</h2>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {done.map((d) => (
-          <Link
-            key={d.key}
-            to="/dashboard/workflow/$key"
-            params={{ key: d.key }}
-            className="rounded-xl border border-white/10 bg-card p-4 hover:border-primary/30 transition"
-          >
-            <div className="flex items-center gap-2 text-emerald-500">
-              <CheckCircle2 className="h-4 w-4" />
-              <span className="text-xs uppercase tracking-wide">Ready</span>
-            </div>
-            <div className="mt-1 font-medium">{d.label}</div>
-            <div className="mt-1 text-sm text-muted-foreground line-clamp-2">{d.description}</div>
-            <div className="mt-3 text-sm text-primary">Take a look →</div>
-          </Link>
-        ))}
+        {done.map((d) => {
+          const type = d.deliverable_types as { label?: string; description?: string | null } | null;
+          const content = (d.content_current ?? {}) as { title?: string; summary?: string };
+          return (
+            <Link
+              key={d.id}
+              to="/dashboard/deliverables"
+              className="rounded-xl border border-white/10 bg-card p-4 hover:border-primary/30 transition"
+            >
+              <div className="flex items-center gap-2 text-emerald-500">
+                <CheckCircle2 className="h-4 w-4" />
+                <span className="text-xs uppercase tracking-wide">Ready</span>
+              </div>
+              <div className="mt-1 font-medium">{content.title ?? type?.label ?? d.deliverable_key}</div>
+              {(content.summary ?? type?.description) && (
+                <div className="mt-1 text-sm text-muted-foreground line-clamp-2">{content.summary ?? type?.description}</div>
+              )}
+              <div className="mt-3 text-sm text-primary">Take a look →</div>
+            </Link>
+          );
+        })}
       </div>
     </section>
   );
@@ -337,7 +345,7 @@ function AfterMode({
     ? { to: "/dashboard/brief", label: "Finish your filing info", hint: "Your LLC needs a couple more details." }
     : !briefReady
       ? { to: "/dashboard/brief", label: "Polish your brief", hint: "More detail = better deliverables." }
-      : { to: "/dashboard/workflow", label: "Open your 90-day plan", hint: `${generated} of ${total} deliverables ready.` };
+      : { to: "/dashboard/deliverables", label: "See your deliverables", hint: generated > 0 ? `${generated} ready so far.` : "We'll publish them as your strategist finishes each one." };
 
   return (
     <>
@@ -377,7 +385,7 @@ function NoCohortMode({ briefScore, briefTotal, pitch, facts }: { briefScore: nu
         <BriefCompleteCard
           facts={facts}
           pitch={pitch}
-          secondary={{ to: "/dashboard/workflow", label: "Browse the 15 deliverables →" }}
+          secondary={{ to: "/dashboard/deliverables", label: "See your deliverables →" }}
           footnote="No workshop date yet — we'll be in touch soon."
         />
       ) : (
@@ -401,13 +409,13 @@ function WalkOutMoment() {
       <div className="text-xs font-medium uppercase tracking-wide text-primary">4:30 PM</div>
       <h1 className="mt-2 text-4xl md:text-5xl font-semibold tracking-tight">You did it 🎉</h1>
       <p className="mt-4 text-lg text-muted-foreground max-w-lg mx-auto">
-        You walked in with an idea. You're walking out with a launched startup and a signed 90-day plan.
+        You walked in with a question. You're walking out with a sharpened brand and a plan you'll actually use.
       </p>
       <Link
-        to="/dashboard/workflow"
+        to="/dashboard/deliverables"
         className="mt-8 inline-flex items-center rounded-xl bg-primary px-6 py-3 text-base font-medium text-primary-foreground hover:opacity-90"
       >
-        Take me to my 90-day plan
+        See your deliverables
       </Link>
     </div>
   );
