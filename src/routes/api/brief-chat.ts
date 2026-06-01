@@ -64,6 +64,7 @@ export const Route = createFileRoute("/api/brief-chat")({
         ]);
 
         const extracted = (profileRes.data?.extracted ?? null) as Record<string, unknown> | null;
+        const rawResumeText = ((profileRes.data?.raw_text ?? null) as string | null)?.trim() || null;
         const facts = (factsRes.data ?? []) as Array<{
           section: BriefSectionId;
           value: string;
@@ -72,17 +73,31 @@ export const Route = createFileRoute("/api/brief-chat")({
         const knownSections = new Set(facts.map((f) => f.section));
         const missingSpine = BRIEF_SPINE.filter((s) => !knownSections.has(s.id));
 
+        // Detect "thin" structured extraction so the model knows to lean on raw text.
+        const extractedIsThin = !extracted || (() => {
+          const e = extracted as Record<string, unknown>;
+          const roles = Array.isArray(e.roles) ? e.roles.length : 0;
+          const skills = Array.isArray(e.skills) ? e.skills.length : 0;
+          const headline = typeof e.headline === "string" ? e.headline.trim().length : 0;
+          return roles === 0 && skills === 0 && headline === 0;
+        })();
+
         const groundingBlock = [
-          extracted
+          extracted && !extractedIsThin
             ? `IMPORTED CONTEXT (from resume/LinkedIn — DO NOT re-ask):\n${JSON.stringify(extracted, null, 2)}`
-            : "IMPORTED CONTEXT: (none — the executive hasn't imported a resume or LinkedIn yet)",
+            : extracted
+              ? "IMPORTED CONTEXT: structured extraction was thin — use RAW RESUME TEXT below as the source of truth for work_experience."
+              : "IMPORTED CONTEXT: (none — the executive hasn't imported a resume or LinkedIn yet)",
+          rawResumeText
+            ? `RAW RESUME TEXT (verbatim — use to anchor work_experience with specific roles, companies, dates, and outcomes; never quote it outside that section):\n${rawResumeText.slice(0, 6000)}`
+            : "",
           facts.length
             ? `BRIEF FACTS LOCKED IN SO FAR:\n${facts.map((f) => `- ${f.section}: ${f.value}`).join("\n")}`
             : "BRIEF FACTS LOCKED IN SO FAR: (none)",
           missingSpine.length
             ? `SPINE DIMENSIONS STILL TO COVER:\n${missingSpine.map((s) => `- ${s.id}: ${s.hint}`).join("\n")}`
             : "SPINE DIMENSIONS STILL TO COVER: (all covered — call finish_brief if ready)",
-        ].join("\n\n");
+        ].filter(Boolean).join("\n\n");
 
         const isFirstTurn = (messages as UIMessage[]).filter((m) => m.role === "assistant").length === 0;
         const factsCount = facts.length;
@@ -148,12 +163,13 @@ The user sees a visual progress bar showing exactly which spine section is "curr
 - Open each section by naming what you're getting at in plain language (NOT the internal id), e.g. "On how you sound on the page —" then ONE question.
 - Lock the section with record_brief_fact before moving on. No combining two sections in one question.
 - After every 4 locked facts, fold ONE short orienting clause into the front of your next question (e.g. "good — most of the foundation is in,"). Never a separate message. Your phrasing, not mine.
+- If only one or two sections are missing AND one of them is work_experience AND RAW RESUME TEXT exists, jump straight to the work_experience synthesis on your next turn — do not recap, do not re-introduce, just open with "From your resume —" (or your own phrasing) and present the synthesized arc.
 
 ═══ RECORDING FACTS ═══
 Whenever the user gives you signal (even partial), CALL record_brief_fact. The right panel and progress bar update live.${revisionBlock}
 
 ═══ PRIORITY SECTIONS ═══
-• work_experience — If IMPORTED CONTEXT contains work_history / roles / companies / experience, DO NOT ask. Synthesize a 4–6 sentence narrative arc (scope, signature wins, through-line across roles) plus a short list of 3–5 anchor roles, and ask only "does this read right?" If absent, ask ONE question offering three paths: upload resume, paste LinkedIn URL, or paste a short career summary. Store as a markdown blob with a prose paragraph followed by bulleted role lines formatted "**Role, Company (years)** — one-line outcome".
+• work_experience — If RAW RESUME TEXT is present in grounding, DO NOT ask the user to paste or upload anything. Read the resume directly: synthesize a 4–6 sentence narrative arc (scope, signature wins, through-line across roles) plus 3–5 anchor roles formatted "**Role, Company (years)** — one-line outcome", call record_brief_fact with that full markdown blob at confidence 4, and ask ONLY "does this read right, or want me to sharpen anything?". Use specific companies/dates/outcomes from the resume verbatim — never invent. If structured IMPORTED CONTEXT has work_history/roles, use those too. ONLY if both RAW RESUME TEXT and structured roles are absent, ask one question offering three paths: upload resume, paste LinkedIn URL, or paste a short career summary.
 • domain & expertise — If 'domain_guess'/'expertise_guess' exist, mirror as ONE draft sentence (your words) and ask to confirm or sharpen. On confirm, record domain as a 2–3 sentence paragraph AND append a final line "**Domains:** tag1 · tag2 · tag3 · tag4" with 3–6 short tags.
 • voice — Reach only AFTER audience + transformation are locked. In ONE question, offer two paths and ask which they want: (a) 3 words for how they sound + 3 words for how they never sound, or (b) paste 2–3 sentences they've actually written. Phrase that offer in your own words. If 'voice_signal' exists, mirror it back as ONE sentence draft and ask to approve. Store voice as a markdown blob that LEADS with a 1–2 sentence prose **Voice summary**, then the labeled fields **Tone**, **Cadence**, **Vocabulary**, **Sample openers**, **Never sounds like** (the stored blob may use markdown — your chat reply may NOT).
 • workshop_alignment — The final question before finish_brief. Reference the 15 in-room deliverables and ask which 2–3 they want to walk out with. Phrase fresh in your own words.

@@ -1,79 +1,64 @@
-## Problem
+## What the logs + DB show
 
-Two issues to fix together:
+I checked the user's actual record (`attendee_founder_profile` for the active dashboard user):
 
-1. **Start over is destructive.** Today's `resetBrandBrief` wipes every fact. Users lose all prior answers and have to retype everything.
-2. **No progress signal.** The chat is open-ended — users don't know how many sections remain or where they are in the assessment.
+- **The PDF was uploaded and the text was extracted.** `raw_text` is 4,541 chars of clean resume prose (Adam Anderson, OPEN Interactive, Citi/Mayo/3M/Disney, St. Kitts, Caribbean Investment Summit, etc.). Storage + parsing worked.
+- **The AI structured extraction silently failed.** Every field in `extracted` is empty (`""`, `[]`) — `roles`, `wins`, `skills`, `industries`, `domain_guess`, `voice_signal`, all empty defaults. The model returned `{}` and Zod filled in defaults, so no error was thrown and the toast said "Resume read."
+- **The chat never sees the resume.** `brief-chat.ts` only puts `extracted` into the grounding block — never `raw_text`. So the strategist's system prompt currently says "IMPORTED CONTEXT: {all empty fields}" and it has nothing to anchor work_experience on.
+- **Current facts for this user**: 14/15 sections locked from a prior session; `work_experience` is the only gap. The resume was uploaded *after* those facts, so we have a clean shot at enriching just that step.
 
-## Proposed behavior
+## Goal
 
-### A. Non-destructive revision (retain prior answers)
+1. Make resume extraction actually populate fields (and never silently succeed-as-empty).
+2. Ground the chat in `raw_text` as a fallback so the strategist can synthesize `work_experience` even when structured extraction is thin.
+3. Trigger the `work_experience` enrichment flow for this user now, and make it the default behavior for anyone whose resume is parsed.
 
-Three actions, with clear hierarchy:
+## Changes
 
-| Action | What it does | When to use |
-|---|---|---|
-| **Keep refining** (existing) | Re-opens a completed brief for tweaks | Add depth to a finished brief |
-| **Revise answers** (renamed from "Start over") | Keeps all `attendee_brief_facts`. Clears only the generated summary + alignment. Re-opens chat in **revision mode**: strategist walks each section, quotes the prior answer back, user keeps / edits / replaces. | Rework the assessment without losing prior input |
-| **Clear everything** (secondary, behind a second confirmation) | The current destructive `resetBrandBrief` — wipes facts, summary, alignment | Truly start blank (rare) |
+### 1. `src/lib/discovery.functions.ts` — make `extractFounderFromText` robust
 
-### B. Progressive onboarding + visual progress indicator
+- Stronger prompt for `google/gemini-3-flash-preview`: explicitly require `roles[]` (title, company, years) and `wins[]` to be populated when the text contains a work history; refuse to return an empty object when ≥ 500 chars of resume text are provided.
+- After `generateText`, detect "empty extraction" (no roles, no headline, no skills) and:
+  - Retry once with a smaller, role-focused prompt that asks for `roles[]` + `headline` + `wins[]` only.
+  - If still empty, set `noteToUser` to "We saved your resume text but couldn't structure it — the strategist will read it directly." (so the UI stops claiming success).
+- Always persist `raw_text` (already happening) plus a new boolean signal returned to the client: `structured_ok: boolean`. The `BrandBriefImportCard` toast becomes truthful: success vs. "saved raw text, AI will read it directly."
 
-A persistent progress component anchored at the top of the chat pane (and mirrored as a tiny inline bar above the input) shows the user exactly where they are.
+### 2. `src/routes/api/brief-chat.ts` — feed raw resume text into grounding
 
-```text
-Step 3 of 8 · Voice profile
-■■■□□□□□   38% complete
-```
+- In the grounding block, when `profileRes.data.raw_text` exists, append a new section:
+  ```
+  RAW RESUME TEXT (verbatim — use ONLY for work_experience synthesis, never quote outside that section):
+  <first ~6000 chars of raw_text>
+  ```
+- Tighten the existing `work_experience` PRIORITY SECTION rule so it explicitly says: "If RAW RESUME TEXT is present, synthesize the 4–6 sentence arc + 3–5 anchor roles directly from it. Do NOT ask the user to paste anything. Call `record_brief_fact` with the synthesized markdown, then ask only 'does this read right?'"
+- Add a short note to PROGRESS DISCIPLINE: when only `work_experience` is missing and raw_text exists, jump straight to it on the next turn instead of recapping.
 
-- **Source of truth:** `BRIEF_SPINE` defines the ordered section list. A section counts as "complete" when at least one fact exists for it in `attendee_brief_facts` (already the data we have).
-- **Component:** new `BriefProgress.tsx`:
-  - Horizontal segmented bar (one cell per spine section) with filled / current / pending states.
-  - Label: `Step {currentIndex + 1} of {total} · {currentSection.label}`.
-  - Tooltip / hover reveals the full section list with check marks.
-  - Click a completed section → scrolls the right-hand `BrandBriefPanel` to that section for inline edit.
-- **"Current" detection:** first spine section with no fact yet; if all are filled, current = "Review & finish".
-- **Reuse on right panel:** `BrandBriefPanel` gets a small completion pill per section ("3 of 5 fields", or a check icon when sufficiently covered).
-- **In revision mode:** the same bar shows all sections as filled but in a muted "revisable" state; the current cell follows the strategist's lead through each section.
+### 3. `src/components/brief/BrandBriefImportCard.tsx` — honest feedback
 
-## Scope
+- Read the new `structured_ok` flag from the extract response.
+- If `structured_ok === false` and no `note` was returned: show an amber toast — "Resume saved. We'll have the strategist read it directly in the next message."
+- No layout changes.
 
-1. **`src/lib/brand-brief.functions.ts`**
-   - Keep `resetBrandBrief` (used only by "Clear everything").
-   - Add `reviseBrandBrief`: delete from `attendee_brief_summary` + `attendee_brief_alignment`; leave `attendee_brief_facts` intact.
-   - Extend `getBrandBrief` return shape with a derived `progress` object: `{ total, completed, currentSectionId, currentSectionLabel, sections: [{ id, label, completed }] }` so the client doesn't recompute spine logic.
+### 4. One-off backfill for the current user (run from the server function, not a migration)
 
-2. **`src/routes/api/brief-chat.ts`** (system prompt)
-   - Add a **REVISION MODE** block: activates when `facts.length > 0 && summary == null`. Strategist quotes the prior answer per section ("Last time you said: '…'. Keep it, refine it, or replace it?") and only re-asks what the user wants to change.
-   - Add a **PROGRESS DISCIPLINE** rule: the assistant must work one section at a time in spine order, announce the section name at the start of each turn, and confirm completion before moving on. This keeps the visual progress bar honest.
-
-3. **`src/components/brief/BriefProgress.tsx`** (new)
-   - Props: `progress` (from `getBrandBrief`), `onJumpToSection?(id)`.
-   - Renders segmented bar + label + accessible tooltip list.
-   - Reused at the top of `ChatPane` and as a slim sticky bar above the chat input.
-
-4. **`src/components/brief/BrandBriefPanel.tsx`**
-   - Add a small completion indicator per section header.
-   - Wire `onJumpToSection` from `BriefProgress` to scroll/highlight the matching section.
-
-5. **`src/routes/_authenticated/dashboard.brief.tsx`**
-   - Rename primary destructive action to **"Revise answers"** (icon `Pencil`), wired to `reviseBrandBrief`. Dialog copy:
-     > "Revise your brand brief? Your prior answers are kept — the strategist will walk you through each one so you can update what's changed. Your generated brief and workshop alignment will be regenerated."
-   - Inside the dialog footer add a subtle link **"Or clear everything and start blank"** → opens a second, hardened confirmation step ("This permanently deletes every answer.") that calls `resetBrandBrief`.
-   - Mount `<BriefProgress>` above the chat header in the in-progress view, and a slim version pinned above the chat input.
-   - In the finished view, replace the progress bar with a "Complete" state pill.
+- Add a small admin-callable server function `reextractFounderProfile` (auth-gated, user can call it for themselves) that re-runs the extractor against the stored `raw_text`. Wire it to a tiny "Re-read resume" link inside the collapsed-state `BrandBriefImportCard` so the user can retrigger if a future upload looks thin.
+- For Adam's record specifically, the next chat turn will pick up the new RAW RESUME TEXT grounding automatically — no manual DB edit needed.
 
 ## Out of scope
 
-- Per-section "ask me again" toggles inside the panel (future).
-- Persisted chat transcript replay — chat messages remain ephemeral; facts + progress carry context.
-- Versioning / undo of prior brief markdown.
-- Gamification (streaks, time-to-complete estimates beyond the simple step count).
+- No changes to the spine order or `BRIEF_SPINE` (work_experience stays step 2 of 15).
+- No new tables / migrations.
+- No changes to the LinkedIn or paste-bio paths beyond what falls out of #1.
+- No re-running the full extraction pipeline for other users — they'll benefit on their next upload.
 
 ## Files touched
 
-- `src/lib/brand-brief.functions.ts` — add `reviseBrandBrief`; extend `getBrandBrief` with `progress`.
-- `src/routes/api/brief-chat.ts` — add REVISION MODE + PROGRESS DISCIPLINE blocks.
-- `src/components/brief/BriefProgress.tsx` — new component.
-- `src/components/brief/BrandBriefPanel.tsx` — per-section completion indicator + jump-to handler.
-- `src/routes/_authenticated/dashboard.brief.tsx` — rename action, two-tier confirmation, mount progress bar.
+- `src/lib/discovery.functions.ts` (harden extractor, add `structured_ok`, add `reextractFounderProfile`)
+- `src/routes/api/brief-chat.ts` (add RAW RESUME TEXT grounding + tighten work_experience rule)
+- `src/components/brief/BrandBriefImportCard.tsx` (honest toast + "Re-read resume" affordance)
+
+## Verification after build
+
+1. Reload `/dashboard/brief` as the current user. Next assistant turn should open with a synthesized work-experience arc anchored on Citi/Mayo/3M/Disney + St. Kitts + Caribbean Investment Summit, and ask "does this read right?"
+2. After confirm, `attendee_brief_facts.work_experience` row appears; progress bar shows 15/15.
+3. Re-upload the PDF on a fresh test account → `extracted.roles` is non-empty, toast says "Resume read."
