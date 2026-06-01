@@ -385,7 +385,7 @@ function NoCohortMode({ briefScore, briefTotal, pitch, facts }: { briefScore: nu
         <BriefCompleteCard
           facts={facts}
           pitch={pitch}
-          secondary={{ to: "/dashboard/workflow", label: "Browse the 15 deliverables →" }}
+          secondary={{ to: "/dashboard/deliverables", label: "See your deliverables →" }}
           footnote="No workshop date yet — we'll be in touch soon."
         />
       ) : (
