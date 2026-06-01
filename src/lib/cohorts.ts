@@ -33,9 +33,12 @@ export type Cohort = {
   id: string;
   startISO: string;
   endISO: string;
-  dateLabel: string;
-  shortLabel: string;
-  monthLabel: string;
+  dateLabel: string;       // "Wed, Aug 5, 2026"
+  dateLabelLong: string;   // "Wednesday, August 5, 2026"
+  dayOfWeekLong: string;   // "Wednesday"
+  shortLabel: string;      // "Aug 5"
+  monthLabel: string;      // "August 2026"
+  decisionDateLabel: string; // "July 21, 2026" — 15 days before workshop
   status: CohortStatus;
   seatsLeft?: number;
   // Pricing & capacity (per cohort)
@@ -116,6 +119,14 @@ const MONTH_SHORT = [
   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
 ];
 const DAY_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const DAY_LONG = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+// Format a "M D, YYYY" label from a date offset N days before another date.
+function formatOffsetDateLabel(baseISO: string, daysBefore: number): string {
+  const d = new Date(baseISO);
+  d.setUTCDate(d.getUTCDate() - daysBefore);
+  return `${MONTH_LONG[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`;
+}
 
 const toCalStamp = (iso: string) =>
   new Date(iso).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
@@ -156,6 +167,7 @@ export function buildCohortFromRow(row: CohortRow): Cohort {
 
   const anchor = new Date(Date.UTC(y, m - 1, d, 12));
   const dow = DAY_SHORT[anchor.getUTCDay()];
+  const dowLong = DAY_LONG[anchor.getUTCDay()];
   const shortMonth = MONTH_SHORT[m - 1];
   const longMonth = MONTH_LONG[m - 1];
 
@@ -177,8 +189,11 @@ export function buildCohortFromRow(row: CohortRow): Cohort {
     startISO,
     endISO,
     dateLabel: `${dow}, ${shortMonth} ${d}, ${y}`,
+    dateLabelLong: `${dowLong}, ${longMonth} ${d}, ${y}`,
+    dayOfWeekLong: dowLong,
     shortLabel: `${shortMonth} ${d}`,
     monthLabel: `${longMonth} ${y}`,
+    decisionDateLabel: formatOffsetDateLabel(startISO, 15),
     status: row.status,
     seatsLeft: row.seats_left ?? undefined,
     foundersPriceCents: row.founders_price_cents,
@@ -235,7 +250,7 @@ export function formatPriceCents(cents: number): string {
 // imports of `EVENT` continue to work without crashing.
 export const FALLBACK_COHORT: Cohort = buildCohortFromRow({
   id: "fallback",
-  cohort_date: "2026-07-23",
+  cohort_date: "2026-08-05",
   tz: "EDT",
   start_time: "13:00",
   end_time: "16:00",

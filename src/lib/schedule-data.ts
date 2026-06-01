@@ -15,6 +15,11 @@ export function buildEvent(cohort: Cohort) {
   const venueAddress = `${cohort.venueAddress}, ${cohort.venueCity}, ${cohort.venueRegion} ${cohort.venuePostal}`;
   return {
     dateLabel: cohort.dateLabel,
+    dateLabelLong: cohort.dateLabelLong,
+    dayOfWeekLong: cohort.dayOfWeekLong,
+    shortLabel: cohort.shortLabel,
+    monthLabel: cohort.monthLabel,
+    decisionDateLabel: cohort.decisionDateLabel,
     timeLabel: "1:00 PM – 4:00 PM ET",
     durationLabel: "3 hours",
     venueName: cohort.venueName,
@@ -22,7 +27,11 @@ export function buildEvent(cohort: Cohort) {
     venueCity: cohort.venueCity,
     venueRegion: cohort.venueRegion,
     isDefaultVenue: cohort.isDefaultVenue,
-    // Public-facing seat count = half of real internal capacity (see toPublicSeats).
+    // Internal total seat count (founders + cohort). This is the number we
+    // surface publicly on the marketing site ("12 seats").
+    totalSeats: cohort.totalSeats,
+    // Public-facing "intimate room" count = half of real internal capacity.
+    // Used in scarcity copy where the smaller number reads as more exclusive.
     capacity: toPublicSeats(cohort.foundersSeats + cohort.cohortSeats),
     mapsUrl: cohort.mapsUrl,
     mapsEmbedUrl: `https://www.google.com/maps?q=${encodeURIComponent(venueAddress)}&output=embed`,

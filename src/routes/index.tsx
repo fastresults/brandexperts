@@ -33,13 +33,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Three hours at the IGNITE Center in Norcross, GA. Twelve seats. You walk in as a title. You walk out operating a Personal Branding Operating System that publishes in your voice, on its own, for the next 90 days and every quarter after.",
+          "Three hours at the IGNITE Center in Norcross, GA. You walk in as a title. You walk out operating a Personal Branding Operating System that publishes in your voice, on its own, for the next 90 days and every quarter after.",
       },
       { property: "og:title", content: "The Executive Brand Intensive — Install a Personal Branding Operating System in one afternoon." },
       {
         property: "og:description",
         content:
-          "July 23, 2026 · IGNITE Center, Norcross, GA. Twelve seats. Installed by a 30-year operator who's built brand systems for Fortune 500 boards, a sovereign government, and the AI-native frontier — for clients who couldn't afford to get it wrong.",
+          "IGNITE Center, Norcross, GA · 1:00–4:00 PM ET. Installed by a 30-year operator who's built brand systems for Fortune 500 boards, a sovereign government, and the AI-native frontier — for clients who couldn't afford to get it wrong.",
       },
     ],
     links: loaderData?.heroBgUrl
@@ -160,7 +160,7 @@ function Hero({ heroBgUrl }: { heroBgUrl: string | null }) {
             to="/register"
             className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-base font-medium text-primary-foreground transition-opacity hover:opacity-90 sm:w-auto"
           >
-            Claim one of {EVENT.capacity * 2} seats <ArrowRight className="size-4" />
+            Claim one of {EVENT.totalSeats} seats <ArrowRight className="size-4" />
           </Link>
           <Link
             to="/schedule"
@@ -172,7 +172,7 @@ function Hero({ heroBgUrl }: { heroBgUrl: string | null }) {
         <div className="mt-10 grid max-w-3xl grid-cols-1 gap-3 text-white/90 sm:grid-cols-2 lg:grid-cols-4 md:mt-12 md:gap-4">
           <Meta icon={<Calendar className="size-4" />} label={EVENT.dateLabel} />
           <Meta icon={<MapPin className="size-4" />} label="IGNITE Center · Norcross, GA" />
-          <Meta icon={<Users className="size-4" />} label={`${EVENT.capacity * 2} seats`} />
+          <Meta icon={<Users className="size-4" />} label={`${EVENT.totalSeats} seats`} />
           <Meta icon={<Award className="size-4" />} label="30-year brand operator" />
         </div>
       </div>
@@ -434,7 +434,7 @@ function VenueCard() {
 
               <div className="mt-5 flex flex-wrap gap-2">
                 <TagChip>Free on-site parking</TagChip>
-                <TagChip>{EVENT.capacity * 2} seats</TagChip>
+                <TagChip>{EVENT.totalSeats} seats</TagChip>
                 <TagChip>Small cohort · full facilitator attention</TagChip>
               </div>
 
@@ -530,7 +530,7 @@ function BottomCTA() {
           />
           <div className="relative max-w-3xl text-white">
             <h2 className="text-3xl font-semibold leading-tight tracking-tight md:text-4xl lg:text-5xl">
-              {seatsWord(EVENT.capacity * 2)} seats. One afternoon. A Brand Operating System that outruns the AI flood.
+              {seatsWord(EVENT.totalSeats)} seats. One afternoon. A Brand Operating System that outruns the AI flood.
             </h2>
             <p className="mt-4 text-base text-white/90 md:mt-5 md:text-lg">
               If you've been waiting for the right week to finally show up publicly, this is the
@@ -543,7 +543,7 @@ function BottomCTA() {
                 to="/register"
                 className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-base font-medium text-neutral-900 transition-opacity hover:opacity-90 hover:text-neutral-900 sm:w-auto"
               >
-                Reserve your seat for July 23 <ArrowRight className="size-4" />
+                Reserve your seat for {EVENT.shortLabel} <ArrowRight className="size-4" />
               </Link>
             </div>
           </div>

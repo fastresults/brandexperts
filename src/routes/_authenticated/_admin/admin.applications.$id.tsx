@@ -131,7 +131,7 @@ function ApplicationDetailPage() {
     `Re: Your Launch Pad ATL application`,
   );
   const mailtoBody = encodeURIComponent(
-    `Hi ${firstName},\n\nThanks again for applying to the July 23, 2026 Atlanta selection cohort. `,
+    `Hi ${firstName},\n\nThanks again for applying to the upcoming Atlanta selection cohort. `,
   );
 
   return (

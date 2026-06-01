@@ -3,6 +3,7 @@ import { SiteHeader } from "@/components/site/Header";
 import { SiteFooter } from "@/components/site/Footer";
 import { ValueGrid } from "@/components/value/ValueGrid";
 import { ArtOfThePossible } from "@/components/home/ArtOfThePossible";
+import { useEvent } from "@/lib/use-event";
 import facilitatorPhoto from "@/assets/facilitator.jpg";
 
 import {
@@ -50,6 +51,7 @@ export function HomeSelection({ heroBgUrl }: { heroBgUrl?: string | null }) {
 }
 
 function Hero({ heroBgUrl }: { heroBgUrl: string | null }) {
+  const EVENT = useEvent();
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900">
       {heroBgUrl ? (
@@ -76,13 +78,13 @@ function Hero({ heroBgUrl }: { heroBgUrl: string | null }) {
           We&rsquo;re new to Atlanta — and we&rsquo;re betting on six of you to prove what one
           honest day can do. Apply by <span className="font-medium text-white">June 20</span>. Six
           founders get a free seat at the IGNITE Center on{" "}
-          <span className="font-medium text-white">July 23, 2026</span> — tuition, materials, and
+          <span className="font-medium text-white">{EVENT.dateLabelLong}</span> — tuition, materials, and
           lunch covered. Every other applicant gets a{" "}
           <span className="font-medium text-white">Founder&rsquo;s Discount</span> on the next
           cohort, sent the same day we announce the six.
         </p>
         <p className="mt-4 max-w-2xl text-sm text-white/85 md:text-base">
-          Decisions emailed <span className="font-medium text-white">July 8</span>. There is no
+          Decisions emailed <span className="font-medium text-white">{EVENT.decisionDateLabel}</span>. There is no
           version of this where applying costs you something.
         </p>
 
@@ -102,7 +104,7 @@ function Hero({ heroBgUrl }: { heroBgUrl: string | null }) {
         </div>
 
         <div className="mt-10 grid max-w-3xl grid-cols-1 gap-3 text-white/90 sm:grid-cols-2 lg:grid-cols-4 md:mt-12 md:gap-4">
-          <Meta icon={<Calendar className="size-4" />} label="Thursday, July 23, 2026" />
+          <Meta icon={<Calendar className="size-4" />} label={EVENT.dateLabelLong} />
           <Meta icon={<MapPin className="size-4" />} label="IGNITE Center · Norcross, GA" />
           <Meta icon={<Users className="size-4" />} label="6 founders selected" />
           <Meta icon={<Award className="size-4" />} label="Tuition fully covered" />
