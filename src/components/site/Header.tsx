@@ -34,7 +34,7 @@ export function SiteHeader() {
     staleTime: 60_000,
   });
   const isFreeCohort = settings?.home_variant === "selection";
-  const ctaFull = isFreeCohort ? "Apply — free cohort" : "Reserve seat — from $679";
+  const ctaFull = isFreeCohort ? "Apply — free cohort" : `Reserve seat — from $${PRICING.founders.price}`;
   const ctaShort = isFreeCohort ? "Apply" : "Reserve";
 
   const close = () => setOpen(false);
