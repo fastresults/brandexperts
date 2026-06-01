@@ -1,44 +1,52 @@
-## Push-to-talk voice input for the brief chat
+## Goal
+Add a reliable, cross-browser **push-to-talk voice dictation** mic button to the chat input on `/dashboard/brief`. User taps mic → speaks → taps stop → transcript is appended into the input field, ready to edit or send.
 
-### Approach (Lovable-recommended, cross-browser)
-Lovable's AI Gateway does not expose speech-to-text. Per Lovable docs, the recommended STT pattern is **record in the browser → send audio to a secure backend → call OpenAI Whisper**. This works in every modern browser (Chrome, Safari, Edge, Firefox) — unlike the Web Speech API, which is Chrome-only and unreliable.
+## Tech choice (per prior research)
+- **OpenAI `gpt-4o-mini-transcribe`** — the bulletproof, cross-browser pick. ~$0.003/min, ~2s latency, no Web Speech API gaps in Firefox/iOS Safari.
+- Audio captured in the browser via `MediaRecorder` with mime-type detection (webm/opus on Chrome/Firefox/Edge, mp4/AAC on Safari desktop + iOS).
+- Audio blob uploaded to a TanStack server function that calls OpenAI server-side. Key stays server-only.
 
-Push-to-talk (record → stop → transcribe → paste into the textarea) — no streaming/WebSocket fragility, one round-trip per utterance.
+## Prerequisite
+Add `OPENAI_API_KEY` as a runtime secret (one click in the secure form Lovable surfaces). Nothing happens until it's set.
 
-### Pieces
+## Files to create
+1. **`src/lib/transcribe.functions.ts`** — `transcribeAudio` server function:
+   - Auth-protected via `requireSupabaseAuth` middleware.
+   - Accepts a `FormData` with an `audio` file blob.
+   - POSTs to `https://api.openai.com/v1/audio/transcriptions` with `model: gpt-4o-mini-transcribe`, `response_format: text`.
+   - Returns `{ text: string }` or `{ text: "", error: string }` on failure (graceful).
 
-1. **Secret**: `OPENAI_API_KEY` — requested via `add_secret` (user grabs it from platform.openai.com → API Keys). I'll request this first; the rest goes in once it's set.
+2. **`src/hooks/use-voice-dictation.ts`** — reusable hook:
+   - `start()` → request mic permission, pick best supported mime-type, start `MediaRecorder`.
+   - `stop()` → finalize blob, stop tracks, POST to `transcribeAudio`, return text.
+   - Exposes `{ isRecording, isTranscribing, start, stop, error, elapsedMs }`.
+   - Hard-stops after 60s as a safety guard.
 
-2. **Server route** `src/routes/api/transcribe.ts` (POST):
-   - Verifies the Supabase bearer token so the endpoint isn't open to the world
-   - Accepts `multipart/form-data` with an `audio` field
-   - Validates mime starts with `audio/` and size ≤ 25 MB (Whisper's cap)
-   - Forwards to `https://api.openai.com/v1/audio/transcriptions` with `model=whisper-1`
-   - Returns `{ text }` or `{ error }`; try/catch around the fetch; never leaks the API key
+3. **`src/components/brief/MicButton.tsx`** — UI control:
+   - Idle: mic icon. Recording: pulsing red square (stop) + live timer. Transcribing: spinner.
+   - Tooltip + `aria-label` for accessibility.
+   - Disabled if `busy` (chat is replying).
+   - On success, calls `onTranscript(text)` so the parent appends to the textarea.
 
-3. **Hook** `src/hooks/use-voice-input.ts`:
-   - Uses `MediaRecorder` with the first supported mime (webm/opus → mp4/aac for Safari)
-   - States: `idle` | `recording` | `transcribing` | `error`
-   - `start()` requests mic permission, begins recording
-   - `stop()` finalizes blob, POSTs to `/api/transcribe`, resolves with text
-   - Auto-stops at 60 s; clear toast messages for permission denial, no mic, or API failure
+## File to edit
+**`src/routes/_authenticated/dashboard.brief.tsx`** (the input form, lines ~190–213):
+- Drop `<MicButton onTranscript={(t) => setInput((prev) => prev ? `${prev} ${t}` : t)} disabled={busy} />` between the textarea and the send button.
+- No other layout changes.
 
-4. **MicButton** `src/components/brief/MicButton.tsx`:
-   - Lucide `Mic` (idle) → red pulsing `Square` (recording) → spinning `Loader2` (transcribing)
-   - Live MM:SS timer while recording; tooltip "Tap to speak"
+## UX details
+- First use: browser prompts for mic permission. Clear error toast if denied or unsupported.
+- Live timer ("0:08") while recording so users know it's listening.
+- Transcript is **appended**, not auto-sent — user reviews and hits Enter.
+- Hard cap 60s per dictation; user can dictate again to add more.
 
-5. **Wire into `dashboard.brief.tsx` `ChatPane`**:
-   - Mount `<MicButton />` in the existing input bar, left of Send
-   - On transcript: append to the textarea (`prev ? prev + " " + text : text`) — never overwrite
-   - Re-focus textarea after paste so the user can edit before sending
+## What this is NOT doing
+- No live/streaming transcription (push-to-talk only — simpler, more reliable).
+- No changes to the chat backend, brief logic, or any other page.
+- No client-side audio processing/compression — raw blob is small enough for 60s clips.
 
-### Explicitly NOT doing
-- No auto-send after transcription — user reviews/edits first
-- No Web Speech API (Chrome-only)
-- No mic on the bio textarea — chat only for now
-- No changes to chat prompts, brief spine, or business logic
-
-### Files
-- New: `src/routes/api/transcribe.ts`, `src/hooks/use-voice-input.ts`, `src/components/brief/MicButton.tsx`
-- Edited: `src/routes/_authenticated/dashboard.brief.tsx`
-- Secret: `OPENAI_API_KEY`
+## Acceptance check after build
+1. Mic button appears in the chat input on `/dashboard/brief`.
+2. Click mic → permission prompt → red recording state with timer.
+3. Click stop → spinner → transcript text appears appended in the textarea.
+4. Works in Chrome, Safari desktop, iOS Safari, Firefox, Edge.
+5. Without `OPENAI_API_KEY`, mic returns a clear error toast (no crash).
