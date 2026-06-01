@@ -354,6 +354,7 @@ function FinishedView({ markdown, onReopen, onReset }: { markdown: string; onReo
   // Revise-with-retention only makes sense on the in-progress view, so it's not exposed here.
   const [copied, setCopied] = useState(false);
   const [packaging, setPackaging] = useState(false);
+  const [packageCopied, setPackageCopied] = useState(false);
   const exportPackage = useServerFn(exportCompletePackage);
 
   const copy = async () => {
