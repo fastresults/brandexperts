@@ -40,7 +40,13 @@ export function SiteHeader() {
 
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/5 bg-background/70 backdrop-blur">
+    <header
+      className="sticky top-0 z-50 backdrop-blur-xl backdrop-saturate-150"
+      style={{
+        backgroundColor: "var(--header-bg)",
+        borderBottom: "1px solid var(--header-border)",
+      }}
+    >
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-2 md:px-6">
         <Link
           to="/"
