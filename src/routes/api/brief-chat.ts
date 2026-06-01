@@ -136,17 +136,27 @@ Begin (or continue) the conversation.`;
             inputSchema: z.object({
               markdown: z.string().min(50).max(8000),
               spine_coverage: z
-                .record(SectionEnum, z.number().int().min(0).max(5))
-                .describe("section id -> confidence 0-5 (0 = not covered)"),
+                .array(
+                  z.object({
+                    section: SectionEnum,
+                    confidence: z.number().int().min(0).max(5),
+                  }),
+                )
+                .describe("Coverage per spine section (0 = not covered, 5 = fully covered)"),
             }),
+
             execute: async ({ markdown, spine_coverage }) => {
+              const coverageMap = Object.fromEntries(
+                spine_coverage.map((c) => [c.section, c.confidence]),
+              );
+
               const { error } = await supabaseAdmin
                 .from("attendee_brief_summary")
                 .upsert(
                   {
                     user_id: userId,
                     markdown,
-                    spine_coverage,
+                    spine_coverage: coverageMap,
                     completed_at: new Date().toISOString(),
                     updated_at: new Date().toISOString(),
                   },
