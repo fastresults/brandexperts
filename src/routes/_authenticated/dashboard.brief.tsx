@@ -352,3 +352,54 @@ function FinishedView({ markdown, onReopen, onReset }: { markdown: string; onReo
     </div>
   );
 }
+
+function StartOverButton({
+  onConfirm,
+  variant = "ghost",
+}: {
+  onConfirm: () => void | Promise<void>;
+  variant?: "ghost" | "link";
+}) {
+  const [busy, setBusy] = useState(false);
+  const triggerClass =
+    variant === "link"
+      ? "inline-flex shrink-0 items-center gap-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-destructive"
+      : "inline-flex items-center gap-2 rounded-md border border-destructive/30 bg-transparent px-3.5 py-2 text-xs font-semibold text-destructive/90 transition-colors hover:bg-destructive/10 hover:text-destructive";
+
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <button type="button" className={triggerClass} disabled={busy}>
+          <RotateCcw className="h-3.5 w-3.5" /> Start over
+        </button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Reset your brand brief?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This permanently clears your captured facts, generated brief, and workshop alignment.
+            The conversation will start fresh. This can't be undone.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={busy}>Cancel</AlertDialogCancel>
+          <AlertDialogAction
+            disabled={busy}
+            onClick={async (e) => {
+              e.preventDefault();
+              setBusy(true);
+              try {
+                await onConfirm();
+              } finally {
+                setBusy(false);
+              }
+            }}
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          >
+            {busy ? "Resetting…" : "Yes, start over"}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
