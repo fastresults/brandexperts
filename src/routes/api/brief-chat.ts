@@ -146,6 +146,10 @@ Begin (or continue) the conversation.`;
             }),
 
             execute: async ({ markdown, spine_coverage }) => {
+              const coverageMap = Object.fromEntries(
+                spine_coverage.map((c) => [c.section, c.confidence]),
+              );
+
               const { error } = await supabaseAdmin
                 .from("attendee_brief_summary")
                 .upsert(
