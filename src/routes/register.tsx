@@ -307,7 +307,7 @@ function RegisterDefault() {
               Reserve your seat
             </h2>
             <p className="mt-2 text-muted-foreground">
-              Tell us a bit about your idea so we can tailor the day to your cohort.
+              A few details so we can tailor the room to the operators in it.
             </p>
           </div>
           {submitted ? (
