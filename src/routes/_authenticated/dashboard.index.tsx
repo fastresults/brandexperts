@@ -345,7 +345,7 @@ function AfterMode({
     ? { to: "/dashboard/brief", label: "Finish your filing info", hint: "Your LLC needs a couple more details." }
     : !briefReady
       ? { to: "/dashboard/brief", label: "Polish your brief", hint: "More detail = better deliverables." }
-      : { to: "/dashboard/workflow", label: "Open your 90-day plan", hint: `${generated} of ${total} deliverables ready.` };
+      : { to: "/dashboard/deliverables", label: "See your deliverables", hint: generated > 0 ? `${generated} ready so far.` : "We'll publish them as your strategist finishes each one." };
 
   return (
     <>
