@@ -93,6 +93,7 @@ function BrandBriefPage() {
           await reopenFn();
           await brief.refetch();
         }}
+        onReset={handleReset}
       />
     );
   }
@@ -101,7 +102,10 @@ function BrandBriefPage() {
     <div className="grid h-[calc(100vh-6rem)] grid-cols-1 gap-0 md:grid-cols-[1fr_380px]">
       <div className="flex min-h-0 flex-col">
         <div className="border-b border-white/10 p-4 md:p-5">
-          <h1 className="text-2xl font-semibold tracking-tight">Design your brand operating system</h1>
+          <div className="flex items-start justify-between gap-4">
+            <h1 className="text-2xl font-semibold tracking-tight">Design your brand operating system</h1>
+            <StartOverButton onConfirm={handleReset} variant="link" />
+          </div>
           <p className="mt-1 text-sm text-muted-foreground">
             A conversation with your AI brand strategist. The brief assembles on the right as you go.
           </p>
