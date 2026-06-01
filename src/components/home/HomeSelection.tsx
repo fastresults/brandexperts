@@ -413,7 +413,7 @@ function FinalistOffer() {
             </div>
             <p className="mt-6 text-xs text-muted-foreground">
               Founder&rsquo;s Discount terms are simple — one applicant per email, one use per
-              person, full terms emailed with the code on July 8.
+              person, full terms emailed with the code on {EVENT.decisionDateLabel}.
             </p>
           </div>
         </div>
