@@ -29,7 +29,9 @@ function SignupPage() {
     }
   }, [loading, isAuthenticated, safeRedirect, navigate]);
 
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+
     setSubmitting(true);
     const { error } = await supabase.auth.signUp({
       email,
