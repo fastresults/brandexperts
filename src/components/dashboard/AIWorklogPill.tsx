@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { getMyRecentRuns } from "@/lib/userPipeline.functions";
+import { getMyRecentRuns } from "@/lib/recentRuns.functions";
 import { Sparkle, ChevronUp } from "lucide-react";
 
 // Subtle bottom-right pill that shows the AI working in the background.
