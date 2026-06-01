@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { getFounderProfile } from "@/lib/discovery.functions";
 import { getBrandBrief, reopenBrandBrief } from "@/lib/brand-brief.functions";
 import { BrandBriefImportCard } from "@/components/brief/BrandBriefImportCard";
+import { MicButton } from "@/components/brief/MicButton";
 import { BrandBriefPanel } from "@/components/brief/BrandBriefPanel";
 import { BrandAlignmentPanel } from "@/components/brief/BrandAlignmentPanel";
 import type { BriefFact } from "@/lib/brand-brief";
