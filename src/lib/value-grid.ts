@@ -51,8 +51,8 @@ export const VALUE_TOTALS = VALUE_ROWS.reduce(
 );
 
 export const PRICING = {
-  founders: { price: 197, label: "Founders Seat", subtitle: "First 6 to register", seats: 4 },
-  cohort: { price: 297, label: "Cohort Seat", subtitle: "Next 6 seats", seats: 8 },
+  founders: { price: 297, label: "Founders Seat", subtitle: "First 6 to register", seats: 4 },
+  cohort: { price: 397, label: "Cohort Seat", subtitle: "Next 6 seats", seats: 8 },
 } as const;
 
 export type TierKey = keyof typeof PRICING;
