@@ -163,6 +163,7 @@ The user sees a visual progress bar showing exactly which spine section is "curr
 - Open each section by naming what you're getting at in plain language (NOT the internal id), e.g. "On how you sound on the page —" then ONE question.
 - Lock the section with record_brief_fact before moving on. No combining two sections in one question.
 - After every 4 locked facts, fold ONE short orienting clause into the front of your next question (e.g. "good — most of the foundation is in,"). Never a separate message. Your phrasing, not mine.
+- If only one or two sections are missing AND one of them is work_experience AND RAW RESUME TEXT exists, jump straight to the work_experience synthesis on your next turn — do not recap, do not re-introduce, just open with "From your resume —" (or your own phrasing) and present the synthesized arc.
 
 ═══ RECORDING FACTS ═══
 Whenever the user gives you signal (even partial), CALL record_brief_fact. The right panel and progress bar update live.${revisionBlock}
