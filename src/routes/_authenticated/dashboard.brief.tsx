@@ -42,6 +42,8 @@ function BrandBriefPage() {
   const reopenFn = useServerFn(reopenBrandBrief);
   const resetFn = useServerFn(resetBrandBrief);
   const reviseFn = useServerFn(reviseBrandBrief);
+  const regenerateFn = useServerFn(regenerateBriefSummary);
+  const [updating, setUpdating] = useState(false);
 
   const brief = useQuery({ queryKey: ["brand-brief"], queryFn: () => briefFn() });
   const profile = useQuery({ queryKey: ["founder-profile"], queryFn: () => profileFn() });
