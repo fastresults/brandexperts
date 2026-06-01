@@ -452,13 +452,13 @@ function FinishedView({ markdown, onReopen, onReset }: { markdown: string; onReo
           </button>
           <button
             type="button"
-            onClick={() => void downloadCompletePackage()}
+            onClick={() => void copyCompletePackage()}
             disabled={packaging}
-            title="Download a single markdown file containing every source, every answer, and the final brief"
+            title="Copy a single markdown document with every source, every answer, and the final brief to your clipboard"
             className="inline-flex items-center gap-2 rounded-md border border-primary/30 bg-primary/10 px-3.5 py-2 text-xs font-semibold text-primary transition-colors hover:bg-primary/20 disabled:opacity-60"
           >
             {packaging ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Package className="h-3.5 w-3.5" />}
-            {packaging ? "Building package…" : "Copy complete package"}
+            {packaging ? "Building package…" : packageCopied ? "Copied" : "Copy complete package"}
           </button>
           <button
             type="button"
