@@ -119,7 +119,7 @@ export function RegisterSelection() {
       <section className="py-12 md:py-16">
         <div className="mx-auto max-w-2xl px-6">
           {submitted ? (
-            <SuccessCard />
+            <SuccessCard event={EVENT} />
           ) : (
             <form
               onSubmit={onSubmit}
