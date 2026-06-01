@@ -155,7 +155,24 @@ function BrandBriefPage() {
         <div className="border-b border-white/10 p-4 md:p-5">
           <div className="flex items-start justify-between gap-4">
             <h1 className="text-2xl font-semibold tracking-tight">Design your brand operating system</h1>
-            <ReviseActions onRevise={handleRevise} onReset={handleReset} hasAnswers={facts.length > 0} variant="link" />
+            <div className="flex shrink-0 items-center gap-3">
+              {canUpdate && (
+                <button
+                  type="button"
+                  onClick={() => void handleUpdateBrief()}
+                  disabled={updating}
+                  className="inline-flex items-center gap-2 rounded-md bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-60"
+                >
+                  {updating ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <Sparkles className="h-3.5 w-3.5" />
+                  )}
+                  {updating ? "Updating…" : revisionMode ? "Update brief" : "Generate brief"}
+                </button>
+              )}
+              <ReviseActions onRevise={handleRevise} onReset={handleReset} hasAnswers={facts.length > 0} variant="link" />
+            </div>
           </div>
           <p className="mt-1 text-sm text-muted-foreground">
             A conversation with your AI brand strategist. The brief assembles on the right as you go.
