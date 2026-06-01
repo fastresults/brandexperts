@@ -14,7 +14,7 @@ export function TotalsBar() {
         icon={<Clock className="size-5" />}
         label="Time to build it yourself"
         value={formatHoursRange(VALUE_TOTALS.hoursMin, VALUE_TOTALS.hoursMax)}
-        sub="≈ 2–3 months of nights & weekends"
+        sub="≈ 3–5 weeks of nights & weekends"
       />
       <Stat
         icon={<Sparkles className="size-5" />}

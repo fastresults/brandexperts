@@ -1,53 +1,60 @@
-## Goal
+## Problem
 
-Elevate the body copy across every public-facing page to award-winning, personal-branding-operator caliber — grounded in the 10 tangible benefits you provided (defensible voice, compounding authority, boardroom-grade prep, elevation of every touchpoint, speed on cultural moments, ghostwriter-tax elimination, compounding inbound, knowledge base that appreciates, insulation against AI commoditization, 30-min weekly cadence).
+Current `src/lib/value-grid.ts` totals to **$23,800–$60,200** and **131–324 hrs**. That inflates the stack to enterprise-agency pricing ($15K–$60K), which an executive paying $1K–$1.5K/month for personal branding will read as fantasy. It hurts the credibility of a $297/$397 offer more than it helps it.
 
-## Hard constraints
+## Market reality (2025–2026 personal-brand rates)
 
-- Do NOT change any pills, eyebrow chips, badges, or headlines (h1/h2/h3 hero lines).
-- Do NOT touch dates, seat counts, pricing — keep `useEvent()` / `EVENT.*` dynamic values intact.
-- Do NOT change layout, structure, components, or routing.
-- Preserve the persuasion architecture (contrarian opener, disqualifier, time-compression, scarcity, operator authority, value-stack, public-commitment close).
-- Frontend / copy only — no logic, no schema, no server functions.
+- LinkedIn ghostwriting retainers for execs: **$1,500–$5,000/mo** (typical $2K–$3K)
+- One-off LinkedIn post / POV piece: **$150–$400**
+- Long-form ghostwritten article (800–1,200w): **$500–$1,500**
+- Brand positioning / messaging sprint (boutique): **$1,500–$4,000**
+- Bio package (3 lengths): **$300–$800**
+- AI/exec headshot set: **$50–$300** (AI) up to $800 (light studio)
+- Carousel design: **$150–$500**
+- Newsletter issue ghostwrite: **$300–$800**
+- Keynote opener / talking points: **$500–$1,500**
+- 14-day scheduled social calendar: **$600–$1,500**
+- Content strategy doc (30/90-day): **$800–$2,000**
+- Voice/style guide: **$500–$1,500**
 
-## Pages and components in scope
+A realistic stack total lands around **$8K–$18K** — still 25–60× the Founders price, which is the persuasion job. It just stops sounding made up.
 
-Public routes:
-- `src/routes/index.tsx` (home)
-- `src/routes/facilitator.tsx` + all `src/components/facilitator/*`
-- `src/routes/register.tsx` + `src/components/register/RegisterSelection.tsx`
-- `src/routes/schedule.tsx`
-- `src/routes/contact.tsx`
+DIY hours similarly: drafting one Op-Ed is realistically 4–8 hrs for a busy exec, not 10–24. Total should land near **60–140 hrs** (~1–2 months of nights & weekends), not 2–3 months.
 
-Public components:
-- `src/components/home/HomeSelection.tsx` (paragraph copy, criteria descriptions, step descriptions, timeline blurbs, finalist-offer body, bottom-CTA paragraph)
-- `src/components/home/ArtOfThePossible.tsx` (body paragraphs only)
-- `src/components/value/ValueGrid.tsx`, `PricingTiers.tsx`, `CohortPicker.tsx`, `TotalsBar.tsx` (descriptions, sub-labels, item explanations — not card titles)
-- `src/components/site/Footer.tsx` (tagline / descriptive lines only)
+## Proposed new numbers (`src/lib/value-grid.ts`)
 
-Out of scope: `_authenticated/*`, admin, dashboard, brief/voice/brand/media tools, auth pages (login/signup/reset-password), legal (privacy/terms), email templates, unsubscribe.
+| Deliverable | Old cost | New cost | Old hrs | New hrs |
+|---|---|---|---|---|
+| Brand Blueprint | $5K–$12K | **$1,500–$3,500** | 24–60 | **8–20** |
+| Brand Assessment Report | $2.5K–$6K | **$800–$2,000** | 12–30 | **5–12** |
+| Voice Profile | $3K–$8K | **$500–$1,500** | 16–40 | **4–10** |
+| Three Bios | $800–$2K | **$300–$800** | 4–10 | **2–5** |
+| Executive Headshot Set | $1.2K–$3.5K | **$150–$600** | 4–12 | **2–6** |
+| Op-Ed (800–1,200w) | $1.5K–$4K | **$600–$1,500** | 10–24 | **4–10** |
+| POV post | $400–$1.2K | **$150–$400** | 3–8 | **1–3** |
+| Framework Carousel | $800–$2.5K | **$250–$700** | 6–16 | **3–8** |
+| Keynote Opener + Q&A | $1.5K–$3K | **$500–$1,200** | 8–16 | **3–8** |
+| Newsletter Issue | $600–$1.5K | **$300–$700** | 4–10 | **2–5** |
+| 30-Day Authority Sprint | $1.5K–$3.5K | **$500–$1,200** | 10–24 | **4–10** |
+| 90-Day Newsletter Arc | $2K–$5K | **$600–$1,500** | 12–28 | **4–12** |
+| 14 Days Scheduled Social | $1.5K–$3.5K | **$600–$1,200** | 8–20 | **3–8** |
+| Reusable Content Presets | $500–$1.5K | **$200–$500** | 4–10 | **2–5** |
+| Brand Operating Manual (PDF) | $1K–$3K | **$400–$1,000** | 6–16 | **3–8** |
 
-## Approach
+**New totals: ≈ $7,350–$18,300 · 50–130 hrs (~3–5 weeks of nights & weekends)**
 
-1. Read every file in scope to inventory existing body copy and identify which strings are headline/pill vs. body. Treat anything rendered inside h1/h2/h3, `Badge`, eyebrow span, or pill component as off-limits.
-2. For each body string, rewrite it through the lens of the most-relevant benefit(s) from your 10. Map roughly:
-   - Hero/intro paragraphs → #1 defensible voice + #9 insulation against commoditization
-   - "What you'll walk out with" / value grids → #2 compounding authority + #4 elevation of touchpoints + #10 30-min cadence
-   - "Who this is for" / disqualifier → #1, #6 (ghostwriter tax), #7 (inbound)
-   - Timeline / in-the-room copy → #3 boardroom-grade prep + #5 speed-to-market
-   - Pricing / value-stack support copy → #6 ghostwriter tax + #8 knowledge base appreciates
-   - Final CTA / commitment close → meta-benefit (attention defaults to authentic signal)
-3. Keep the operator-authority voice (Citi/Mayo/3M/Disney + Caribbean government + 5 summits) and Adam's facilitator framing on `facilitator.tsx`.
-4. Tone rules: specific over generic, concrete over abstract, second-person ("you"), no hype words ("revolutionary", "game-changing"), no em-dash overuse, no AI-tells. Each rewritten paragraph must earn its line — cut anything that doesn't.
-5. Length: match or shorten existing copy; never inflate. If a paragraph currently is 2 sentences, the replacement is ≤ 2 sentences.
-6. After edits, grep for the original phrases to confirm nothing was missed, and visually confirm pills/headlines are untouched.
+Still ~25–60× the $297 Founders price and ~20–45× the $397 Cohort price — the value-stack persuasion math holds, and the numbers are defensible to a CFO.
 
-## Technical notes
+## Copy adjustments (downstream)
 
-- All edits are surgical `code--line_replace` calls on string literals inside JSX — no component restructuring.
-- Anything wrapped in `EVENT.*`, `useEvent()`, `cohort.*`, or dynamic interpolation stays as-is; only the static prose around it changes.
-- No new dependencies, no new files.
+- `TotalsBar` / wherever the "≈ 2–3 months of nights & weekends" string lives — change to "≈ 3–5 weeks of nights & weekends" (or read from a single source). I'll grep for the literal and update.
+- No headlines, pills, or pricing change. No structural changes.
 
-## Deliverable
+## Files to edit
 
-A single build-mode pass that rewrites body copy across the files above, leaving pills, headlines, dates, seats, pricing, and structure identical. I'll list the edited files at the end.
+1. `src/lib/value-grid.ts` — replace `marketCostMin/Max` and `diyHoursMin/Max` on all 15 rows per the table above.
+2. `src/components/value/TotalsBar.tsx` (and any other file containing "2–3 months of nights") — update the nights-&-weekends descriptor to match the new hours band.
+
+## Out of scope
+
+Pricing tiers, headlines, pills, dynamic cohort data, persuasion architecture, layout — all untouched.
