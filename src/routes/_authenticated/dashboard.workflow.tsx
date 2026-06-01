@@ -9,6 +9,11 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, Circle, Lock, Loader2, Play } from "lucide-react";
 import { toast } from "sonner";
 
+type RecentRunStep = {
+  deliverable_key: string;
+  status: string;
+};
+
 export const Route = createFileRoute("/_authenticated/dashboard/workflow")({
   component: WorkflowPage,
   head: () => ({ meta: [{ title: "Workflow" }] }),
@@ -116,7 +121,7 @@ function WorkflowPage() {
         <section>
           <h2 className="mb-2 text-sm font-medium uppercase tracking-wide text-muted-foreground">Recent activity</h2>
           <ul className="space-y-1 rounded-xl border border-white/10 bg-card p-4 text-xs">
-            {recent.steps.slice(0, 12).map((s, i) => (
+            {(recent.steps as RecentRunStep[]).slice(0, 12).map((s, i) => (
               <li key={i} className="flex items-center justify-between gap-2">
                 <span className="truncate">{s.deliverable_key}</span>
                 <span className={s.status === "completed" ? "text-green-500" : s.status === "failed" ? "text-red-500" : "text-muted-foreground"}>
