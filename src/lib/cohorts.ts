@@ -167,6 +167,7 @@ export function buildCohortFromRow(row: CohortRow): Cohort {
 
   const anchor = new Date(Date.UTC(y, m - 1, d, 12));
   const dow = DAY_SHORT[anchor.getUTCDay()];
+  const dowLong = DAY_LONG[anchor.getUTCDay()];
   const shortMonth = MONTH_SHORT[m - 1];
   const longMonth = MONTH_LONG[m - 1];
 
