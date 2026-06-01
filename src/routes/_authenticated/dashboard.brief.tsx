@@ -300,6 +300,8 @@ function ChatPane({
 }
 
 function FinishedView({ markdown, onReopen, onReset }: { markdown: string; onReopen: () => void | Promise<void>; onReset: () => void | Promise<void> }) {
+  // FinishedView uses Keep refining (onReopen) and Clear everything (onReset).
+  // Revise-with-retention only makes sense on the in-progress view, so it's not exposed here.
   const [copied, setCopied] = useState(false);
 
   const copy = async () => {
