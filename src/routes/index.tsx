@@ -33,13 +33,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Three hours at the IGNITE Center in Norcross, GA. Twelve seats. You walk in as a title. You walk out operating a Personal Branding Operating System that publishes in your voice, on its own, for the next 90 days and every quarter after.",
+          "Three hours at the IGNITE Center in Norcross, GA. You walk in as a title. You walk out operating a Personal Branding Operating System that publishes in your voice, on its own, for the next 90 days and every quarter after.",
       },
       { property: "og:title", content: "The Executive Brand Intensive — Install a Personal Branding Operating System in one afternoon." },
       {
         property: "og:description",
         content:
-          "July 23, 2026 · IGNITE Center, Norcross, GA. Twelve seats. Installed by a 30-year operator who's built brand systems for Fortune 500 boards, a sovereign government, and the AI-native frontier — for clients who couldn't afford to get it wrong.",
+          "IGNITE Center, Norcross, GA · 1:00–4:00 PM ET. Installed by a 30-year operator who's built brand systems for Fortune 500 boards, a sovereign government, and the AI-native frontier — for clients who couldn't afford to get it wrong.",
       },
     ],
     links: loaderData?.heroBgUrl
