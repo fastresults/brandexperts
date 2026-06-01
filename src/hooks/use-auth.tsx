@@ -17,6 +17,7 @@ type AuthState = {
   isSuperAdmin: boolean;
   isApprovedMember: boolean;
   signOut: () => Promise<void>;
+  refreshAccount: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthState | null>(null);
