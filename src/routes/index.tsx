@@ -138,7 +138,10 @@ function Hero({ heroBgUrl }: { heroBgUrl: string | null }) {
           For executives whose résumé no longer does the work it used to.
         </p>
         <h1 className="max-w-3xl text-4xl font-semibold leading-[1.08] tracking-tight text-white md:text-5xl lg:text-7xl">
-          AI erases your edge. <span className="italic">Install a Personal Branding Operating System that compounds.</span>
+          AI erases your edge.{" "}
+          <span className="italic">
+            Install a <span className="text-primary">Personal Branding Operating System</span> that compounds.
+          </span>
         </h1>
         <p className="mt-5 max-w-2xl text-base text-white/90 md:mt-6 md:text-lg">
           One afternoon at the IGNITE Center in Norcross, GA.{" "}
