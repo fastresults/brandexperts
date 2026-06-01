@@ -78,6 +78,13 @@ function BrandBriefPage() {
           <p className="mt-1 text-sm text-muted-foreground">
             A conversation with your AI brand strategist. The brief assembles on the right as you go.
           </p>
+          <div className="mt-4 rounded-2xl border border-primary/20 bg-primary/5 p-4 text-sm leading-relaxed text-foreground/90">
+            <div className="text-xs font-medium uppercase tracking-wide text-primary">Before your workshop</div>
+            <p className="mt-1.5">
+              Welcome! This short ~10-minute conversation builds your Brand Operating System — the foundation we'll sharpen together in the room. Upload a resume, LinkedIn, or bio to start, then chat at your own pace. Arrive ready, leave with clarity.
+            </p>
+          </div>
+
           <div className="mt-4">
             <BrandBriefImportCard
               importedHeadline={
