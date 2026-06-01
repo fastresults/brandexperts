@@ -150,13 +150,99 @@ function parseLabeledLines(body: string): Record<string, string> {
 }
 
 function parseVoice(body: string): VoiceFields {
-  const labels = parseLabeledLines(body);
+  // Capture leading prose (lines before the first labeled "**Tone**" / "Tone —" line)
+  // as a narrative voice summary.
+  const lines = body.split(/\r?\n/);
+  const labelRegex = /^\s*(?:\*\*)?(Tone|Cadence|Vocabulary|Sample openers|Openers|Never sounds like|Never)\b/i;
+  const summaryLines: string[] = [];
+  const fieldLines: string[] = [];
+  let inFields = false;
+  for (const raw of lines) {
+    if (!inFields && labelRegex.test(raw)) inFields = true;
+    if (inFields) fieldLines.push(raw);
+    else if (raw.trim()) summaryLines.push(raw);
+  }
+  const summaryRaw = summaryLines.join(" ").trim();
+  const labels = parseLabeledLines(fieldLines.join("\n"));
   return {
+    summary: summaryRaw ? stripBoldRuns(summaryRaw) : undefined,
     tone: labels["tone"],
     cadence: labels["cadence"],
     vocabulary: labels["vocabulary"],
     openers: labels["sample openers"] ?? labels["openers"],
     neverSoundsLike: labels["never sounds like"] ?? labels["never"],
+  };
+}
+
+// Pull a "**Domains:** a · b · c" trailing line out of a domain body.
+// Returns the remaining prose and the parsed tags.
+function extractDomainTags(body: string): { prose: string; tags: string[] } {
+  const lines = body.split(/\r?\n/);
+  const tagLineIdx = lines.findIndex((l) =>
+    /^\s*\*?\*?\s*Domains?\s*:?\*?\*?\s*[—–:-]?\s*/i.test(l) && /[·,•|]/.test(l),
+  );
+  if (tagLineIdx === -1) return { prose: body, tags: [] };
+  const tagLine = lines[tagLineIdx];
+  const stripped = stripBoldRuns(tagLine).replace(/^\s*Domains?\s*[:—–-]\s*/i, "");
+  const tags = stripped
+    .split(/\s*[·•|,]\s*/)
+    .map((t) => t.trim())
+    .filter(Boolean)
+    .slice(0, 8);
+  const prose = lines.filter((_, i) => i !== tagLineIdx).join("\n");
+  return { prose, tags };
+}
+
+function parseWorkExperience(body: string): WorkExperience {
+  const lines = body.split(/\r?\n/);
+  const summaryLines: string[] = [];
+  const roleLines: string[] = [];
+  for (const raw of lines) {
+    const trimmed = raw.trim();
+    if (!trimmed) continue;
+    const isBullet = /^([-*•]|\d+[.)])\s+/.test(trimmed);
+    if (isBullet) roleLines.push(trimmed);
+    else summaryLines.push(trimmed);
+  }
+  const roles: WorkExperienceRole[] = [];
+  for (const raw of roleLines) {
+    const line = stripLeadingBullet(raw).trim();
+    // **Role, Company (years)** — outcome
+    const m = line.match(/^\*\*(.+?)\*\*\s*[—–:-]?\s*(.*)$/);
+    let head = "";
+    let outcome = "";
+    if (m) {
+      head = m[1].trim();
+      outcome = m[2].trim();
+    } else {
+      const m2 = line.match(/^(.+?)\s+[—–-]\s+(.+)$/);
+      if (m2) {
+        head = m2[1].trim();
+        outcome = m2[2].trim();
+      } else {
+        head = line;
+      }
+    }
+    // Extract trailing "(years)" / "(2019–2023)" into period.
+    let period: string | undefined;
+    const periodMatch = head.match(/\(([^)]+)\)\s*$/);
+    if (periodMatch) {
+      period = periodMatch[1].trim();
+      head = head.slice(0, periodMatch.index).trim().replace(/[,;]\s*$/, "");
+    }
+    // Split "Role, Company" if a comma is present.
+    let role = head;
+    let company: string | undefined;
+    const commaIdx = head.indexOf(",");
+    if (commaIdx > 0) {
+      role = head.slice(0, commaIdx).trim();
+      company = head.slice(commaIdx + 1).trim();
+    }
+    roles.push({ role, company, period, outcome: outcome || undefined });
+  }
+  return {
+    summary: stripBoldRuns(summaryLines.join(" ")).trim(),
+    roles,
   };
 }
 
