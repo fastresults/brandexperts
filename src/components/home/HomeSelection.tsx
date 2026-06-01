@@ -483,6 +483,7 @@ function Facilitator() {
 }
 
 function BottomCTA() {
+  const EVENT = useEvent();
   return (
     <section className="border-t border-white/5 py-16 md:py-24">
       <div className="mx-auto max-w-3xl px-6 text-center">
@@ -491,7 +492,7 @@ function BottomCTA() {
           <span className="text-gradient-brand">Yours starts with one form.</span>
         </h2>
         <p className="mt-4 text-base text-muted-foreground md:text-lg">
-          Twelve minutes to apply. Decision by July 8. Either a free seat on July 23 — or a{" "}
+          Twelve minutes to apply. Decision by {EVENT.decisionDateLabel}. Either a free seat on {EVENT.shortLabel} — or a{" "}
           {FINALIST_DISCOUNT_PCT}% Founder&rsquo;s Discount and a front-row seat to the launches.
           There is no version of this where applying costs you.
         </p>
