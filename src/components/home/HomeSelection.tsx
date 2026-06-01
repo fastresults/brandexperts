@@ -124,12 +124,13 @@ function Meta({ icon, label }: { icon: React.ReactNode; label: string }) {
 }
 
 function WhyApplyingIsTheMove() {
+  const EVENT = useEvent();
   const cards = [
     {
       icon: <Flame className="size-5 text-primary" />,
       title: "If you&rsquo;re chosen",
       body:
-        "A free seat on July 23 — roughly " +
+        `A free seat on ${EVENT.shortLabel} — roughly ` +
         PIECEMEAL_VALUE +
         " of brand, web, and launch work built with you in one day, and a signed 90-day plan in your hand before you leave.",
     },
