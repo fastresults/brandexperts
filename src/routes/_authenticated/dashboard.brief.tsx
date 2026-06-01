@@ -40,24 +40,48 @@ function BrandBriefPage() {
   const profileFn = useServerFn(getFounderProfile);
   const reopenFn = useServerFn(reopenBrandBrief);
   const resetFn = useServerFn(resetBrandBrief);
-
-  const handleReset = async () => {
-    try {
-      await resetFn();
-      await Promise.all([brief.refetch(), profile.refetch()]);
-      toast.success("Assessment reset — let's start fresh");
-    } catch (err) {
-      toast.error("Couldn't reset the assessment");
-      console.error(err);
-    }
-  };
+  const reviseFn = useServerFn(reviseBrandBrief);
 
   const brief = useQuery({ queryKey: ["brand-brief"], queryFn: () => briefFn() });
   const profile = useQuery({ queryKey: ["founder-profile"], queryFn: () => profileFn() });
 
   const facts = (brief.data?.facts ?? []) as BriefFact[];
   const summary = brief.data?.summary ?? null;
+  const progress = (brief.data?.progress ?? {
+    total: 0,
+    completed: 0,
+    percent: 0,
+    allComplete: false,
+    currentSectionId: null,
+    currentSectionLabel: "",
+    currentIndex: 0,
+    sections: [],
+  }) as BriefProgressData;
   const finished = !!summary?.completed_at;
+  const revisionMode = !finished && facts.length > 0 && !summary;
+
+  const handleRevise = async () => {
+    try {
+      await reviseFn();
+      await Promise.all([brief.refetch(), profile.refetch()]);
+      toast.success("Revision mode — your answers are kept. Walk through what you'd like to change.");
+    } catch (err) {
+      toast.error("Couldn't enter revision mode");
+      console.error(err);
+    }
+  };
+
+  const handleReset = async () => {
+    try {
+      await resetFn();
+      await Promise.all([brief.refetch(), profile.refetch()]);
+      toast.success("Cleared — let's start fresh");
+    } catch (err) {
+      toast.error("Couldn't clear the assessment");
+      console.error(err);
+    }
+  };
+
 
   // Auth-aware transport: attach the bearer token to /api/brief-chat.
   const [transport, setTransport] = useState<DefaultChatTransport<UIMessage> | null>(null);
