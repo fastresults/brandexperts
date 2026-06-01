@@ -472,85 +472,121 @@ export const regenerateBriefSummary = createServerFn({ method: "POST" })
 
 // ----- Export the complete package: every source, answer, and the final brief -----
 
+async function gatherCompletePackageMarkdown(userId: string): Promise<string> {
+  const [factsRes, summaryRes, profileRes, docsRes, alignmentRes, userRes] = await Promise.all([
+    supabaseAdmin
+      .from("attendee_brief_facts")
+      .select("section, value, confidence, updated_at")
+      .eq("user_id", userId),
+    supabaseAdmin
+      .from("attendee_brief_summary")
+      .select("markdown, spine_coverage, completed_at, updated_at")
+      .eq("user_id", userId)
+      .maybeSingle(),
+    supabaseAdmin
+      .from("attendee_founder_profile")
+      .select("extracted, raw_text, source, source_file_path, linkedin_url, extracted_at, unfair_advantage, right_person_reason")
+      .eq("user_id", userId)
+      .maybeSingle(),
+    supabaseAdmin
+      .from("attendee_documents")
+      .select("kind, original_name, mime_type, size_bytes, created_at")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: true }),
+    supabaseAdmin
+      .from("attendee_brief_alignment")
+      .select("items, model, generated_at")
+      .eq("user_id", userId)
+      .maybeSingle(),
+    supabaseAdmin.auth.admin.getUserById(userId),
+  ]);
+
+  if (factsRes.error) throw new Error(factsRes.error.message);
+  if (summaryRes.error) throw new Error(summaryRes.error.message);
+  if (profileRes.error) throw new Error(profileRes.error.message);
+  if (docsRes.error) throw new Error(docsRes.error.message);
+  if (alignmentRes.error) throw new Error(alignmentRes.error.message);
+
+  const authUser = userRes.data?.user ?? null;
+  const meta = (authUser?.user_metadata ?? {}) as Record<string, unknown>;
+  const name =
+    (typeof meta.full_name === "string" && meta.full_name) ||
+    (typeof meta.name === "string" && meta.name) ||
+    null;
+
+  return buildCompletePackageMarkdown({
+    user: { email: authUser?.email ?? null, name },
+    summary: (summaryRes.data ?? null) as BriefSummary | null,
+    facts: (factsRes.data ?? []) as BriefFact[],
+    founderProfile: profileRes.data
+      ? {
+          extracted: (profileRes.data.extracted ?? null) as Record<string, unknown> | null,
+          raw_text: (profileRes.data.raw_text ?? null) as string | null,
+          source: (profileRes.data.source ?? null) as string | null,
+          source_file_path: (profileRes.data.source_file_path ?? null) as string | null,
+          linkedin_url: (profileRes.data.linkedin_url ?? null) as string | null,
+          extracted_at: (profileRes.data.extracted_at ?? null) as string | null,
+          unfair_advantage: (profileRes.data.unfair_advantage ?? null) as string | null,
+          right_person_reason: (profileRes.data.right_person_reason ?? null) as string | null,
+        }
+      : null,
+    documents: (docsRes.data ?? []) as Array<{
+      kind: string;
+      original_name: string;
+      mime_type: string | null;
+      size_bytes: number | null;
+      created_at: string;
+    }>,
+    alignment: alignmentRes.data
+      ? {
+          items: (alignmentRes.data.items ?? []) as AlignmentItem[],
+          model: (alignmentRes.data.model ?? null) as string | null,
+          generated_at: alignmentRes.data.generated_at as string,
+        }
+      : null,
+  });
+}
+
+function packageFilename(ext: string): string {
+  return `brand-brief-complete-${new Date().toISOString().slice(0, 10)}.${ext}`;
+}
+
+function uint8ToBase64(bytes: Uint8Array): string {
+  return Buffer.from(bytes).toString("base64");
+}
+
 export const exportCompletePackage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { userId } = context;
-
-    const [factsRes, summaryRes, profileRes, docsRes, alignmentRes, userRes] = await Promise.all([
-      supabaseAdmin
-        .from("attendee_brief_facts")
-        .select("section, value, confidence, updated_at")
-        .eq("user_id", userId),
-      supabaseAdmin
-        .from("attendee_brief_summary")
-        .select("markdown, spine_coverage, completed_at, updated_at")
-        .eq("user_id", userId)
-        .maybeSingle(),
-      supabaseAdmin
-        .from("attendee_founder_profile")
-        .select("extracted, raw_text, source, source_file_path, linkedin_url, extracted_at, unfair_advantage, right_person_reason")
-        .eq("user_id", userId)
-        .maybeSingle(),
-      supabaseAdmin
-        .from("attendee_documents")
-        .select("kind, original_name, mime_type, size_bytes, created_at")
-        .eq("user_id", userId)
-        .order("created_at", { ascending: true }),
-      supabaseAdmin
-        .from("attendee_brief_alignment")
-        .select("items, model, generated_at")
-        .eq("user_id", userId)
-        .maybeSingle(),
-      supabaseAdmin.auth.admin.getUserById(userId),
-    ]);
-
-    if (factsRes.error) throw new Error(factsRes.error.message);
-    if (summaryRes.error) throw new Error(summaryRes.error.message);
-    if (profileRes.error) throw new Error(profileRes.error.message);
-    if (docsRes.error) throw new Error(docsRes.error.message);
-    if (alignmentRes.error) throw new Error(alignmentRes.error.message);
-
-    const authUser = userRes.data?.user ?? null;
-    const meta = (authUser?.user_metadata ?? {}) as Record<string, unknown>;
-    const name =
-      (typeof meta.full_name === "string" && meta.full_name) ||
-      (typeof meta.name === "string" && meta.name) ||
-      null;
-
-    const markdown = buildCompletePackageMarkdown({
-      user: { email: authUser?.email ?? null, name },
-      summary: (summaryRes.data ?? null) as BriefSummary | null,
-      facts: (factsRes.data ?? []) as BriefFact[],
-      founderProfile: profileRes.data
-        ? {
-            extracted: (profileRes.data.extracted ?? null) as Record<string, unknown> | null,
-            raw_text: (profileRes.data.raw_text ?? null) as string | null,
-            source: (profileRes.data.source ?? null) as string | null,
-            source_file_path: (profileRes.data.source_file_path ?? null) as string | null,
-            linkedin_url: (profileRes.data.linkedin_url ?? null) as string | null,
-            extracted_at: (profileRes.data.extracted_at ?? null) as string | null,
-            unfair_advantage: (profileRes.data.unfair_advantage ?? null) as string | null,
-            right_person_reason: (profileRes.data.right_person_reason ?? null) as string | null,
-          }
-        : null,
-      documents: (docsRes.data ?? []) as Array<{
-        kind: string;
-        original_name: string;
-        mime_type: string | null;
-        size_bytes: number | null;
-        created_at: string;
-      }>,
-      alignment: alignmentRes.data
-        ? {
-            items: (alignmentRes.data.items ?? []) as AlignmentItem[],
-            model: (alignmentRes.data.model ?? null) as string | null,
-            generated_at: alignmentRes.data.generated_at as string,
-          }
-        : null,
-    });
-
+    const markdown = await gatherCompletePackageMarkdown(context.userId);
     return { markdown, filename: buildCompletePackageFilename() };
   });
+
+export const exportCompletePackageDocx = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const markdown = await gatherCompletePackageMarkdown(context.userId);
+    const { buildCompletePackageDocx } = await import("@/lib/complete-package-formats");
+    const bytes = await buildCompletePackageDocx(markdown);
+    return {
+      base64: uint8ToBase64(bytes),
+      filename: packageFilename("docx"),
+      mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    };
+  });
+
+export const exportCompletePackagePdf = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const markdown = await gatherCompletePackageMarkdown(context.userId);
+    const { buildCompletePackagePdf } = await import("@/lib/complete-package-formats");
+    const bytes = await buildCompletePackagePdf(markdown);
+    return {
+      base64: uint8ToBase64(bytes),
+      filename: packageFilename("pdf"),
+      mimeType: "application/pdf",
+    };
+  });
+
 
 
