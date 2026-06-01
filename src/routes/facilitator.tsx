@@ -12,21 +12,21 @@ import { FacilitatorCTA } from "@/components/facilitator/FacilitatorCTA";
 export const Route = createFileRoute("/facilitator")({
   head: () => ({
     meta: [
-      { title: "About Adam Anderson | AI Workshop Facilitator | StartupLabs" },
+      { title: "Adam Anderson — Facilitator, The Executive Brand Intensive" },
       {
         name: "description",
         content:
-          "40 years of brand, tech, and business transformation experience. Adam Anderson teaches entrepreneurs and executives practical AI skills, startup building, and personal brand strategy.",
+          "40 years of brand, tech, and sovereign communications experience. Adam Anderson leads The Executive Brand Intensive — a 3-hour, hands-on workshop that installs an executive personal-brand operating system in your voice.",
       },
-      { property: "og:title", content: "About Adam Anderson | AI Workshop Facilitator | StartupLabs" },
+      { property: "og:title", content: "Adam Anderson — Facilitator, The Executive Brand Intensive" },
       {
         property: "og:description",
         content:
-          "40 years of brand, tech, and business transformation experience. Adam Anderson teaches entrepreneurs and executives practical AI skills, startup building, and personal brand strategy.",
+          "Fortune 500, sovereign cabinet, and AI-native product fluency — translated into an executive brand operating system you walk out owning.",
       },
-      { property: "og:url", content: "https://startuplabs.online/facilitator" },
+      { property: "og:url", content: "https://brandexperts.org/facilitator" },
     ],
-    links: [{ rel: "canonical", href: "https://startuplabs.online/facilitator" }],
+    links: [{ rel: "canonical", href: "https://brandexperts.org/facilitator" }],
   }),
   component: FacilitatorPage,
 });

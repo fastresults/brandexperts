@@ -76,16 +76,16 @@ export const DEFAULT_VENUE = {
 } as const;
 
 export const DEFAULT_PRICING = {
-  foundersPriceCents: 67900,
-  foundersSeats: 7,
-  cohortPriceCents: 99700,
-  cohortSeats: 13,
+  foundersPriceCents: 150000,
+  foundersSeats: 4,
+  cohortPriceCents: 250000,
+  cohortSeats: 8,
 } as const;
 
 // Public-facing seat counts are shown at half of the real internal capacity.
-// Admin / DB / registration pipeline always uses the real internal numbers
-// (so we onboard up to 20). The marketing site shows the scaled-down public
-// numbers (e.g. 10) so the workshop reads as intimate and hands-on.
+// Admin / DB / registration pipeline always uses the real internal numbers.
+// The marketing site shows the scaled-down public numbers so the workshop
+// reads as intimate and hands-on.
 export const PUBLIC_DISPLAY_DIVISOR = 2;
 
 export function toPublicSeats(internal: number): number {
@@ -103,9 +103,9 @@ export function toPublicTaken(
   return Math.min(publicCapacity, Math.max(0, scaled));
 }
 
-const EVENT_TITLE = "Ignite Business Launch Workshop";
+const EVENT_TITLE = "The Executive Brand Intensive";
 const EVENT_DETAILS =
-  "One-day, build-your-business workshop with Adam Anderson. You walk in with an idea, you walk out operationally launch-ready: LLC packet, EIN, offer, website draft, full marketing kit, and a signed 90-day plan. (Anything physical your business needs — space, equipment, inventory — is on you.)";
+  "Three-hour, hands-on executive personal-brand workshop with Adam Anderson. You walk in with a bio, posts, and a headshot — you walk out with a launched personal brand operating system: voice profile, three bios, an Op-Ed, a POV post, a framework carousel, a newsletter, a keynote opener, fourteen days of scheduled posts, and a 30-min weekly cadence already on your calendar.";
 
 const MONTH_LONG = [
   "January", "February", "March", "April", "May", "June",
@@ -133,11 +133,11 @@ const buildIcs = (id: string, startISO: string, endISO: string, location: string
   [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//Ignite Business Launch//EN",
+    "PRODID:-//Executive Brand Intensive//EN",
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
     "BEGIN:VEVENT",
-    `UID:ignite-business-launch-${id}@greateratlantachristian`,
+    `UID:executive-brand-intensive-${id}@greateratlantachristian`,
     `DTSTAMP:${toCalStamp(new Date().toISOString())}`,
     `DTSTART:${toCalStamp(startISO)}`,
     `DTEND:${toCalStamp(endISO)}`,
@@ -203,7 +203,7 @@ export function buildCohortFromRow(row: CohortRow): Cohort {
     mapsUrl,
     googleCalendarUrl: buildGoogleUrl(startISO, endISO, venueLine),
     icsHref: `data:text/calendar;charset=utf-8,${encodeURIComponent(buildIcs(row.id, startISO, endISO, venueLine))}`,
-    icsFilename: `ignite-business-launch-${row.id}.ics`,
+    icsFilename: `executive-brand-intensive-${row.id}.ics`,
   };
 }
 
@@ -235,10 +235,10 @@ export function formatPriceCents(cents: number): string {
 // imports of `EVENT` continue to work without crashing.
 export const FALLBACK_COHORT: Cohort = buildCohortFromRow({
   id: "fallback",
-  cohort_date: "2026-07-15",
+  cohort_date: "2026-07-23",
   tz: "EDT",
-  start_time: "08:00",
-  end_time: "16:30",
+  start_time: "13:00",
+  end_time: "16:00",
   status: "open",
   seats_left: null,
   venue_name: DEFAULT_VENUE.name,
