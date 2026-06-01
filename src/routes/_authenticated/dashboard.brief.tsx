@@ -359,13 +359,16 @@ function ChatPane({
   );
 }
 
+type PackageFormat = "copy-md" | "copy-txt" | "dl-md" | "dl-txt" | "dl-docx" | "dl-pdf";
+
 function FinishedView({ markdown, onReopen, onReset }: { markdown: string; onReopen: () => void | Promise<void>; onReset: () => void | Promise<void> }) {
   // FinishedView uses Keep refining (onReopen) and Clear everything (onReset).
   // Revise-with-retention only makes sense on the in-progress view, so it's not exposed here.
   const [copied, setCopied] = useState(false);
-  const [packaging, setPackaging] = useState(false);
-  const [packageCopied, setPackageCopied] = useState(false);
+  const [busyFormat, setBusyFormat] = useState<PackageFormat | null>(null);
   const exportPackage = useServerFn(exportCompletePackage);
+  const exportPackageDocx = useServerFn(exportCompletePackageDocx);
+  const exportPackagePdf = useServerFn(exportCompletePackagePdf);
 
   const copy = async () => {
     try {
@@ -390,41 +393,73 @@ function FinishedView({ markdown, onReopen, onReset }: { markdown: string; onReo
     URL.revokeObjectURL(url);
   };
 
-  const copyCompletePackage = async () => {
-    if (packaging) return;
-    setPackaging(true);
+  const sizeLabel = (n: number) =>
+    n < 1024
+      ? `${n} B`
+      : n < 1024 * 1024
+      ? `${(n / 1024).toFixed(1)} KB`
+      : `${(n / 1024 / 1024).toFixed(2)} MB`;
+
+  const triggerBlobDownload = (data: Blob | Uint8Array, filename: string, mimeType: string) => {
+    const blob = data instanceof Blob ? data : new Blob([data], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  const base64ToBytes = (b64: string): Uint8Array => {
+    const bin = atob(b64);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return bytes;
+  };
+
+  const handleExport = async (format: PackageFormat) => {
+    if (busyFormat) return;
+    setBusyFormat(format);
     try {
-      const { markdown: pkg, filename } = await exportPackage();
-      const sizeLabel =
-        pkg.length < 1024
-          ? `${pkg.length} B`
-          : pkg.length < 1024 * 1024
-          ? `${(pkg.length / 1024).toFixed(1)} KB`
-          : `${(pkg.length / 1024 / 1024).toFixed(2)} MB`;
-      try {
-        await navigator.clipboard.writeText(pkg);
-        setPackageCopied(true);
-        toast.success(`Complete package copied — ${sizeLabel} on your clipboard`);
-        setTimeout(() => setPackageCopied(false), 2500);
-      } catch {
-        // Clipboard blocked (permissions, insecure context, payload too large) — fall back to download.
-        const blob = new Blob([pkg], { type: "text/markdown;charset=utf-8" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
-        toast.success(`Clipboard blocked — downloaded the package (${sizeLabel}) instead`);
+      if (format === "copy-md" || format === "copy-txt" || format === "dl-md" || format === "dl-txt") {
+        const { markdown: pkg, filename } = await exportPackage();
+        const content = format === "copy-txt" || format === "dl-txt" ? markdownToPlainText(pkg) : pkg;
+        const ext = format === "copy-txt" || format === "dl-txt" ? "txt" : "md";
+        const mime = ext === "txt" ? "text/plain;charset=utf-8" : "text/markdown;charset=utf-8";
+        const outName = filename.replace(/\.md$/, `.${ext}`);
+
+        if (format === "copy-md" || format === "copy-txt") {
+          try {
+            await navigator.clipboard.writeText(content);
+            toast.success(`Complete package copied — ${sizeLabel(content.length)} on your clipboard`);
+          } catch {
+            triggerBlobDownload(new Blob([content], { type: mime }), outName, mime);
+            toast.success(`Clipboard blocked — downloaded the package (${sizeLabel(content.length)}) instead`);
+          }
+        } else {
+          triggerBlobDownload(new Blob([content], { type: mime }), outName, mime);
+          toast.success(`Downloaded ${outName} (${sizeLabel(content.length)})`);
+        }
+      } else if (format === "dl-docx") {
+        const { base64, filename, mimeType } = await exportPackageDocx();
+        const bytes = base64ToBytes(base64);
+        triggerBlobDownload(bytes, filename, mimeType);
+        toast.success(`Downloaded ${filename} (${sizeLabel(bytes.byteLength)})`);
+      } else if (format === "dl-pdf") {
+        const { base64, filename, mimeType } = await exportPackagePdf();
+        const bytes = base64ToBytes(base64);
+        triggerBlobDownload(bytes, filename, mimeType);
+        toast.success(`Downloaded ${filename} (${sizeLabel(bytes.byteLength)})`);
       }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Couldn't build the complete package");
     } finally {
-      setPackaging(false);
+      setBusyFormat(null);
     }
   };
+
 
 
   const sections = parseBrief(markdown);
