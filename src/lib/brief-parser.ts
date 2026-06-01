@@ -14,6 +14,7 @@ export interface ExpertisePillar {
 }
 
 export interface VoiceFields {
+  summary?: string;
   tone?: string;
   cadence?: string;
   vocabulary?: string;
@@ -21,12 +22,26 @@ export interface VoiceFields {
   neverSoundsLike?: string;
 }
 
+export interface WorkExperienceRole {
+  role: string;
+  company?: string;
+  period?: string;
+  outcome?: string;
+}
+
+export interface WorkExperience {
+  summary: string;
+  roles: WorkExperienceRole[];
+}
+
 export interface ParsedBrief {
   title?: string;
   positioning?: string;
   snapshot?: string;
   identity?: string;
+  workExperience?: WorkExperience;
   domain?: string;
+  domainTags: string[];
   expertise: ExpertisePillar[];
   audience?: string;
   audiencePain?: string;
