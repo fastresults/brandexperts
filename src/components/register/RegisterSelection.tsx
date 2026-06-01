@@ -49,6 +49,7 @@ const FormSchema = z.object({
 type FormValues = z.infer<typeof FormSchema>;
 
 export function RegisterSelection() {
+  const EVENT = useEvent();
   const [submitted, setSubmitted] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const submit = useServerFn(submitFounderApplication);
