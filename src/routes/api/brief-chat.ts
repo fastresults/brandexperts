@@ -46,7 +46,7 @@ export const Route = createFileRoute("/api/brief-chat")({
         if (!Array.isArray(messages)) return new Response("messages required", { status: 400 });
 
         // ---- Ground the model: load resume extract + existing facts ----
-        const [profileRes, factsRes] = await Promise.all([
+        const [profileRes, factsRes, summaryRes] = await Promise.all([
           supabaseAdmin
             .from("attendee_founder_profile")
             .select("extracted, raw_text, linkedin_url, source")
@@ -56,6 +56,11 @@ export const Route = createFileRoute("/api/brief-chat")({
             .from("attendee_brief_facts")
             .select("section, value, confidence")
             .eq("user_id", userId),
+          supabaseAdmin
+            .from("attendee_brief_summary")
+            .select("completed_at")
+            .eq("user_id", userId)
+            .maybeSingle(),
         ]);
 
         const extracted = (profileRes.data?.extracted ?? null) as Record<string, unknown> | null;
