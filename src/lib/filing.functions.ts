@@ -20,13 +20,13 @@ const FilingInput = z.object({
   business_purpose: z.string().trim().max(2000).optional().nullable(),
 });
 
-// Columns safe to return to the client. Excludes `ssn_full` — only `ssn_last4`
-// is exposed for display. The full SSN is write-only via updateMyFiling.
-const FILING_SELECT =
-  "id, user_id, legal_first_name, legal_last_name, dob, ssn_last4, " +
-  "address_line1, address_line2, city, state, postal_code, country, " +
-  "llc_name, registered_agent_name, registered_agent_address, " +
-  "business_purpose, created_at, updated_at";
+// Strip `ssn_full` before returning to the client — only `ssn_last4` is exposed
+// for display. The full SSN is write-only via updateMyFiling.
+function redactFiling<T extends Record<string, any> | null>(row: T): T {
+  if (!row) return row;
+  const { ssn_full: _omit, ...rest } = row as Record<string, any>;
+  return rest as T;
+}
 
 export const getMyFiling = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
@@ -34,7 +34,7 @@ export const getMyFiling = createServerFn({ method: "GET" })
     const { supabase, userId } = context;
     const { data, error } = await supabase
       .from("attendee_filing_info")
-      .select(FILING_SELECT)
+      .select("*")
       .eq("user_id", userId)
       .maybeSingle();
     if (error) throw new Error(error.message);
@@ -42,12 +42,12 @@ export const getMyFiling = createServerFn({ method: "GET" })
       const { data: ins, error: insErr } = await supabase
         .from("attendee_filing_info")
         .insert({ user_id: userId })
-        .select(FILING_SELECT)
+        .select("*")
         .single();
       if (insErr) throw new Error(insErr.message);
-      return { filing: ins };
+      return { filing: redactFiling(ins) };
     }
-    return { filing: data };
+    return { filing: redactFiling(data) };
   });
 
 export const updateMyFiling = createServerFn({ method: "POST" })
