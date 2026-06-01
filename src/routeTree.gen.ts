@@ -31,6 +31,7 @@ import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/em
 import { Route as AuthenticatedDashboardWorkflowRouteImport } from './routes/_authenticated/dashboard.workflow'
 import { Route as AuthenticatedDashboardProfileRouteImport } from './routes/_authenticated/dashboard.profile'
 import { Route as AuthenticatedDashboardMediaRouteImport } from './routes/_authenticated/dashboard.media'
+import { Route as AuthenticatedDashboardMaterialsRouteImport } from './routes/_authenticated/dashboard.materials'
 import { Route as AuthenticatedDashboardGoalsRouteImport } from './routes/_authenticated/dashboard.goals'
 import { Route as AuthenticatedDashboardFilingRouteImport } from './routes/_authenticated/dashboard.filing'
 import { Route as AuthenticatedDashboardFilesRouteImport } from './routes/_authenticated/dashboard.files'
@@ -173,6 +174,12 @@ const AuthenticatedDashboardMediaRoute =
   AuthenticatedDashboardMediaRouteImport.update({
     id: '/media',
     path: '/media',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardMaterialsRoute =
+  AuthenticatedDashboardMaterialsRouteImport.update({
+    id: '/materials',
+    path: '/materials',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
 const AuthenticatedDashboardGoalsRoute =
@@ -386,6 +393,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/files': typeof AuthenticatedDashboardFilesRoute
   '/dashboard/filing': typeof AuthenticatedDashboardFilingRoute
   '/dashboard/goals': typeof AuthenticatedDashboardGoalsRoute
+  '/dashboard/materials': typeof AuthenticatedDashboardMaterialsRoute
   '/dashboard/media': typeof AuthenticatedDashboardMediaRoute
   '/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
   '/dashboard/workflow': typeof AuthenticatedDashboardWorkflowRouteWithChildren
@@ -438,6 +446,7 @@ export interface FileRoutesByTo {
   '/dashboard/files': typeof AuthenticatedDashboardFilesRoute
   '/dashboard/filing': typeof AuthenticatedDashboardFilingRoute
   '/dashboard/goals': typeof AuthenticatedDashboardGoalsRoute
+  '/dashboard/materials': typeof AuthenticatedDashboardMaterialsRoute
   '/dashboard/media': typeof AuthenticatedDashboardMediaRoute
   '/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
   '/dashboard/workflow': typeof AuthenticatedDashboardWorkflowRouteWithChildren
@@ -494,6 +503,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/files': typeof AuthenticatedDashboardFilesRoute
   '/_authenticated/dashboard/filing': typeof AuthenticatedDashboardFilingRoute
   '/_authenticated/dashboard/goals': typeof AuthenticatedDashboardGoalsRoute
+  '/_authenticated/dashboard/materials': typeof AuthenticatedDashboardMaterialsRoute
   '/_authenticated/dashboard/media': typeof AuthenticatedDashboardMediaRoute
   '/_authenticated/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
   '/_authenticated/dashboard/workflow': typeof AuthenticatedDashboardWorkflowRouteWithChildren
@@ -549,6 +559,7 @@ export interface FileRouteTypes {
     | '/dashboard/files'
     | '/dashboard/filing'
     | '/dashboard/goals'
+    | '/dashboard/materials'
     | '/dashboard/media'
     | '/dashboard/profile'
     | '/dashboard/workflow'
@@ -601,6 +612,7 @@ export interface FileRouteTypes {
     | '/dashboard/files'
     | '/dashboard/filing'
     | '/dashboard/goals'
+    | '/dashboard/materials'
     | '/dashboard/media'
     | '/dashboard/profile'
     | '/dashboard/workflow'
@@ -656,6 +668,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/files'
     | '/_authenticated/dashboard/filing'
     | '/_authenticated/dashboard/goals'
+    | '/_authenticated/dashboard/materials'
     | '/_authenticated/dashboard/media'
     | '/_authenticated/dashboard/profile'
     | '/_authenticated/dashboard/workflow'
@@ -861,6 +874,13 @@ declare module '@tanstack/react-router' {
       path: '/media'
       fullPath: '/dashboard/media'
       preLoaderRoute: typeof AuthenticatedDashboardMediaRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/materials': {
+      id: '/_authenticated/dashboard/materials'
+      path: '/materials'
+      fullPath: '/dashboard/materials'
+      preLoaderRoute: typeof AuthenticatedDashboardMaterialsRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
     '/_authenticated/dashboard/goals': {
@@ -1188,6 +1208,7 @@ interface AuthenticatedDashboardRouteChildren {
   AuthenticatedDashboardFilesRoute: typeof AuthenticatedDashboardFilesRoute
   AuthenticatedDashboardFilingRoute: typeof AuthenticatedDashboardFilingRoute
   AuthenticatedDashboardGoalsRoute: typeof AuthenticatedDashboardGoalsRoute
+  AuthenticatedDashboardMaterialsRoute: typeof AuthenticatedDashboardMaterialsRoute
   AuthenticatedDashboardMediaRoute: typeof AuthenticatedDashboardMediaRoute
   AuthenticatedDashboardProfileRoute: typeof AuthenticatedDashboardProfileRoute
   AuthenticatedDashboardWorkflowRoute: typeof AuthenticatedDashboardWorkflowRouteWithChildren
@@ -1205,6 +1226,7 @@ const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
     AuthenticatedDashboardFilesRoute: AuthenticatedDashboardFilesRoute,
     AuthenticatedDashboardFilingRoute: AuthenticatedDashboardFilingRoute,
     AuthenticatedDashboardGoalsRoute: AuthenticatedDashboardGoalsRoute,
+    AuthenticatedDashboardMaterialsRoute: AuthenticatedDashboardMaterialsRoute,
     AuthenticatedDashboardMediaRoute: AuthenticatedDashboardMediaRoute,
     AuthenticatedDashboardProfileRoute: AuthenticatedDashboardProfileRoute,
     AuthenticatedDashboardWorkflowRoute:
