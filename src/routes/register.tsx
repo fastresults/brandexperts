@@ -370,11 +370,11 @@ function RegisterDefault() {
                     ))}
                   </select>
                 </Field>
-                <Field label="Where are you today?" error={errors.stage?.message}>
+                <Field label="Where's your brand today?" error={errors.stage?.message}>
                   <select {...register("stage")} className="input">
-                    <option value="idea">Just an idea</option>
-                    <option value="early">Early — testing it</option>
-                    <option value="existing">Existing business</option>
+                    <option value="idea">Defining it</option>
+                    <option value="early">Publishing inconsistently</option>
+                    <option value="existing">Established and scaling</option>
                   </select>
                 </Field>
               </div>
