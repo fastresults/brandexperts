@@ -28,7 +28,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [memberStatus, setMemberStatus] = useState<MemberStatus>("pending");
-  const [approvedVia, setApprovedVia] = useState<"admin" | "payment" | null>(null);
+  const [approvedVia, setApprovedVia] = useState<"admin" | "payment" | "brief" | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
