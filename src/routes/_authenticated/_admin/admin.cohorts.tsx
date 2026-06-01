@@ -117,6 +117,7 @@ function CohortsAdminPage() {
   const listFn = useServerFn(listCohorts);
   const upsertFn = useServerFn(upsertCohort);
   const deleteFn = useServerFn(deleteCohort);
+  const setStatusFn = useServerFn(setCohortStatus);
 
   const { data: cohorts = [], isLoading } = useQuery({
     queryKey: ["cohorts"],
