@@ -1,0 +1,2 @@
+ALTER TABLE public.profiles DROP CONSTRAINT IF EXISTS profiles_approved_via_chk;
+ALTER TABLE public.profiles ADD CONSTRAINT profiles_approved_via_chk CHECK (approved_via IS NULL OR approved_via = ANY (ARRAY['admin'::text, 'payment'::text, 'brief'::text]));
