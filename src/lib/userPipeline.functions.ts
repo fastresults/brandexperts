@@ -474,9 +474,9 @@ export const adminRunForUser = createServerFn({ method: "POST" })
     return { runId: run!.id, total: toRun.length, failed };
   });
 
-// `getMyRecentRuns` moved to `recentRuns.functions.ts` to avoid loading this
-// whole module for the AIWorklogPill polling query.
-export { getMyRecentRuns } from "./recentRuns.functions";
+// `getMyRecentRuns` lives in `recentRuns.functions.ts` — import it from there.
+
+
 
 // Admin: read another user's workflow grid
 const AdminWorkflowInput = z.object({ userId: z.string().uuid() });
