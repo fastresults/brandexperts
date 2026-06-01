@@ -354,6 +354,7 @@ function FinishedView({ markdown, onReopen, onReset }: { markdown: string; onReo
   // Revise-with-retention only makes sense on the in-progress view, so it's not exposed here.
   const [copied, setCopied] = useState(false);
   const [packaging, setPackaging] = useState(false);
+  const [packageCopied, setPackageCopied] = useState(false);
   const exportPackage = useServerFn(exportCompletePackage);
 
   const copy = async () => {
@@ -379,27 +380,42 @@ function FinishedView({ markdown, onReopen, onReset }: { markdown: string; onReo
     URL.revokeObjectURL(url);
   };
 
-  const downloadCompletePackage = async () => {
+  const copyCompletePackage = async () => {
     if (packaging) return;
     setPackaging(true);
     try {
       const { markdown: pkg, filename } = await exportPackage();
-      const blob = new Blob([pkg], { type: "text/markdown;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-      toast.success("Complete package downloaded");
+      const sizeLabel =
+        pkg.length < 1024
+          ? `${pkg.length} B`
+          : pkg.length < 1024 * 1024
+          ? `${(pkg.length / 1024).toFixed(1)} KB`
+          : `${(pkg.length / 1024 / 1024).toFixed(2)} MB`;
+      try {
+        await navigator.clipboard.writeText(pkg);
+        setPackageCopied(true);
+        toast.success(`Complete package copied — ${sizeLabel} on your clipboard`);
+        setTimeout(() => setPackageCopied(false), 2500);
+      } catch {
+        // Clipboard blocked (permissions, insecure context, payload too large) — fall back to download.
+        const blob = new Blob([pkg], { type: "text/markdown;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        toast.success(`Clipboard blocked — downloaded the package (${sizeLabel}) instead`);
+      }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Couldn't build the complete package");
     } finally {
       setPackaging(false);
     }
   };
+
 
   const sections = parseBrief(markdown);
 
@@ -436,13 +452,13 @@ function FinishedView({ markdown, onReopen, onReset }: { markdown: string; onReo
           </button>
           <button
             type="button"
-            onClick={() => void downloadCompletePackage()}
+            onClick={() => void copyCompletePackage()}
             disabled={packaging}
-            title="Download a single markdown file containing every source, every answer, and the final brief"
+            title="Copy a single markdown document with every source, every answer, and the final brief to your clipboard"
             className="inline-flex items-center gap-2 rounded-md border border-primary/30 bg-primary/10 px-3.5 py-2 text-xs font-semibold text-primary transition-colors hover:bg-primary/20 disabled:opacity-60"
           >
             {packaging ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Package className="h-3.5 w-3.5" />}
-            {packaging ? "Building package…" : "Copy complete package"}
+            {packaging ? "Building package…" : packageCopied ? "Copied" : "Copy complete package"}
           </button>
           <button
             type="button"
