@@ -54,7 +54,54 @@ export function LedgerBrief({ sections }: { sections: ParsedBrief }) {
         </section>
       )}
 
-      {/* 02. Domain + 03. Expertise (two columns when both present) */}
+      {/* 02. Work experience — featured, full-width résumé rail */}
+      {showWorkExperience && sections.workExperience && (
+        <section className="rounded-xl border border-white/5 bg-muted/20 p-10 md:col-span-12">
+          <SectionMark n={num()} title="Work experience" />
+          {sections.workExperience.summary && (
+            <p className="mb-8 max-w-3xl text-lg font-light leading-relaxed text-foreground/90">
+              {sections.workExperience.summary}
+            </p>
+          )}
+          {sections.workExperience.roles.length > 0 && (
+            <ul className="divide-y divide-border/40">
+              {sections.workExperience.roles.map((r, i) => (
+                <li
+                  key={i}
+                  className="grid grid-cols-1 gap-2 py-4 md:grid-cols-12 md:gap-6"
+                >
+                  <div className="md:col-span-5">
+                    <div className="text-sm font-semibold text-foreground">
+                      {r.role}
+                    </div>
+                    {r.company && (
+                      <div className="text-xs uppercase tracking-wide text-muted-foreground">
+                        {r.company}
+                      </div>
+                    )}
+                  </div>
+                  <div className="md:col-span-2">
+                    {r.period && (
+                      <span className="text-xs font-medium tracking-wide text-muted-foreground">
+                        {r.period}
+                      </span>
+                    )}
+                  </div>
+                  <div className="md:col-span-5">
+                    {r.outcome && (
+                      <p className="text-sm leading-relaxed text-foreground/75">
+                        {r.outcome}
+                      </p>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
+
+      {/* 03. Domain + 04. Expertise (two columns when both present) */}
       {(sections.domain || sections.expertise.length > 0) && (
         <>
           {sections.domain && (
@@ -63,6 +110,18 @@ export function LedgerBrief({ sections }: { sections: ParsedBrief }) {
               <p className="text-lg font-medium text-foreground/80">
                 {sections.domain}
               </p>
+              {sections.domainTags.length > 0 && (
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {sections.domainTags.map((tag, i) => (
+                    <span
+                      key={i}
+                      className="rounded-full border border-border/60 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-foreground/70"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
             </section>
           )}
           {sections.expertise.length > 0 && (
