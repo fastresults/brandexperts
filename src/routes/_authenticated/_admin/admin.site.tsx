@@ -104,7 +104,7 @@ function VariantCard({
     {
       value: "selection",
       label: "Selection — Free Cohort",
-      desc: "Inaugural Atlanta cohort. 6 selected founders. Free. July 23, 2026.",
+      desc: "Inaugural Atlanta cohort. 6 selected founders. Free.",
     },
   ];
   return (
