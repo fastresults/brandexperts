@@ -511,8 +511,8 @@ function SuccessCard({
   const bring = [
     "Your laptop and charger",
     "Headphones (optional)",
-    "Any existing brand assets / domain ideas",
-    "An open mind and your business idea",
+    "Any existing bios, headshots, or links you want pulled in",
+    "The executive POV you're ready to make public",
   ];
   const tierLabel = tier === "founders" ? "Founders Seat" : "Cohort Seat";
   return (
