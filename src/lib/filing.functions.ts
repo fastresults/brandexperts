@@ -20,13 +20,21 @@ const FilingInput = z.object({
   business_purpose: z.string().trim().max(2000).optional().nullable(),
 });
 
+// Columns safe to return to the client. Excludes `ssn_full` — only `ssn_last4`
+// is exposed for display. The full SSN is write-only via updateMyFiling.
+const FILING_SELECT =
+  "id, user_id, legal_first_name, legal_last_name, dob, ssn_last4, " +
+  "address_line1, address_line2, city, state, postal_code, country, " +
+  "llc_name, registered_agent_name, registered_agent_address, " +
+  "business_purpose, created_at, updated_at";
+
 export const getMyFiling = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
     const { data, error } = await supabase
       .from("attendee_filing_info")
-      .select("*")
+      .select(FILING_SELECT)
       .eq("user_id", userId)
       .maybeSingle();
     if (error) throw new Error(error.message);
@@ -34,7 +42,7 @@ export const getMyFiling = createServerFn({ method: "GET" })
       const { data: ins, error: insErr } = await supabase
         .from("attendee_filing_info")
         .insert({ user_id: userId })
-        .select("*")
+        .select(FILING_SELECT)
         .single();
       if (insErr) throw new Error(insErr.message);
       return { filing: ins };
