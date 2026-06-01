@@ -288,13 +288,25 @@ function CohortsAdminPage() {
                   </td>
 
                   <td className="px-4 py-3">
-                    <span className={`rounded-full px-2 py-0.5 text-xs ${
-                      c.status === "sold_out" ? "bg-white/5 text-muted-foreground" :
-                      c.status === "filling" ? "bg-amber-400/15 text-amber-300" :
-                      "bg-emerald-400/15 text-emerald-300"
-                    }`}>
-                      {c.status === "sold_out" ? "Sold out" : c.status === "filling" ? "Filling" : "Open"}
-                    </span>
+                    <div className="flex flex-col gap-1.5">
+                      <span className={`inline-block w-fit rounded-full px-2 py-0.5 text-xs ${
+                        c.status === "sold_out" ? "bg-white/5 text-muted-foreground" :
+                        c.status === "filling" ? "bg-amber-400/15 text-amber-300" :
+                        "bg-emerald-400/15 text-emerald-300"
+                      }`}>
+                        {c.status === "sold_out" ? "Sold out" : c.status === "filling" ? "Filling" : "Open"}
+                      </span>
+                      <label className="inline-flex cursor-pointer items-center gap-1.5 text-[11px] text-muted-foreground">
+                        <input
+                          type="checkbox"
+                          className="size-3.5 cursor-pointer accent-primary"
+                          checked={c.status === "sold_out"}
+                          disabled={toggleSoldOut.isPending}
+                          onChange={(e) => toggleSoldOut.mutate({ id: c.id, soldOut: e.target.checked })}
+                        />
+                        Sold out (override)
+                      </label>
+                    </div>
                   </td>
                   <td className="px-4 py-3 text-xs leading-relaxed">
                     <div>
