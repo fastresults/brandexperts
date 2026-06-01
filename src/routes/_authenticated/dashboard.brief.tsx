@@ -214,7 +214,14 @@ function BrandBriefPage() {
         />
       </div>
 
-      <BrandBriefPanel facts={facts} onChanged={() => { void brief.refetch(); }} />
+      <BrandBriefPanel
+        facts={facts}
+        onChanged={() => { void brief.refetch(); }}
+        onUpdateBrief={canUpdate ? handleUpdateBrief : undefined}
+        updating={updating}
+        revisionMode={revisionMode}
+      />
+
     </div>
   );
 }
