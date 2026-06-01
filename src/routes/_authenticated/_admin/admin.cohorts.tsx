@@ -186,6 +186,16 @@ function CohortsAdminPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const toggleSoldOut = useMutation({
+    mutationFn: (vars: { id: string; soldOut: boolean }) =>
+      setStatusFn({ data: { id: vars.id, status: vars.soldOut ? "sold_out" : "open" } }),
+    onSuccess: (_d, vars) => {
+      toast.success(vars.soldOut ? "Marked sold out" : "Reopened");
+      qc.invalidateQueries({ queryKey: ["cohorts"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   if (loading) return <div className="text-sm text-muted-foreground">Loading…</div>;
   if (!isSuperAdmin) return <Navigate to="/admin" replace />;
 
