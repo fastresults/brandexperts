@@ -119,6 +119,14 @@ const MONTH_SHORT = [
   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
 ];
 const DAY_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const DAY_LONG = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+// Format a "M D, YYYY" label from a date offset N days before another date.
+function formatOffsetDateLabel(baseISO: string, daysBefore: number): string {
+  const d = new Date(baseISO);
+  d.setUTCDate(d.getUTCDate() - daysBefore);
+  return `${MONTH_LONG[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`;
+}
 
 const toCalStamp = (iso: string) =>
   new Date(iso).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
