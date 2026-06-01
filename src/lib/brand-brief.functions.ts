@@ -358,3 +358,114 @@ export const regenerateBriefAlignment = createServerFn({ method: "POST" })
 
     return { items, model: ALIGNMENT_MODEL, generated_at: nowIso, updated_at: nowIso };
   });
+
+// ----- Regenerate the final brief on demand (e.g. after the user revised answers) -----
+
+const SUMMARY_MODEL = "google/gemini-2.5-pro";
+
+export const regenerateBriefSummary = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { userId } = context;
+
+    const [factsRes, profileRes] = await Promise.all([
+      supabaseAdmin
+        .from("attendee_brief_facts")
+        .select("section, value, confidence")
+        .eq("user_id", userId),
+      supabaseAdmin
+        .from("attendee_founder_profile")
+        .select("extracted, raw_text")
+        .eq("user_id", userId)
+        .maybeSingle(),
+    ]);
+    if (factsRes.error) throw new Error(factsRes.error.message);
+
+    const facts = (factsRes.data ?? []) as Array<Pick<BriefFact, "section" | "value" | "confidence">>;
+    const filledFacts = facts.filter((f) => (f.value ?? "").trim().length > 0);
+
+    if (filledFacts.length < MIN_FACTS_TO_FINALIZE) {
+      return {
+        ok: false as const,
+        reason: "insufficient" as const,
+        have: filledFacts.length,
+        need: MIN_FACTS_TO_FINALIZE,
+      };
+    }
+
+    const apiKey = process.env.LOVABLE_API_KEY;
+    if (!apiKey) throw new Error("LOVABLE_API_KEY missing");
+
+    const extracted = (profileRes.data?.extracted ?? null) as Record<string, unknown> | null;
+    const rawResumeText = ((profileRes.data?.raw_text ?? null) as string | null)?.trim() || null;
+
+    const factsBlock = filledFacts
+      .map(
+        (f) =>
+          `- [${f.section}] ${BRIEF_SECTION_BY_ID[f.section as BriefSectionId]?.label ?? f.section}: ${f.value}`,
+      )
+      .join("\n");
+
+    const systemPrompt = [
+      "You are a senior brand strategist for The Executive Brand Intensive.",
+      "You are regenerating an executive's Brand Operating System brief from their locked answers.",
+      "Write the brief in their voice. Use ONLY the BRIEF FACTS, IMPORTED CONTEXT, and RAW RESUME TEXT provided.",
+      "Never invent companies, titles, dates, credentials, or outcomes. If a section's signal is missing or thin, write one short honest sentence noting we'll lock it down in the room — never fabricate.",
+      "Output MUST be valid markdown. No code fences. No preamble or sign-off. Begin with the H1 title.",
+      "",
+      "═══ FINAL-BRIEF FORMAT ═══",
+      FINAL_BRIEF_FORMAT_PROMPT,
+    ].join("\n");
+
+    const userPrompt = [
+      "BRIEF FACTS (locked answers — your primary source):",
+      factsBlock,
+      "",
+      extracted
+        ? `IMPORTED CONTEXT (from resume/LinkedIn — anchor where useful, never re-ask):\n${JSON.stringify(extracted, null, 2)}`
+        : "IMPORTED CONTEXT: (none)",
+      "",
+      rawResumeText
+        ? `RAW RESUME TEXT (verbatim — anchor the Work experience section with real roles, companies, dates, and outcomes):\n${rawResumeText.slice(0, 6000)}`
+        : "RAW RESUME TEXT: (none)",
+      "",
+      "Write the full brief now, following the FINAL-BRIEF FORMAT skeleton exactly.",
+    ].join("\n");
+
+    const gateway = createLovableAiGatewayProvider(apiKey);
+    const { text } = await generateText({
+      model: gateway(SUMMARY_MODEL),
+      system: systemPrompt,
+      prompt: userPrompt,
+    });
+
+    const markdown = (text ?? "").trim();
+    if (markdown.length < 50) {
+      throw new Error("The model returned an empty brief. Please try again.");
+    }
+
+    // Coverage map mirrors what `getBrandBrief` computes for progress.
+    const spineCoverage: Record<string, number> = {};
+    for (const s of BRIEF_SPINE) {
+      const f = filledFacts.find((x) => x.section === s.id);
+      spineCoverage[s.id] = f ? Math.max(1, Math.min(5, f.confidence ?? 4)) : 0;
+    }
+
+    const nowIso = new Date().toISOString();
+    const { error: upErr } = await supabaseAdmin
+      .from("attendee_brief_summary")
+      .upsert(
+        {
+          user_id: userId,
+          markdown,
+          spine_coverage: spineCoverage,
+          completed_at: nowIso,
+          updated_at: nowIso,
+        },
+        { onConflict: "user_id" },
+      );
+    if (upErr) throw new Error(upErr.message);
+
+    return { ok: true as const };
+  });
+
