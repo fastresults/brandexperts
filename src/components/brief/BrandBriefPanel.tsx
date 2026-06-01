@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Pencil, Check, X } from "lucide-react";
+import { Pencil, Check, X, Sparkles, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { BRIEF_SPINE, type BriefFact, type BriefSectionId } from "@/lib/brand-brief";
 import { upsertBrandBriefFact } from "@/lib/brand-brief.functions";
@@ -8,51 +8,82 @@ import { upsertBrandBriefFact } from "@/lib/brand-brief.functions";
 type Props = {
   facts: BriefFact[];
   onChanged: () => void | Promise<void>;
+  onUpdateBrief?: () => void | Promise<void>;
+  updating?: boolean;
+  revisionMode?: boolean;
 };
 
-export function BrandBriefPanel({ facts, onChanged }: Props) {
+export function BrandBriefPanel({ facts, onChanged, onUpdateBrief, updating = false, revisionMode = false }: Props) {
   const upsertFn = useServerFn(upsertBrandBriefFact);
   const byId = new Map(facts.map((f) => [f.section, f]));
   const filled = facts.length;
   const total = BRIEF_SPINE.length;
 
   return (
-    <div className="h-full overflow-y-auto border-l border-white/10 bg-card/30 p-4 md:p-5">
-      <div className="mb-4">
-        <div className="text-xs uppercase tracking-wide text-muted-foreground">Your brand brief</div>
-        <div className="mt-1 flex items-baseline gap-2">
-          <span className="text-2xl font-semibold tracking-tight">{filled}</span>
-          <span className="text-sm text-muted-foreground">of {total} sections</span>
+    <div className="flex h-full flex-col border-l border-white/10 bg-card/30">
+      <div className="flex-1 overflow-y-auto p-4 md:p-5">
+        <div className="mb-4">
+          <div className="text-xs uppercase tracking-wide text-muted-foreground">Your brand brief</div>
+          <div className="mt-1 flex items-baseline gap-2">
+            <span className="text-2xl font-semibold tracking-tight">{filled}</span>
+            <span className="text-sm text-muted-foreground">of {total} sections</span>
+          </div>
+          <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-white/5">
+            <div
+              className="h-full bg-primary transition-all"
+              style={{ width: `${(filled / total) * 100}%` }}
+            />
+          </div>
+          <p className="mt-3 text-xs text-muted-foreground">
+            The strategist will assemble this as you talk. Click any section to edit.
+          </p>
         </div>
-        <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-white/5">
-          <div
-            className="h-full bg-primary transition-all"
-            style={{ width: `${(filled / total) * 100}%` }}
-          />
-        </div>
-        <p className="mt-3 text-xs text-muted-foreground">
-          The strategist will assemble this as you talk. Click any section to edit.
-        </p>
+
+        <ul className="space-y-3">
+          {BRIEF_SPINE.map((s) => (
+            <BriefRow
+              key={s.id}
+              id={s.id}
+              label={s.label}
+              hint={s.hint}
+              fact={byId.get(s.id) ?? null}
+              onSave={async (value) => {
+                await upsertFn({ data: { section: s.id, value, confidence: 4 } });
+                await onChanged();
+              }}
+            />
+          ))}
+        </ul>
       </div>
 
-      <ul className="space-y-3">
-        {BRIEF_SPINE.map((s) => (
-          <BriefRow
-            key={s.id}
-            id={s.id}
-            label={s.label}
-            hint={s.hint}
-            fact={byId.get(s.id) ?? null}
-            onSave={async (value) => {
-              await upsertFn({ data: { section: s.id, value, confidence: 4 } });
-              await onChanged();
-            }}
-          />
-        ))}
-      </ul>
+      {onUpdateBrief && (
+        <div className="border-t border-white/10 bg-background/60 p-3 backdrop-blur">
+          <button
+            type="button"
+            onClick={() => void onUpdateBrief()}
+            disabled={updating}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-60"
+          >
+            {updating ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Sparkles className="h-3.5 w-3.5" />
+            )}
+            {updating
+              ? "Updating your brief…"
+              : revisionMode
+                ? "Update brief with these answers"
+                : "Generate your brief"}
+          </button>
+          <p className="mt-2 text-center text-[11px] text-muted-foreground">
+            Recomposes your final brief from the answers above.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
+
 
 function BriefRow({
   id: _id,
