@@ -330,6 +330,7 @@ function FinishedView({ markdown, onReopen, onReset }: { markdown: string; onReo
           >
             <RefreshCw className="h-3.5 w-3.5" /> Keep refining
           </button>
+          <StartOverButton onConfirm={onReset} variant="ghost" />
         </div>
       </header>
 
