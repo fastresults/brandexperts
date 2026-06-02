@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { FileDown, ExternalLink, BookOpen, ClipboardList } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import workbookAsset from "@/assets/executive-brand-intensive-workbook.pdf.asset.json";
+import runSheetAsset from "@/assets/executive-brand-intensive-run-sheet.pdf.asset.json";
 
 export const Route = createFileRoute("/_authenticated/dashboard/materials")({
   component: MaterialsPage,
@@ -21,18 +23,18 @@ const MATERIALS: Material[] = [
     title: "Attendee Workbook",
     description:
       "Pre-work checklist, in-room prompts for all 15 brand deliverables, the one-page Personal Branding Operating System summary, and your 30-minute weekly cadence card.",
-    href: "/materials/executive-brand-intensive-workbook.pdf",
+    href: workbookAsset.url,
     filename: "executive-brand-intensive-workbook.pdf",
-    sizeKb: 34,
+    sizeKb: Math.round(workbookAsset.size / 1024),
     icon: BookOpen,
   },
   {
     title: "Facilitator Run-Sheet",
     description:
       "Persuasion-engine checklist, scripted beats for each of the 6 blocks, timing, and contingency fallbacks if anything stalls.",
-    href: "/materials/executive-brand-intensive-run-sheet.pdf",
+    href: runSheetAsset.url,
     filename: "executive-brand-intensive-run-sheet.pdf",
-    sizeKb: 42,
+    sizeKb: Math.round(runSheetAsset.size / 1024),
     icon: ClipboardList,
   },
 ];
