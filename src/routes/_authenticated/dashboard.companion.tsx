@@ -12,6 +12,7 @@ import {
   ChevronDown,
   FileDown,
 } from "lucide-react";
+import { DeliverableDropzone } from "@/components/companion/DeliverableDropzone";
 
 export const Route = createFileRoute("/_authenticated/dashboard/companion")({
   component: WorkshopCompanion,
@@ -258,25 +259,35 @@ function WorkshopCompanion() {
                       {blockDeliverables.map((d) => {
                         const done = delivered[d.key];
                         return (
-                          <button
-                            key={d.key}
-                            onClick={() => toggleDelivered(d.key)}
-                            className={`flex w-full items-start gap-3 rounded-lg border p-3 text-left transition ${
-                              done
-                                ? "border-emerald-500/40 bg-emerald-500/5"
-                                : "border-white/10 bg-background/40 hover:border-primary/30"
-                            }`}
-                          >
-                            {done ? (
-                              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />
-                            ) : (
-                              <Circle className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
-                            )}
-                            <div className="min-w-0">
-                              <div className="text-sm font-medium">{d.label}</div>
-                              <div className="mt-0.5 text-xs text-muted-foreground">{d.group}</div>
-                            </div>
-                          </button>
+                          <div key={d.key} className="space-y-2">
+                            <button
+                              onClick={() => toggleDelivered(d.key)}
+                              className={`flex w-full items-start gap-3 rounded-lg border p-3 text-left transition ${
+                                done
+                                  ? "border-emerald-500/40 bg-emerald-500/5"
+                                  : "border-white/10 bg-background/40 hover:border-primary/30"
+                              }`}
+                            >
+                              {done ? (
+                                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />
+                              ) : (
+                                <Circle className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+                              )}
+                              <div className="min-w-0">
+                                <div className="text-sm font-medium">{d.label}</div>
+                                <div className="mt-0.5 text-xs text-muted-foreground">{d.group}</div>
+                              </div>
+                            </button>
+                            <DeliverableDropzone
+                              deliverableKey={d.key}
+                              deliverableLabel={d.label}
+                              group={d.group}
+                              block={d.block}
+                              onFirstUpload={() => {
+                                if (!delivered[d.key]) toggleDelivered(d.key);
+                              }}
+                            />
+                          </div>
                         );
                       })}
                     </div>
