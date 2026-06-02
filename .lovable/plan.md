@@ -1,61 +1,78 @@
-# Workshop materials don't open in new tab — root cause + durable fix
+## Goal
 
-## Forensic trace
+On `/dashboard/companion`, give every one of the 15 deliverables its own inline upload dropzone. Files dropped or picked there upload directly into the attendee's Media Hub (`user-media` bucket, scope = `user`) and are tagged so they can be found later both on the deliverable card and in `/dashboard/media`.
 
-1. **UI** (`src/routes/_authenticated/dashboard.materials.tsx`) — "Open in new tab" is a clean `<a href="/materials/...pdf" target="_blank" rel="noreferrer">`. No JS handler, no router interception. The markup is correct.
-2. **Files exist** — `public/materials/executive-brand-intensive-workbook.pdf` (34 KB) and `executive-brand-intensive-run-sheet.pdf` (42 KB) are both present in `public/`.
-3. **Production custom domain** (`brandexperts.org`) — `curl` returns `200 application/pdf`. Works.
-4. **Preview URL** (`id-preview--*.lovable.app`, where the user is testing) — `curl` returns:
-   ```
-   HTTP/2 302
-   location: https://lovable.dev/auth-bridge?...&return_url=...workbook.pdf
-   ```
-   The Lovable **preview environment wraps every request — including static assets from `public/` — in an auth bridge**. When the user clicks "Open in new tab", the new tab opens the auth-bridge URL, not the PDF. Depending on session state / popup handling the result is a blank tab, a login screen, or a failed redirect loop. The Download button has the same problem but browsers often surface the redirect differently, so it may appear to "work" occasionally.
+## Current state
 
-This is an environmental constraint, not a code bug — but the fix is straightforward: stop relying on `public/` for these PDFs.
+- `dashboard.companion.tsx` renders the 15 deliverables inside 6 collapsible blocks. Each deliverable today is just a check-toggle button stored in `localStorage` — no upload.
+- The Media Hub already has a working upload pipeline via `createSignedUploadUrl` + `finalizeUpload` (see `src/lib/media.functions.ts`) and `MediaHub` on `/dashboard/media` reads via `listMedia`.
+- `media_assets` rows support `tags: text[]`, and there is already an `updateAsset` server function that accepts `tags` — so we can stamp each upload with a deliverable tag without any DB migration.
 
-## Durable fix: host the PDFs on Lovable Assets
+## Plan
 
-Lovable Assets are served from `/__l5e/assets-v1/...` on a CDN that is **not** behind the preview auth wall. Same URL works identically in preview, published, and custom-domain environments — no 302, no login round-trip.
+### 1. New small component: `DeliverableDropzone`
 
-### Steps
+New file: `src/components/companion/DeliverableDropzone.tsx`.
 
-1. **Upload both PDFs to the asset CDN** (sandbox CLI, reads existing files from `public/materials/`):
-   ```bash
-   mkdir -p src/assets
-   lovable-assets create \
-     --file public/materials/executive-brand-intensive-workbook.pdf \
-     > src/assets/executive-brand-intensive-workbook.pdf.asset.json
-   lovable-assets create \
-     --file public/materials/executive-brand-intensive-run-sheet.pdf \
-     > src/assets/executive-brand-intensive-run-sheet.pdf.asset.json
-   ```
+Props:
+```ts
+{ deliverableKey: string; deliverableLabel: string; group: string }
+```
 
-2. **Update `src/routes/_authenticated/dashboard.materials.tsx`** to import the asset pointers and use `asset.url` as the `href`:
-   ```ts
-   import workbookAsset from "@/assets/executive-brand-intensive-workbook.pdf.asset.json";
-   import runSheetAsset from "@/assets/executive-brand-intensive-run-sheet.pdf.asset.json";
-   ```
-   Replace each `href: "/materials/..."` with the corresponding `asset.url`. Keep the `download={filename}` attribute and the `target="_blank" rel="noreferrer"` on the open-in-new-tab anchor — both still work because CDN responses include `Content-Type: application/pdf`.
+Behavior:
+- Renders a compact dashed drop area + hidden `<input type="file" multiple>` + "Upload" button + small list of files already uploaded for this deliverable.
+- Uses `useAuth()` to get the current `user.id`.
+- Drag-over / drop and click-to-pick both call one `uploadFiles(files)` helper.
+- For each file:
+  1. `createSignedUploadUrl({ scope: "user", ownerUserId: user.id, filename, mimeType, sizeBytes })`
+  2. `PUT` the file bytes to `uploadUrl`
+  3. `finalizeUpload({ assetId })`
+  4. `updateAsset({ id: assetId, tags: ["deliverable:<key>", "block:<n>", group] })` to stamp the deliverable.
+- 100 MB per-file cap (mirrors `MediaHub`), `toast.success` / `toast.error` per file.
+- After upload, invalidate the query below and (optionally) auto-check the deliverable as "delivered".
 
-3. **Delete the originals** from the repo so they don't ship in the Worker bundle:
-   ```bash
-   rm public/materials/executive-brand-intensive-workbook.pdf
-   rm public/materials/executive-brand-intensive-run-sheet.pdf
-   rmdir public/materials
-   ```
+### 2. Per-deliverable file list
 
-4. **Verify** in the preview: click "Open in new tab" for each card → PDF renders inline in the browser. Click "Download" → file saves with correct filename.
+In the same component, run a query keyed by deliverable:
+```ts
+useQuery({
+  queryKey: ["companion-deliverable-files", deliverableKey, userId],
+  queryFn: () => listMedia({ data: { scope: "user", ownerUserId: userId, search: null, mediaType: null } })
+})
+```
+Filter the returned assets client-side to those whose `tags` include `deliverable:<key>`. Show: filename, size, "Open" (uses `getAssetSignedUrl`), "Remove" (uses `deleteAsset`). Keep the list to ~5 visible with "view all in Media Hub" link to `/dashboard/media`.
 
-## Why not other approaches
+(Client-side filter is fine because `listMedia` already scopes by user — typical attendee will have well under the 1000-row Supabase default.)
 
-- **Inline `<iframe>` viewer** — the iframe src would still hit the preview auth wall as a top-level-style navigation and could fail or flash a login redirect; doesn't solve the root cause.
-- **Server route under `/api/public/materials/*`** — would work but adds an unnecessary handler and bundles the PDFs into the Worker. CDN is the right home for static binaries.
-- **"It works in production"** — true, but the user (and any reviewer) tests in preview. Asset CDN makes preview and production behave identically.
+### 3. Wire into `dashboard.companion.tsx`
+
+Inside the existing `blockDeliverables.map(...)` render, below the current checkbox button, mount:
+```tsx
+<DeliverableDropzone
+  deliverableKey={d.key}
+  deliverableLabel={d.label}
+  group={d.group}
+/>
+```
+No changes to the block layout, header, pre-work section, or weekly cadence card.
+
+### 4. Auto-tick on first upload (small UX win)
+
+When the dropzone successfully uploads at least one file and the deliverable is not yet checked, call the existing `toggleDelivered(d.key)` (lift `delivered`/`toggleDelivered` access into the dropzone via a callback prop). Manual uncheck still works.
+
+### 5. Out of scope
+
+- No DB migration. `tags` already exists on `media_assets`, RLS already restricts to `auth.uid() = owner_user_id`, and `user-media` bucket is in place.
+- No changes to the Media Hub UI itself — files uploaded from `companion` show up there automatically, filterable by the `deliverable:<key>` tag.
+- No backend route changes; we reuse `createSignedUploadUrl`, `finalizeUpload`, `updateAsset`, `listMedia`, `getAssetSignedUrl`, `deleteAsset`.
+
+## Technical notes
+
+- Drop handler must call `e.preventDefault()` on both `dragover` and `drop`, and only react when `e.dataTransfer.types.includes("Files")`.
+- All server fn calls go through `useServerFn(...)` so `attachSupabaseAuth` provides the bearer.
+- Tag stamping happens after `finalizeUpload` (not in the insert) because `createSignedUploadUrl` doesn't accept `tags`; this keeps the change zero-migration. If we later want it atomic, we can extend `UploadInput` with an optional `tags` array — flagged but not in this plan.
 
 ## Files touched
 
-- `src/routes/_authenticated/dashboard.materials.tsx` — swap `href` values to asset URLs.
-- `src/assets/executive-brand-intensive-workbook.pdf.asset.json` — new pointer.
-- `src/assets/executive-brand-intensive-run-sheet.pdf.asset.json` — new pointer.
-- `public/materials/` — deleted.
+- **new** `src/components/companion/DeliverableDropzone.tsx`
+- **edit** `src/routes/_authenticated/dashboard.companion.tsx` (mount the dropzone under each deliverable; pass `toggleDelivered`)
