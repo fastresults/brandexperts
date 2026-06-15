@@ -1,16 +1,23 @@
-# ─── Netlify deployment config for EvoveMyBrand ───
-# Vite/Lovable outputs a client bundle to dist/client (not .output/public).
-# SPA redirect catches all routes so TanStack Router handles them client-side.
+# ─── Netlify deployment config for EvoveMyBrand (TanStack Start / Nitro SSR) ───
+# Build: `npm run build` with NITRO_PRESET=netlify
+# Static assets → .output/public/  (Netlify CDN)
+# SSR handler  → .netlify/functions/server (Netlify Function, auto-written by Nitro)
 
 [build]
   command = "npm run build"
-  publish = "dist/client"
+  publish = ".output/public"
 
 [build.environment]
-  NODE_VERSION = "20"
+  NODE_VERSION  = "20"
+  NITRO_PRESET  = "netlify"
 
-# SPA fallback — send all non-asset routes to index.html
+# Netlify Functions produced by Nitro netlify preset
+[functions]
+  node_bundler = "none"
+
+# Route every non-static request to the Nitro SSR handler.
+# Static files in .output/public/ are served directly (they take precedence).
 [[redirects]]
   from   = "/*"
-  to     = "/index.html"
+  to     = "/.netlify/functions/server"
   status = 200
