@@ -35,6 +35,9 @@ Key settings:
 
 **Before changing `netlify.toml` or the nitro config:** run `rm -rf dist .output && npm run build` locally and inspect the `dist/` output (confirm `dist/nitro.json`, `dist/client/`, `dist/server/` all exist) before pushing. Verify against actual build output, not assumptions - this has regressed twice from guesswork.
 
+- **`public/_redirects` must NOT exist / must NOT contain a SPA fallback like `/* /index.html 200`.** This is an SSR app — there is no `index.html` to fall back to. If this file is present with a catch-all rule, Nitro's build logs "Not adding Nitro fallback to _redirects (as an existing fallback was found)" and skips writing the redirect to the SSR function, causing every route to 404. If you need custom redirects/headers, add them via `netlify.toml` `[[redirects]]`/`[[headers]]`, not `public/_redirects`.
+- After any build-output-affecting change, check the build log for the line `[nitro] ✔ Generated public dist/client` and confirm it does NOT also log "Not adding Nitro fallback to _redirects".
+
 **If you see a Netlify 404:** check `vite.config.ts` has `nitro: { preset: "netlify" }`, `NITRO_PRESET=netlify` is set, and `publish = "dist"`. The old `.netlify/netlify.toml` had `publish` pointing to an absolute local path - that file is now superseded by root `netlify.toml`.
 
 ---
