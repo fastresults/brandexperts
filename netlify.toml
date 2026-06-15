@@ -6,8 +6,19 @@
 
 [build]
   command = "npm run build"
-  publish = "dist"
+  publish = "dist/client"
 
 [build.environment]
   NODE_VERSION  = "20"
   NITRO_PRESET  = "netlify"
+
+[functions]
+  directory = "dist/server"
+  node_bundler = "none"
+
+# Nitro's server.mjs exports config = { path: "/*", nodeBundler: "none", includedFiles: ["**"] }
+# which Netlify Functions v2 uses to route all non-static requests through the SSR handler.
+[[redirects]]
+  from   = "/*"
+  to     = "/.netlify/functions/server"
+  status = 200
