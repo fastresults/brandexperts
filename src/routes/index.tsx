@@ -13,7 +13,7 @@ import { getHeroBackgroundList } from "@/lib/media.functions";
 
 export const FACILITATOR_NAME = "Adam Anderson";
 export const FACILITATOR_TITLE =
-  "30-year brand operator · Co-Founder, OPEN Interactive · Has installed executive brand systems for Fortune 500 boards, a sovereign government, and AI-native operators who couldn't afford to get it wrong.";
+  "Brand Operator · Co-Founder, OPEN Interactive · Has built brand systems for founders, operators, and executives who couldn't afford to sound like everyone else.";
 
 export const Route = createFileRoute("/")({
   loader: async ({ context }) => {
@@ -29,17 +29,17 @@ export const Route = createFileRoute("/")({
   },
   head: ({ loaderData }) => ({
     meta: [
-      { title: "The Executive Brand Intensive — Install a Personal Branding Operating System in one afternoon." },
+      { title: "The Brand OS Intensive — Build a Personal Branding Operating System in one afternoon." },
       {
         name: "description",
         content:
-          "Three hours at the IGNITE Center in Norcross, GA. You walk in as a title. You walk out operating a Personal Branding Operating System that publishes in your voice, on its own, for the next 90 days and every quarter after.",
+          "Three hours at the IGNITE Center in Norcross, GA. Walk in with a scattered brand. Walk out with 15 finished assets and a publishing system that runs itself — 30 minutes a week, in your voice, for the next 90 days and every quarter after.",
       },
-      { property: "og:title", content: "The Executive Brand Intensive — Install a Personal Branding Operating System in one afternoon." },
+      { property: "og:title", content: "The Brand OS Intensive — Build a Personal Branding Operating System in one afternoon." },
       {
         property: "og:description",
         content:
-          "IGNITE Center, Norcross, GA · 1:00–4:00 PM ET. Installed by a 30-year operator who's built brand systems for Fortune 500 boards, a sovereign government, and the AI-native frontier — for clients who couldn't afford to get it wrong.",
+          "IGNITE Center, Norcross, GA · 1:00–4:00 PM ET. One afternoon to build the system that makes everything you publish sound undeniably like you — not like AI wrote it for a LinkedIn influencer.",
       },
     ],
     links: loaderData?.heroBgUrl
@@ -86,13 +86,13 @@ function NotACourseBanner() {
             </span>
             <div>
               <p className="text-[11px] md:text-xs uppercase tracking-[0.18em] font-semibold text-gradient-brand">
-                The market is flooded with courses and ghostwriters. Neither survives an AI-era executive's calendar.
+                Not another prompt template. Not a 90-day LinkedIn challenge.
               </p>
               <h2 className="mt-2 text-xl font-semibold text-white/70 leading-tight md:text-xl">
-                You're not buying a curriculum. You're getting a system installed — in your voice, in one room, in three hours.
+                This is the afternoon you build the system — in your voice, in one room, in three hours — instead of being handed someone else's.
               </h2>
               <p className="mt-2 text-sm text-white/55 leading-relaxed md:text-sm">
-                A course hands you knowledge you'll never schedule time to apply. A ghostwriter hands you a $4K article, a $2K bio, an $8K monthly retainer — and a dependency that scales the invoice, not your authority. The Brand Operating System replaces both with an asset you own: 15 finished pieces leave the room with you, and a 30-minute weekly ritual keeps the engine producing in your voice — quarter after quarter, without rebuilding it. <span className="text-white/40">(Hard costs — scheduler/newsletter subscriptions, premium AI tier, paid distribution — aren't covered by the workshop fee.)</span>
+                ChatGPT gives you generic output that sounds like everyone else's ChatGPT output. A 90-day content calendar becomes a 2-week content calendar the moment life happens. The Brand OS is different: 15 finished assets leave the room already in your voice, and a 30-minute weekly ritual keeps the engine running — quarter after quarter, without rebuilding from scratch. <span className="text-white/40">(Hard costs — scheduler/newsletter subscriptions, premium AI tier, paid distribution — aren't covered by the workshop fee.)</span>
               </p>
 
             </div>
@@ -135,24 +135,23 @@ function Hero({ heroBgUrl }: { heroBgUrl: string | null }) {
       <div className="absolute inset-0 bg-background/0" />
       <div className="relative mx-auto max-w-6xl px-6 py-16 md:py-24 lg:py-32">
         <p className="mb-5 text-xs uppercase tracking-[0.18em] text-white/80 md:mb-6 md:text-sm md:tracking-[0.2em]">
-          For executives whose résumé no longer does the work it used to.
+          For founders and operators who can't afford to sound like everyone else.
         </p>
         <h1 className="max-w-3xl text-4xl font-semibold leading-[1.08] tracking-tight text-white md:text-5xl lg:text-7xl">
-          AI erases your edge.{" "}
+          AI doesn't replace the real ones.{" "}
           <span className="italic">
-            Install a <span className="text-gradient-brand">Personal Branding Operating System</span> that compounds.
+            But it will replace anyone who sounds <span className="text-gradient-brand">generic.</span>
           </span>
         </h1>
         <p className="mt-5 max-w-2xl text-base text-white/90 md:mt-6 md:text-lg">
           One afternoon at the IGNITE Center in Norcross, GA.{" "}
           <span className="font-medium text-white">
-            You walk in as a title. You walk out operating a system that publishes in your voice, on your calendar, without you in the loop —
+            Walk out with 15 finished assets and a publishing system that runs itself —
           </span>{" "}
-          for the next 90 days and every quarter after.
+          30 minutes a week, in your voice, for the next 90 days and every quarter after.
         </p>
         <p className="mt-4 max-w-2xl text-sm text-white/85 md:text-base">
-          Built by the operator who's installed brand systems for Fortune 500 boards, a sovereign
-          government, and the AI-native frontier — for clients who couldn't afford to get it wrong.
+          You don't need a ghostwriter. You don't need a content team. You need an OS.
         </p>
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4 md:mt-10">
@@ -173,7 +172,7 @@ function Hero({ heroBgUrl }: { heroBgUrl: string | null }) {
           <Meta icon={<Calendar className="size-4" />} label={EVENT.dateLabel} />
           <Meta icon={<MapPin className="size-4" />} label="IGNITE Center · Norcross, GA" />
           <Meta icon={<Users className="size-4" />} label={`${EVENT.totalSeats} seats`} />
-          <Meta icon={<Award className="size-4" />} label="30-year brand operator" />
+          <Meta icon={<Award className="size-4" />} label="Brand OS Intensive" />
         </div>
       </div>
     </section>
@@ -232,29 +231,28 @@ function FacilitatorSection() {
             </h2>
             <p className="text-2xl font-semibold tracking-tight md:text-3xl lg:text-4xl">
               {FACILITATOR_NAME} —{" "}
-              <span className="text-gradient-brand">30 years building the brand systems other people teach about.</span>
+              <span className="text-gradient-brand">the operator who built the framework, then compressed it into a single afternoon.</span>
             </p>
             <p className="mt-3 text-sm uppercase tracking-[0.15em] text-muted-foreground">
               {FACILITATOR_TITLE}
             </p>
             <p className="mt-5 text-muted-foreground">
-              Adam is one of a handful of operators fluent in three rooms that almost never overlap —
-              Fortune 500 boardrooms (Citigroup, Mayo Clinic, 3M, Disney), sovereign cabinet ministries
-              (seven years embedded with the Federation of St. Kitts & Nevis, branding its national investor
-              program and producing five Caribbean Investment Summits), and the AI-native product trenches
-              (five SaaS platforms shipped with the toolchain he installs in this room).
+              Adam has spent decades building brand systems that outlast their category — not as a consultant
+              who slides in a deck and disappears, but as an operator who builds the infrastructure and then
+              hands you the keys. He's worked at every scale, from early-stage founders to large organizations,
+              and shipped five AI-native SaaS products with the same toolchain he installs in this room.
             </p>
             <p className="mt-3 text-muted-foreground">
-              He's spent the last two years compressing what used to take a 90-day agency engagement into a
-              single afternoon — because the executives he works with don't have 90 days, and AI no longer
-              leaves room to wait. When he installs your Brand Operating System, he's installing the same
-              operating model he runs on himself.
+              His read: most personal brands fail not because of bad content, but because there's no system
+              underneath. He spent the last two years compressing what used to take a 90-day agency engagement
+              into a single afternoon — because the people he works with don't have 90 days, and AI no longer
+              leaves room to wait. When he installs your Brand OS, he's installing the same model he runs on himself.
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
-              <TagChip>Installed brand systems for Fortune 500 boards</TagChip>
-              <TagChip>Branded a sovereign nation's flagship program</TagChip>
-              <TagChip>Shipped 5 AI-native SaaS products</TagChip>
-              <TagChip>Produced 5 international summits</TagChip>
+              <TagChip>Brand systems across 50+ companies</TagChip>
+              <TagChip>5 AI-native SaaS products shipped</TagChip>
+              <TagChip>5 international summits produced</TagChip>
+              <TagChip>90-day engagements → compressed to 3 hours</TagChip>
             </div>
           </div>
         </div>
@@ -273,11 +271,11 @@ function TagChip({ children }: { children: React.ReactNode }) {
 
 function WalkInWalkOut() {
   const walkIn = [
-    "A bio written for a job you no longer hold",
+    "A bio written for a version of yourself you've already outgrown",
     "A LinkedIn About indistinguishable from three peers in your category",
-    "Thinking that only lives in DMs, back-channels, and unsent drafts",
-    "A vague resolution to \"post more\" that hasn't survived a single board week",
-    "A ghostwriter line item you can't justify to your CFO",
+    "Thinking that only lives in DMs, voice memos, and unsent drafts",
+    "A vague resolution to \"post more\" that evaporated by week two",
+    "Prompt-and-pray ChatGPT content that sounds like everyone else's ChatGPT content",
   ];
   return (
     <section className="py-12 md:py-20">
@@ -483,7 +481,7 @@ function VenueCard() {
                   to="/register"
                   className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
                 >
-                  Reserve seat <ArrowRight className="size-4" />
+                  Claim your seat <ArrowRight className="size-4" />
                 </Link>
               </div>
             </div>
@@ -530,17 +528,17 @@ function BottomCTA() {
           />
           <div className="relative max-w-3xl text-white">
             <h2 className="text-3xl font-semibold leading-tight tracking-tight md:text-4xl lg:text-5xl">
-              {seatsWord(EVENT.totalSeats)} seats. One afternoon. A Brand Operating System that outruns the AI flood.
+              {seatsWord(EVENT.totalSeats)} seats left. One afternoon to build the system that makes everything you publish sound undeniably like you.
             </h2>
             <p className="mt-4 text-base text-white/90 md:mt-5 md:text-lg">
-              In a feed flooded with AI sludge that sounds the same, the only executives who break through are the ones publishing a named, specific point of view faster and more consistently than their peers. This is the afternoon you stop being one of the interchangeable ones. Bring the bio, the posts, the headshot. We bring the operator, the room, and the system that produces in your voice long after you leave it.
+              In a feed flooded with AI content that sounds the same, the only people who break through are the ones publishing a named, specific point of view — faster and more consistently than everyone else. This is the afternoon you stop being one of the interchangeable ones. Bring the bio, the ideas, the voice. Leave with 15 assets and a system that runs itself.
             </p>
             <div className="mt-7 md:mt-8">
               <Link
                 to="/register"
                 className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-base font-medium text-neutral-900 transition-opacity hover:opacity-90 hover:text-neutral-900 sm:w-auto"
               >
-                Reserve your seat for {EVENT.shortLabel} <ArrowRight className="size-4" />
+                Claim your seat — {EVENT.shortLabel} <ArrowRight className="size-4" />
               </Link>
             </div>
           </div>

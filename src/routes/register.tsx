@@ -32,16 +32,16 @@ import { RegisterSelection } from "@/components/register/RegisterSelection";
 export const Route = createFileRoute("/register")({
   head: () => ({
     meta: [
-      { title: "Reserve your seat — The Executive Brand Intensive" },
+      { title: "Claim your seat — The Brand OS Intensive" },
       {
         name: "description",
         content:
-          "One 3-hour afternoon at the IGNITE Center in Norcross, GA. You walk in as a title. You walk out with a Personal Branding Operating System that publishes in your voice — on its own — for the next 90 days and every quarter after.",
+          "One 3-hour afternoon at the IGNITE Center in Norcross, GA. Walk in with a scattered brand. Walk out with 15 finished assets and a publishing system that runs itself — in your voice, for the next 90 days and every quarter after.",
       },
-      { property: "og:title", content: "Reserve your seat — The Executive Brand Intensive" },
+      { property: "og:title", content: "Claim your seat — The Brand OS Intensive" },
       {
         property: "og:description",
-        content: "Walk in with a title. Walk out with a Personal Branding Operating System.",
+        content: "Walk in with a scattered brand. Walk out with 15 assets and a system that publishes in your voice without you.",
       },
     ],
   }),
@@ -302,7 +302,7 @@ function RegisterDefault() {
         <div className="mx-auto max-w-2xl px-6">
           <div className="mb-6 text-center">
             <h2 className="text-2xl font-semibold tracking-tight md:text-4xl">
-              Reserve your seat
+              Claim your seat
             </h2>
             <p className="mt-2 text-muted-foreground">
               A few details so the room — and the voice profile built inside it — is tuned to the operator you actually are, not the title on your card.
@@ -338,15 +338,15 @@ function RegisterDefault() {
                   autoComplete="email"
                 />
               </Field>
-              <Field label="Phone (optional)" error={errors.phone?.message}>
+              <Field label="Phone (optional — we won't spam you)" error={errors.phone?.message}>
                 <input {...register("phone")} className="input" placeholder="+1 (404) 555-0123" autoComplete="tel" />
               </Field>
-              <Field label="What's the brand you're here to install?" error={errors.business_idea?.message}>
+              <Field label="What are you building or launching?" error={errors.business_idea?.message}>
                 <textarea
                   {...register("business_idea")}
                   rows={4}
                   className="input resize-y"
-                  placeholder="A sentence or two. Your role, the audience you want to lead, the POV you want known for."
+                  placeholder="Even a rough direction is enough — your role, what you're building, the POV you want to be known for."
                 />
               </Field>
               <div className="grid gap-5 md:grid-cols-2">
@@ -446,8 +446,8 @@ function RegisterDefault() {
                 className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-hero-gradient px-6 py-3 text-base font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-60"
               >
                 {isSubmitting
-                  ? "Reserving…"
-                  : `Reserve my ${effectiveTier === "founders" ? "Founders" : "Cohort"} Seat — ${formatPriceCents(effectivePriceCents)}`}
+                  ? "Claiming your seat…"
+                  : `Claim my ${effectiveTier === "founders" ? "Founders" : "Cohort"} Seat — ${formatPriceCents(effectivePriceCents)}`}
                 {!isSubmitting && <ArrowRight className="size-4" />}
               </button>
               <p className="text-center text-xs text-muted-foreground">

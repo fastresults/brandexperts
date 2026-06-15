@@ -29,7 +29,7 @@ export function FacilitatorHero() {
       {/* Headline column — keeps the existing left primary border */}
       <div className="order-2 md:order-1 md:flex-1 border-l-4 border-primary pl-6">
         <p className="mb-3 text-xs uppercase tracking-[0.18em] text-muted-foreground md:text-sm md:tracking-[0.2em]">
-          Executive Brand Facilitator & AI Strategist
+          Brand Operator & AI Strategist
         </p>
         <h1 className="text-4xl font-semibold leading-tight tracking-tight text-foreground md:text-5xl lg:text-6xl">
           Adam Anderson
@@ -39,7 +39,7 @@ export function FacilitatorHero() {
           He installs the system that does.
         </h1>
         <p className="mt-4 max-w-2xl text-base text-muted-foreground md:mt-5 md:text-lg">
-          One of the few practitioners fluent across three rooms most consultants never enter together — Fortune 500 boardrooms, sovereign cabinet ministries, and the AI-native product trenches. Adam doesn't write your content. He installs the operating system that does — locked to your voice, defensibly grounded in your actual expertise, ready to publish from Monday and compound every quarter after.
+          Adam's take: most personal brands fail not because of bad content — but because there's no system underneath. He's spent years building the framework that fixes that, then compressed it into a single afternoon because that's all the people he works with have. He doesn't write your content. He installs the operating system that does — locked to your voice, grounded in your actual expertise, ready to publish by Monday and run itself every quarter after.
         </p>
       </div>
     </motion.section>

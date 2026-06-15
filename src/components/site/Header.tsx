@@ -20,7 +20,7 @@ const nav = [
   { to: "/", label: "home" },
   { to: "/schedule", label: "schedule" },
   { to: "/register", label: "register" },
-  { to: "/facilitator", label: "facilitator" },
+  { to: "/facilitator", label: "about" },
   { to: "/contact", label: "contact" },
 ] as const;
 
@@ -34,8 +34,8 @@ export function SiteHeader() {
     staleTime: 60_000,
   });
   const isFreeCohort = settings?.home_variant === "selection";
-  const ctaFull = isFreeCohort ? "Apply — free cohort" : `Reserve seat — from $${PRICING.founders.price}`;
-  const ctaShort = isFreeCohort ? "Apply" : "Reserve";
+  const ctaFull = isFreeCohort ? "Apply — free cohort" : `Claim your seat — from $${PRICING.founders.price}`;
+  const ctaShort = isFreeCohort ? "Apply" : "Claim";
 
   const close = () => setOpen(false);
 
