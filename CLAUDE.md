@@ -29,12 +29,13 @@ GitHub: https://github.com/fastresults/brandexperts
 **Root `netlify.toml`** controls the build (the `.netlify/netlify.toml` is legacy UI config — ignore it).
 
 Key settings:
-- `NITRO_PRESET = "netlify"` — overrides Nitro's default Cloudflare target
-- `publish = ".output/public"` — Nitro's static output dir for Netlify preset
-- SSR handler → `.netlify/functions/server` (written by Nitro at build time)
-- All non-static routes redirect to the Nitro SSR function
+- `vite.config.ts` MUST pass `nitro: { preset: "netlify" }` to `defineConfig` — outside the Lovable sandbox, `@lovable.dev/vite-tanstack-config` skips the nitro deploy plugin entirely unless `nitro` is explicitly set. Without it, `npm run build` is a plain Vite build with no SSR output (no `index.html`, no server bundle) -> 404 on every route.
+- `NITRO_PRESET = "netlify"` env var - overrides Nitro's default Cloudflare target
+- `publish = "dist"` - the parent `dist/` dir, not `dist/client`. Nitro's netlify preset emits `dist/client` (static), `dist/server` (SSR fn), and `dist/nitro.json`; Netlify's build image auto-detects `dist/nitro.json` and wires up the SSR function + redirects itself. Do NOT add manual `[[redirects]]` or `[functions]` blocks for this.
 
-**If you see a Netlify 404:** check that `NITRO_PRESET` is set and `.output/public` exists after build. The old `.netlify/netlify.toml` had `publish` pointing to an absolute local path — that file is now superseded by root `netlify.toml`.
+**Before changing `netlify.toml` or the nitro config:** run `rm -rf dist .output && npm run build` locally and inspect the `dist/` output (confirm `dist/nitro.json`, `dist/client/`, `dist/server/` all exist) before pushing. Verify against actual build output, not assumptions - this has regressed twice from guesswork.
+
+**If you see a Netlify 404:** check `vite.config.ts` has `nitro: { preset: "netlify" }`, `NITRO_PRESET=netlify` is set, and `publish = "dist"`. The old `.netlify/netlify.toml` had `publish` pointing to an absolute local path - that file is now superseded by root `netlify.toml`.
 
 ---
 
