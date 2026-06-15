@@ -7,6 +7,12 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
+  // Outside the Lovable sandbox the nitro deploy plugin is skipped unless
+  // explicitly enabled — enable it so `npm run build` emits .output/public
+  // + .output/server (Netlify preset) instead of a plain dist/client.
+  nitro: {
+    preset: "netlify",
+  },
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
