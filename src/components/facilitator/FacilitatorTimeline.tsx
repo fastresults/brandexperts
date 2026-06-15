@@ -20,7 +20,7 @@ export function FacilitatorTimeline() {
       transition={{ duration: 0.5, delay: 0.4 }}
     >
       <p className="mb-3 text-xs uppercase tracking-[0.18em] text-muted-foreground md:text-sm md:tracking-[0.2em]">
-        Career Milestones
+        What he's actually built
       </p>
       <div className="relative pl-8">
         <div className="absolute left-[7px] top-2 bottom-2 w-px bg-primary/20" />

@@ -184,14 +184,14 @@ function RegisterDefault() {
       <section className="border-b border-white/5 py-12 md:py-20">
         <div className="mx-auto max-w-5xl px-6">
           <p className="mb-3 text-xs uppercase tracking-[0.18em] text-muted-foreground md:text-sm md:tracking-[0.2em]">
-            Quarterly cohorts · IGNITE Center at Greater Atlanta Christian School, Norcross GA
+            Quarterly cohorts · IGNITE Center · Norcross, GA
           </p>
           <h1 className="text-4xl font-semibold leading-tight tracking-tight md:text-5xl lg:text-6xl">
-            Walk in with a title.{" "}
-            <span className="text-gradient-brand">Walk out with a Personal Branding Operating System.</span>
+            Walk in scattered.{" "}
+            <span className="text-gradient-brand">Walk out with a brand system that actually runs.</span>
           </h1>
           <p className="mt-4 max-w-2xl text-base text-muted-foreground md:mt-5 md:text-lg">
-            One 3-hour afternoon. A locked Brand Blueprint, an Op-Ed, a newsletter, a keynote opener, fourteen days of scheduled publishing, and a 30-minute weekly cadence on your calendar. Installed in the room, locked to your voice, replacing the $4K article, $2K bio, $8K monthly retainer you've been quietly paying to sound generic.
+            Three hours. A locked Brand Blueprint, a published Op-Ed, a newsletter issue, a keynote opener, two weeks of scheduled posts, and a 30-minute weekly cadence already on your calendar — installed in the room, in your voice, before you leave.
           </p>
           <div className="mt-5 flex flex-col gap-2 text-sm text-muted-foreground sm:flex-row sm:flex-wrap sm:gap-4 md:mt-6">
             <span className="inline-flex items-center gap-2">
@@ -201,7 +201,7 @@ function RegisterDefault() {
               <CalendarDays className="size-4" /> {EVENT.timeLabel}
             </span>
             <span className="inline-flex items-center gap-2">
-              <ShieldCheck className="size-4" /> Practitioner-led, work-product driven
+              <ShieldCheck className="size-4" /> Built in the room — nothing assigned as homework
             </span>
           </div>
 
@@ -220,10 +220,10 @@ function RegisterDefault() {
               What you actually walk out with
             </p>
             <h2 className="text-3xl font-semibold leading-tight tracking-tight md:text-4xl lg:text-5xl">
-              Every asset. <span className="text-muted-foreground">What an agency charges. What it would take you.</span>
+              Every asset. <span className="text-muted-foreground">What it costs to build it yourself. What an agency charges.</span>
             </h2>
             <p className="mt-3 text-muted-foreground">
-              Conservative agency rates and DIY hours, asset by asset. A comparable engagement runs $15K–$40K over 6–10 weeks — and ends the day the invoice clears, instead of compounding into inbound, speaking, and boards every quarter after.
+              Real numbers, asset by asset. Figuring this out on your own takes months. Hiring it out costs more than you think. The Brand OS installs everything in one afternoon — and it compounds every quarter after instead of ending when the retainer does.
             </p>
           </div>
           <ValueGrid />
@@ -238,14 +238,14 @@ function RegisterDefault() {
         <div className="mx-auto max-w-5xl px-6">
           <div className="mb-7 text-center md:mb-8">
             <p className="mb-3 text-xs uppercase tracking-[0.18em] text-muted-foreground md:text-sm md:tracking-[0.2em]">
-              Pick your seat
+              Pick your spot
             </p>
             <h2 className="text-3xl font-semibold leading-tight tracking-tight md:text-4xl lg:text-5xl">
-              From{" "}
+              Starting at{" "}
               <span className="text-gradient-brand">
                 {formatPriceCents(selectedCohort.foundersPriceCents)}
               </span>
-              . All 15 finished assets included.
+              . All 15 assets included. Nothing extra to buy.
             </h2>
 
             {availability && !cohortSoldOut && (() => {
@@ -302,10 +302,10 @@ function RegisterDefault() {
         <div className="mx-auto max-w-2xl px-6">
           <div className="mb-6 text-center">
             <h2 className="text-2xl font-semibold tracking-tight md:text-4xl">
-              Claim your seat
+              Lock in your spot
             </h2>
             <p className="mt-2 text-muted-foreground">
-              A few details so the room — and the voice profile built inside it — is tuned to the operator you actually are, not the title on your card.
+              Tell us what you're building so the room — and the voice profile we build inside it — is actually tuned to you. Not a generic founder archetype.
             </p>
           </div>
           {submitted ? (
@@ -326,8 +326,8 @@ function RegisterDefault() {
               onSubmit={onSubmit}
               className="space-y-5 rounded-2xl border border-white/10 bg-card p-6 md:p-8"
             >
-              <Field label="Full name" error={errors.name?.message}>
-                <input {...register("name")} className="input" placeholder="Your name" autoComplete="name" />
+              <Field label="Your name" error={errors.name?.message}>
+                <input {...register("name")} className="input" placeholder="First and last" autoComplete="name" />
               </Field>
               <Field label="Email" error={errors.email?.message}>
                 <input
@@ -338,21 +338,21 @@ function RegisterDefault() {
                   autoComplete="email"
                 />
               </Field>
-              <Field label="Phone (optional — we won't spam you)" error={errors.phone?.message}>
+              <Field label="Phone (optional — no spam, ever)" error={errors.phone?.message}>
                 <input {...register("phone")} className="input" placeholder="+1 (404) 555-0123" autoComplete="tel" />
               </Field>
-              <Field label="What are you building or launching?" error={errors.business_idea?.message}>
+              <Field label="What are you building?" error={errors.business_idea?.message}>
                 <textarea
                   {...register("business_idea")}
                   rows={4}
                   className="input resize-y"
-                  placeholder="Even a rough direction is enough — your role, what you're building, the POV you want to be known for."
+                  placeholder="Rough direction is fine — what you're building, who it's for, the POV you want to own."
                 />
               </Field>
               <div className="grid gap-5 md:grid-cols-2">
-                <Field label="Industry" error={errors.industry?.message}>
+                <Field label="Space you're in" error={errors.industry?.message}>
                   <select {...register("industry")} className="input">
-                    <option value="">Select…</option>
+                    <option value="">Pick one…</option>
                     {[
                       "Services / Consulting",
                       "E-commerce / Retail",
@@ -368,11 +368,11 @@ function RegisterDefault() {
                     ))}
                   </select>
                 </Field>
-                <Field label="Where's your brand today?" error={errors.stage?.message}>
+                <Field label="Where's your brand right now?" error={errors.stage?.message}>
                   <select {...register("stage")} className="input">
-                    <option value="idea">Defining it</option>
-                    <option value="early">Publishing inconsistently</option>
-                    <option value="existing">Established and scaling</option>
+                    <option value="idea">Still figuring it out</option>
+                    <option value="early">Posting but inconsistently</option>
+                    <option value="existing">Active and ready to scale</option>
                   </select>
                 </Field>
               </div>
@@ -430,8 +430,8 @@ function RegisterDefault() {
                 </div>
               </div>
 
-              <Field label="How did you hear about us? (optional)" error={errors.referral_source?.message}>
-                <input {...register("referral_source")} className="input" placeholder="Friend, Instagram, search…" />
+              <Field label="How'd you find us? (optional)" error={errors.referral_source?.message}>
+                <input {...register("referral_source")} className="input" placeholder="Friend, Instagram, LinkedIn, search…" />
               </Field>
 
               {serverError && (
@@ -451,7 +451,7 @@ function RegisterDefault() {
                 {!isSubmitting && <ArrowRight className="size-4" />}
               </button>
               <p className="text-center text-xs text-muted-foreground">
-                We&apos;ll follow up with confirmation, payment instructions, and what to bring.
+                We'll send confirmation + payment instructions to your email. Bring your laptop. That's it.
               </p>
             </form>
           )}
@@ -507,10 +507,10 @@ function SuccessCard({
   priceCents: number;
 }) {
   const bring = [
-    "Your laptop and charger",
-    "Headphones (optional)",
-    "Any existing bios, headshots, or links you want pulled in",
-    "The executive POV you're ready to make public",
+    "Laptop + charger",
+    "Headphones if you want them",
+    "Any existing bios, headshots, or links — we'll pull them in",
+    "The POV you've been sitting on. It's time.",
   ];
   const tierLabel = tier === "founders" ? "Founders Seat" : "Cohort Seat";
   return (
@@ -520,8 +520,8 @@ function SuccessCard({
       </div>
       <h2 className="text-2xl font-semibold tracking-tight">You&apos;re in.</h2>
       <p className="mt-2 text-muted-foreground">
-        {tierLabel} ({formatPriceCents(priceCents)}) reserved for {cohort.dateLabel} in{" "}
-        {cohort.cityLabel}. Check your email for confirmation and payment instructions shortly.
+        {tierLabel} ({formatPriceCents(priceCents)}) locked for {cohort.dateLabel} in{" "}
+        {cohort.cityLabel}. Check your email — confirmation and payment details are on their way.
       </p>
       <div className="mt-8 rounded-xl border border-white/10 p-5 text-left">
         <div className="mb-2 text-sm uppercase tracking-[0.2em] text-muted-foreground">

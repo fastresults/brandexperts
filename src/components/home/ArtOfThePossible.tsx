@@ -41,14 +41,16 @@ const CATEGORY_LABEL: Record<BusinessCategory, string> = {
 function IdeaCard({ idea }: { idea: BusinessIdea }) {
   const Icon = CATEGORY_ICON[idea.category];
   return (
-    <article className="group relative flex w-[320px] shrink-0 flex-col gap-3 rounded-2xl border border-white/10 bg-card p-5 transition-all duration-300 hover:-translate-y-1 hover:border-white/30 hover:shadow-[0_10px_40px_-15px_rgba(255,80,180,0.35)] md:w-[360px]">
-      <div className="flex items-center justify-between">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[10px] uppercase tracking-[0.15em]">
+    <article className="group relative flex w-[320px] shrink-0 flex-col gap-3 rounded-2xl border border-white/10 bg-card p-5 transition-all duration-300 hover:-translate-y-1.5 hover:border-white/25 hover:glow-brand md:w-[360px]">
+      {/* Subtle gradient sweep on hover */}
+      <div className="pointer-events-none absolute inset-0 rounded-2xl bg-hero-gradient opacity-0 transition-opacity duration-300 group-hover:opacity-[0.04]" />
+      <div className="relative flex items-center justify-between">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[10px] uppercase tracking-[0.15em] transition-colors group-hover:border-white/20">
           <Icon className="size-3 text-foreground/70" />
           <span className="text-gradient-brand font-semibold">{CATEGORY_LABEL[idea.category]}</span>
         </span>
       </div>
-      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+      <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3 transition-colors group-hover:border-white/15 group-hover:bg-white/[0.05]">
         <div className="text-[10px] font-medium uppercase tracking-[0.15em] text-muted-foreground">
           Monthly income potential
         </div>
@@ -125,28 +127,24 @@ export function ArtOfThePossible() {
     <section className="border-y border-white/5 py-12 md:py-20">
       <div className="mx-auto mb-8 max-w-6xl px-6 md:mb-10">
         <h2 className="mb-2 text-xs uppercase tracking-[0.18em] text-muted-foreground md:text-sm md:tracking-[0.2em]">
-          What others are starting in 2026
+          What people are actually building in 2026
         </h2>
         <p className="max-w-3xl text-2xl font-semibold leading-tight tracking-tight md:text-5xl">
-          Proof, not a menu.{" "}
+          Not a mood board.{" "}
           <span className="text-gradient-brand">
-            These are the kinds of businesses real people are launching in 2026 —
-            online, on a street corner, out of a kitchen, off a phone, or built around AI.
+            Real businesses real people are launching right now —
+            online, on a corner, out of a kitchen, off a phone, or built entirely around AI.
           </span>
         </p>
         <p className="mt-4 max-w-2xl text-muted-foreground md:text-lg">
-          Scroll through for inspiration.{" "}
+          Yours doesn't have to be on this list.{" "}
           <span className="font-medium text-foreground">
-            Yours doesn't have to be on this list.
+            You walk in with your idea. We build the brand system around it.
           </span>{" "}
-          You walk in with your idea, and we build the business around it using the
-          same seven stages — so you leave with a formed business and a 90-day plan
-          you can run on Monday.
+          Same process every time — so you leave with 15 finished assets and a 90-day plan you can run starting Monday.
         </p>
         <p className="mt-3 max-w-2xl text-xs text-muted-foreground/80 md:text-sm">
-          Income ranges are realistic year-one numbers for a solo operator who works
-          the seven-stage plan. What you make will depend on your hours, your prices,
-          and how many customers you keep.
+          Income ranges are realistic year-one numbers for a solo operator running the full seven-stage plan. Your results depend on your hours, pricing, and retention.
         </p>
         <div className="mt-8 -mx-6 flex gap-2 overflow-x-auto px-6 pb-2 [scrollbar-width:none] md:mx-0 md:flex-wrap md:overflow-visible md:px-0 md:pb-0 [&::-webkit-scrollbar]:hidden">
           {BUSINESS_CATEGORIES.map((c) => {
@@ -182,16 +180,16 @@ export function ArtOfThePossible() {
       <div className="mx-auto mt-12 max-w-6xl px-6">
         <div className="rounded-2xl border border-white/10 bg-card/60 p-6 md:p-8">
           <p className="text-lg md:text-xl">
-            Whether your idea looks like one of these or nothing like them,{" "}
-            <span className="text-gradient-brand font-semibold">it gets built the same way</span> —
-            the same seven stages, in one day, in this room.
+            Doesn't matter if your idea looks like one of these or nothing like them —{" "}
+            <span className="text-gradient-brand font-semibold">it goes through the same seven stages, same room, same afternoon.</span>{" "}
+            You leave with the system no matter what you're building.
           </p>
           <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
             <Link
               to="/register"
-              className="inline-flex items-center gap-2 rounded-full bg-hero-gradient px-5 py-2.5 text-sm font-semibold text-white transition-transform hover:scale-[1.02]"
+              className="inline-flex items-center gap-2 rounded-full bg-hero-gradient px-5 py-2.5 text-sm font-semibold text-white transition-all hover:scale-[1.02] hover:glow-brand"
             >
-              Save your seat — only {EVENT.capacity} spots <ArrowRight className="size-4" />
+              Lock in your seat — {EVENT.capacity} spots <ArrowRight className="size-4" />
             </Link>
           </div>
         </div>

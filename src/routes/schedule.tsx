@@ -66,15 +66,15 @@ function SchedulePage() {
             Profile in. <span className="text-gradient-brand">Publishing system out.</span>
           </h1>
           <p className="mt-4 max-w-2xl text-base text-muted-foreground md:mt-5 md:text-lg">
-            Three focused hours, six blocks, one outcome. Every block ships finished work the next block builds on — no homework, no draft-review-revise loop, no week-long wait between insight and publication. By 4:00 PM you walk out with 15 publish-ready assets and a 30-minute weekly cadence already on your calendar.
+            Six blocks. Three hours. Every block ships finished work the next one builds on — no homework, no week-long wait between insight and post. You walk out at 4:00 PM with 15 publish-ready assets and a 30-minute weekly cadence that's already on your calendar.
           </p>
 
           {/* Stat ribbon */}
           <div className="mt-8 grid grid-cols-1 gap-3 border-t border-white/10 pt-6 sm:grid-cols-3 md:mt-10 md:pt-8">
             {[
-              { stat: "3 hrs", label: "working time" },
-              { stat: "6 blocks", label: "foundation → cadence" },
-              { stat: "15 assets", label: "finished by 4:00" },
+              { stat: "3 hrs", label: "total time in the room" },
+              { stat: "6 blocks", label: "foundation → running system" },
+              { stat: "15 assets", label: "done before you leave" },
             ].map((s) => (
               <div
                 key={s.label}
@@ -258,17 +258,17 @@ function SchedulePage() {
           {/* Footer CTA tile */}
           <div className="mt-16 rounded-2xl border border-white/10 bg-card p-6 text-center md:p-10">
             <h3 className="text-2xl font-semibold tracking-tight md:text-3xl">
-              One afternoon. One door. {EVENT.totalSeats} seats.
+              One afternoon. {EVENT.totalSeats} seats. No second chances on this cohort.
             </h3>
             <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
-              Walk in at 1:00 PM as a title on a slide. Walk out at 4:00 PM operating the system every other executive in your category will spend the next quarter trying to assemble.
+              Walk in at 1:00 PM with scattered ideas and a stale bio. Walk out at 4:00 PM running the same system everyone else in your category will spend the next quarter trying to figure out.
             </p>
             <div className="mt-6 flex justify-center">
               <Link
                 to="/register"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-base font-medium text-primary-foreground transition-opacity hover:opacity-90 sm:w-auto"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-base font-medium text-primary-foreground transition-all hover:opacity-90 hover:scale-[1.03] hover:glow-primary sm:w-auto"
               >
-                Reserve your seat <ArrowRight className="size-4" />
+                Lock in your seat <ArrowRight className="size-4" />
               </Link>
             </div>
           </div>

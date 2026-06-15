@@ -56,21 +56,19 @@ function ContactPage() {
       <main className="flex-1">
         <div className="mx-auto max-w-2xl px-6 py-16 md:py-24">
           <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
-            Get in touch
+            Questions? Ask.
           </h1>
           <p className="mt-3 text-muted-foreground">
-            Questions, concerns, or just curious how the program works? Drop us a
-            note — a real person will reply within 1 business day.
+            Curious how the program works, whether it's right for you, or something else entirely — send it. A real person replies within one business day. No sales funnel. No auto-responder.
           </p>
 
           {submitted ? (
             <div className="mt-10 rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-8 text-center">
               <CheckCircle2 className="mx-auto h-10 w-10 text-emerald-400" />
-              <h2 className="mt-4 text-xl font-semibold">Message sent</h2>
+              <h2 className="mt-4 text-xl font-semibold">Got it.</h2>
               <p className="mt-2 text-sm text-muted-foreground">
                 Thanks{form.name ? `, ${form.name.split(/\s+/)[0]}` : ""}. We
-                emailed you a confirmation and will get back to you within 1
-                business day.
+                sent a confirmation to your email and we'll be back within one business day.
               </p>
             </div>
           ) : (
@@ -143,7 +141,7 @@ function ContactPage() {
                   onChange={(e) => update("subject", e.target.value)}
                   minLength={3}
                   maxLength={180}
-                  placeholder="What's this about?"
+                  placeholder="What's on your mind?"
                 />
               </div>
 
@@ -167,7 +165,7 @@ function ContactPage() {
                 className="w-full"
                 disabled={mutation.isPending}
               >
-                {mutation.isPending ? "Sending…" : "Send message"}
+                {mutation.isPending ? "Sending…" : "Send it"}
               </Button>
             </form>
           )}

@@ -12,17 +12,17 @@ import { FacilitatorCTA } from "@/components/facilitator/FacilitatorCTA";
 export const Route = createFileRoute("/facilitator")({
   head: () => ({
     meta: [
-      { title: "Adam Anderson — Facilitator, The Executive Brand Intensive" },
+      { title: "Adam Anderson — Who runs the room at the Brand OS Intensive" },
       {
         name: "description",
         content:
-          "40 years of brand, tech, and sovereign communications experience. Adam Anderson leads The Executive Brand Intensive — a 3-hour, hands-on workshop that installs an executive personal-brand operating system in your voice.",
+          "Builder. Brand operator. AI practitioner. Adam Anderson compressed a 90-day agency process into one 3-hour afternoon — and runs the same system himself.",
       },
-      { property: "og:title", content: "Adam Anderson — Facilitator, The Executive Brand Intensive" },
+      { property: "og:title", content: "Adam Anderson — Who runs the room at the Brand OS Intensive" },
       {
         property: "og:description",
         content:
-          "Fortune 500, sovereign cabinet, and AI-native product fluency — translated into an executive brand operating system you walk out owning.",
+          "He didn't learn this in a classroom. He built 5 AI-native SaaS products, ran brand systems for 50+ founders, and produced 5 international summits — then compressed it all into a single afternoon.",
       },
       { property: "og:url", content: "https://brandexperts.org/facilitator" },
     ],

@@ -13,7 +13,7 @@ import { getHeroBackgroundList } from "@/lib/media.functions";
 
 export const FACILITATOR_NAME = "Adam Anderson";
 export const FACILITATOR_TITLE =
-  "Brand Operator · Co-Founder, OPEN Interactive · Has built brand systems for founders, operators, and executives who couldn't afford to sound like everyone else.";
+  "Brand Operator · AI Builder · 50+ brand systems installed for founders and operators who refused to sound like everyone else.";
 
 export const Route = createFileRoute("/")({
   loader: async ({ context }) => {
@@ -75,33 +75,33 @@ function HomePage() {
 
 function NotACourseBanner() {
   return (
-    <section className="relative bg-neutral-900">
-      <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] via-transparent to-black/30" />
+    <section className="relative overflow-hidden bg-neutral-900">
+      {/* Subtle gradient shimmer bar at top */}
+      <div className="absolute inset-x-0 top-0 h-px bg-hero-gradient opacity-40" />
+      <div className="absolute inset-0 bg-gradient-to-b from-white/[0.025] via-transparent to-black/40" />
 
       <div className="relative container mx-auto px-6 py-8 md:py-10">
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="flex items-start gap-4 md:max-w-3xl">
-            <span className="mt-1 inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-white/15 ring-1 ring-white/30 backdrop-blur">
+            <span className="mt-1 inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-white/15 ring-1 ring-white/30 backdrop-blur animate-pulse-glow">
               <AlertTriangle className="size-5 text-white" />
             </span>
             <div>
               <p className="text-[11px] md:text-xs uppercase tracking-[0.18em] font-semibold text-gradient-brand">
-                Not another prompt template. Not a 90-day LinkedIn challenge.
+                Not a template. Not a 90-day challenge. Not homework.
               </p>
-              <h2 className="mt-2 text-xl font-semibold text-white/70 leading-tight md:text-xl">
-                This is the afternoon you build the system — in your voice, in one room, in three hours — instead of being handed someone else's.
+              <h2 className="mt-2 text-xl font-semibold text-white/75 leading-tight md:text-xl">
+                Three hours. One room. You build the system — in your voice — instead of getting handed someone else's.
               </h2>
               <p className="mt-2 text-sm text-white/55 leading-relaxed md:text-sm">
-                ChatGPT gives you generic output that sounds like everyone else's ChatGPT output. A 90-day content calendar becomes a 2-week content calendar the moment life happens. The Brand OS is different: 15 finished assets leave the room already in your voice, and a 30-minute weekly ritual keeps the engine running — quarter after quarter, without rebuilding from scratch. <span className="text-white/40">(Hard costs — scheduler/newsletter subscriptions, premium AI tier, paid distribution — aren't covered by the workshop fee.)</span>
+                ChatGPT gives you generic output that sounds like everyone else's ChatGPT output. A 90-day calendar collapses the moment life happens. The Brand OS is different: 15 assets leave the room already in your voice, and a 30-minute weekly ritual keeps the engine running — quarter after quarter, no rebuilding. <span className="text-white/40">(Scheduler, newsletter, and AI subscriptions aren't covered by the workshop fee.)</span>
               </p>
-
             </div>
           </div>
           <div className="flex flex-col gap-2 md:flex-col md:items-end md:gap-2 md:shrink-0">
-            <BannerChip icon={<Hammer className="size-3.5" />} label="Installed in the room — not assigned as homework" />
-            <BannerChip icon={<Timer className="size-3.5" />} label="Runs on 30 minutes a week — not your willpower" />
-            <BannerChip icon={<Check className="size-3.5" />} label="Outlives the workshop — quarter after quarter" />
-
+            <BannerChip icon={<Hammer className="size-3.5" />} label="Built in the room. Not homework." />
+            <BannerChip icon={<Timer className="size-3.5" />} label="30 min/week. No willpower tax." />
+            <BannerChip icon={<Check className="size-3.5" />} label="Still running next quarter." />
           </div>
         </div>
       </div>
@@ -132,43 +132,74 @@ function Hero({ heroBgUrl }: { heroBgUrl: string | null }) {
           className="absolute inset-0 h-full w-full object-cover"
         />
       ) : null}
-      <div className="absolute inset-0 bg-background/0" />
+      {/* Gradient overlay — deepens toward bottom so text always pops */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/60" />
+      {/* Subtle grain texture for depth */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.03]"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.8) 1px, transparent 0)",
+          backgroundSize: "28px 28px",
+        }}
+      />
+
       <div className="relative mx-auto max-w-6xl px-6 py-16 md:py-24 lg:py-32">
-        <p className="mb-5 text-xs uppercase tracking-[0.18em] text-white/80 md:mb-6 md:text-sm md:tracking-[0.2em]">
-          For founders and operators who can't afford to sound like everyone else.
+        <p
+          className="mb-5 text-xs uppercase tracking-[0.18em] text-white/80 animate-fade-up md:mb-6 md:text-sm md:tracking-[0.2em]"
+          style={{ animationDelay: "0.05s" }}
+        >
+          Stop sounding like everyone else. Start publishing in your actual voice.
         </p>
-        <h1 className="max-w-3xl text-4xl font-semibold leading-[1.08] tracking-tight text-white md:text-5xl lg:text-7xl">
+        <h1
+          className="max-w-3xl text-4xl font-semibold leading-[1.06] tracking-tight text-white animate-fade-up md:text-5xl lg:text-[4.5rem]"
+          style={{ animationDelay: "0.15s" }}
+        >
           AI doesn't replace the real ones.{" "}
           <span className="italic">
-            But it will replace anyone who sounds <span className="text-gradient-brand">generic.</span>
+            But it will replace anyone who sounds{" "}
+            <span className="text-gradient-brand">generic.</span>
           </span>
         </h1>
-        <p className="mt-5 max-w-2xl text-base text-white/90 md:mt-6 md:text-lg">
-          One afternoon at the IGNITE Center in Norcross, GA.{" "}
+        <p
+          className="mt-5 max-w-2xl text-base text-white/90 animate-fade-up md:mt-6 md:text-lg"
+          style={{ animationDelay: "0.25s" }}
+        >
+          One afternoon. IGNITE Center, Norcross GA.{" "}
           <span className="font-medium text-white">
             Walk out with 15 finished assets and a publishing system that runs itself —
           </span>{" "}
-          30 minutes a week, in your voice, for the next 90 days and every quarter after.
+          30 minutes a week, for the next 90 days and every quarter after.
         </p>
-        <p className="mt-4 max-w-2xl text-sm text-white/85 md:text-base">
-          You don't need a ghostwriter. You don't need a content team. You need an OS.
+        <p
+          className="mt-4 max-w-2xl text-sm text-white/85 animate-fade-up md:text-base"
+          style={{ animationDelay: "0.32s" }}
+        >
+          No ghostwriter. No content team. Just an OS built around your voice.
         </p>
 
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4 md:mt-10">
+        <div
+          className="mt-8 flex flex-col gap-3 animate-fade-up sm:flex-row sm:flex-wrap sm:items-center sm:gap-4 md:mt-10"
+          style={{ animationDelay: "0.42s" }}
+        >
           <Link
             to="/register"
-            className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-base font-medium text-primary-foreground transition-opacity hover:opacity-90 sm:w-auto"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-base font-medium text-primary-foreground transition-all duration-200 hover:opacity-90 hover:scale-[1.03] hover:glow-primary sm:w-auto"
           >
-            Claim one of {EVENT.totalSeats} seats <ArrowRight className="size-4" />
+            Lock in your seat <ArrowRight className="size-4" />
           </Link>
           <Link
             to="/schedule"
-            className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/30 px-6 py-3 text-base font-medium text-white transition-colors hover:bg-white/10 sm:w-auto"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/30 px-6 py-3 text-base font-medium text-white transition-all hover:bg-white/10 hover:border-white/50 sm:w-auto"
           >
-            See the 3-hour flow
+            See the agenda
           </Link>
         </div>
-        <div className="mt-10 grid max-w-3xl grid-cols-1 gap-3 text-white/90 sm:grid-cols-2 lg:grid-cols-4 md:mt-12 md:gap-4">
+
+        <div
+          className="mt-10 grid max-w-3xl grid-cols-1 gap-3 text-white/90 animate-fade-up sm:grid-cols-2 lg:grid-cols-4 md:mt-12 md:gap-4"
+          style={{ animationDelay: "0.52s" }}
+        >
           <Meta icon={<Calendar className="size-4" />} label={EVENT.dateLabel} />
           <Meta icon={<MapPin className="size-4" />} label="IGNITE Center · Norcross, GA" />
           <Meta icon={<Users className="size-4" />} label={`${EVENT.totalSeats} seats`} />
@@ -181,7 +212,7 @@ function Hero({ heroBgUrl }: { heroBgUrl: string | null }) {
 
 function Meta({ icon, label }: { icon: React.ReactNode; label: string }) {
   return (
-    <div className="flex items-center gap-2 rounded-full bg-black/20 px-4 py-2 text-sm backdrop-blur">
+    <div className="flex items-center gap-2 rounded-full bg-black/25 px-4 py-2 text-sm backdrop-blur border border-white/10">
       {icon}
       <span>{label}</span>
     </div>
@@ -227,32 +258,33 @@ function FacilitatorSection() {
           </div>
           <div>
             <h2 className="mb-2 text-sm uppercase tracking-[0.2em] text-muted-foreground">
-              Who installs it
+              Who runs the room
             </h2>
             <p className="text-2xl font-semibold tracking-tight md:text-3xl lg:text-4xl">
               {FACILITATOR_NAME} —{" "}
-              <span className="text-gradient-brand">the operator who built the framework, then compressed it into a single afternoon.</span>
+              <span className="text-gradient-brand">the builder who designed the framework, then compressed it into a single afternoon.</span>
             </p>
             <p className="mt-3 text-sm uppercase tracking-[0.15em] text-muted-foreground">
               {FACILITATOR_TITLE}
             </p>
             <p className="mt-5 text-muted-foreground">
-              Adam has spent decades building brand systems that outlast their category — not as a consultant
-              who slides in a deck and disappears, but as an operator who builds the infrastructure and then
-              hands you the keys. He's worked at every scale, from early-stage founders to large organizations,
-              and shipped five AI-native SaaS products with the same toolchain he installs in this room.
+              Adam isn't a consultant who hands you a deck and disappears. He's an operator
+              who builds the infrastructure and hands you the keys. He's shipped five AI-native
+              products using the same toolchain he installs in this room — and he's compressed
+              what used to take a 90-day agency engagement into a single afternoon, because
+              the founders he works with don't have 90 days.
             </p>
             <p className="mt-3 text-muted-foreground">
-              His read: most personal brands fail not because of bad content, but because there's no system
-              underneath. He spent the last two years compressing what used to take a 90-day agency engagement
-              into a single afternoon — because the people he works with don't have 90 days, and AI no longer
-              leaves room to wait. When he installs your Brand OS, he's installing the same model he runs on himself.
+              His take: most brands fail not because of bad content, but because there's no
+              system underneath it. So he built one. When he installs your Brand OS,
+              it's the same model he runs on himself — not theory, not templates,
+              not someone else's voice pattern dressed up as yours.
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
-              <TagChip>Brand systems across 50+ companies</TagChip>
+              <TagChip>50+ brand systems installed</TagChip>
               <TagChip>5 AI-native SaaS products shipped</TagChip>
               <TagChip>5 international summits produced</TagChip>
-              <TagChip>90-day engagements → compressed to 3 hours</TagChip>
+              <TagChip>What took 90 days → compressed to 3 hours</TagChip>
             </div>
           </div>
         </div>
@@ -271,21 +303,21 @@ function TagChip({ children }: { children: React.ReactNode }) {
 
 function WalkInWalkOut() {
   const walkIn = [
-    "A bio written for a version of yourself you've already outgrown",
-    "A LinkedIn About indistinguishable from three peers in your category",
-    "Thinking that only lives in DMs, voice memos, and unsent drafts",
-    "A vague resolution to \"post more\" that evaporated by week two",
-    "Prompt-and-pray ChatGPT content that sounds like everyone else's ChatGPT content",
+    "A bio written for a version of you that doesn't exist anymore",
+    "A LinkedIn About that could belong to literally anyone in your category",
+    "Ideas rotting in voice memos and never-sent DMs",
+    "A 'post more' plan that survived about two weeks",
+    "ChatGPT output that sounds exactly like everyone else's ChatGPT output",
   ];
   return (
     <section className="py-12 md:py-20">
       <div className="mx-auto max-w-6xl px-6">
         <h2 className="mb-2 text-xs uppercase tracking-[0.18em] text-muted-foreground md:text-sm md:tracking-[0.2em]">
-          What three hours actually changes
+          Three hours. real change.
         </h2>
         <p className="mb-8 max-w-3xl text-2xl font-semibold leading-tight tracking-tight md:mb-10 md:text-4xl">
-          Between{" "}
-          <span className="text-gradient-brand">1:00 PM and 4:00 PM</span>, your brand stops being a side project and starts being infrastructure.
+          <span className="text-gradient-brand">1:00 PM to 4:00 PM.</span>{" "}
+          Your brand stops being a someday project and becomes infrastructure you actually run.
         </p>
         <div className="grid gap-5 md:grid-cols-[1fr_1.4fr] md:gap-6">
           <div className="rounded-3xl border border-white/10 bg-card/50 p-6 md:p-8">
@@ -293,7 +325,7 @@ function WalkInWalkOut() {
               1:00 PM
             </div>
             <div className="text-2xl font-semibold tracking-tight text-foreground/80">
-              What you walk in with
+              What you show up with
             </div>
             <ul className="mt-6 space-y-3">
               {walkIn.map((i) => (
@@ -364,16 +396,16 @@ function WhatYouLeaveWith() {
     <section className="border-y border-white/5 py-12 md:py-20">
       <div className="mx-auto max-w-6xl px-6">
         <h2 className="mb-2 text-xs uppercase tracking-[0.18em] text-muted-foreground md:text-sm md:tracking-[0.2em]">
-          15 finished assets · one installed system · zero homework
+          15 assets. 1 system. 0 homework.
         </h2>
         <p className="mb-3 max-w-3xl text-3xl font-semibold tracking-tight md:text-4xl">
-          Each of these is what an executive normally pays a specialist firm to produce —{" "}
+          Each of these normally costs a specialist to build.{" "}
           <span className="text-gradient-brand">
-            except yours leave the room locked to your voice, on the same afternoon.
+            Yours leave the room already in your voice — the same afternoon you build them.
           </span>
         </p>
         <p className="mb-10 max-w-2xl text-base text-muted-foreground md:text-lg">
-          Three modules of the Brand Operating System. Five assets per module. One well-formed idea becomes an article, a newsletter, a keynote opener, a carousel, and two weeks of social — the same insight, working ten places at once, in your name.
+          Three modules. Five assets each. One idea becomes an article, a newsletter, a keynote opener, a carousel, and two weeks of scheduled posts — the same thought running in ten places at once.
         </p>
         <div className="grid gap-4 md:grid-cols-3">
           {WALKOUT_PHASES.map((p) => (
@@ -517,28 +549,31 @@ function BottomCTA() {
   return (
     <section className="pb-16 md:pb-24">
       <div className="mx-auto max-w-6xl px-6">
-        <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-hero-gradient p-8 md:p-10 lg:p-16">
+        <div className="relative overflow-hidden rounded-3xl border border-white/15 bg-hero-gradient p-8 md:p-10 lg:p-16">
+          {/* Dot grid overlay */}
           <div
-            className="absolute inset-0 mix-blend-overlay opacity-30"
+            className="absolute inset-0 mix-blend-overlay opacity-25"
             style={{
               backgroundImage:
-                "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.4) 1px, transparent 0)",
+                "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.5) 1px, transparent 0)",
               backgroundSize: "22px 22px",
             }}
           />
+          {/* Bottom glow */}
+          <div className="pointer-events-none absolute -bottom-16 -right-16 size-64 rounded-full bg-brand-violet/30 blur-3xl" />
           <div className="relative max-w-3xl text-white">
             <h2 className="text-3xl font-semibold leading-tight tracking-tight md:text-4xl lg:text-5xl">
-              {seatsWord(EVENT.totalSeats)} seats left. One afternoon to build the system that makes everything you publish sound undeniably like you.
+              {seatsWord(EVENT.totalSeats)} seats left. One afternoon to build the system that makes everything you publish sound like you — not like everyone else's AI.
             </h2>
             <p className="mt-4 text-base text-white/90 md:mt-5 md:text-lg">
-              In a feed flooded with AI content that sounds the same, the only people who break through are the ones publishing a named, specific point of view — faster and more consistently than everyone else. This is the afternoon you stop being one of the interchangeable ones. Bring the bio, the ideas, the voice. Leave with 15 assets and a system that runs itself.
+              The feed is flooded with AI content that sounds identical. The ones breaking through have a named, specific point of view — published faster and more consistently than everyone else. This is the afternoon you get the system. Bring your bio, your ideas, your voice. Leave with 15 assets and an OS that runs itself.
             </p>
             <div className="mt-7 md:mt-8">
               <Link
                 to="/register"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-base font-medium text-neutral-900 transition-opacity hover:opacity-90 hover:text-neutral-900 sm:w-auto"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-base font-semibold text-neutral-900 shadow-lg transition-all duration-200 hover:opacity-95 hover:scale-[1.025] hover:shadow-xl hover:text-neutral-900 sm:w-auto"
               >
-                Claim your seat — {EVENT.shortLabel} <ArrowRight className="size-4" />
+                Lock in your seat — {EVENT.shortLabel} <ArrowRight className="size-4" />
               </Link>
             </div>
           </div>

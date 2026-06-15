@@ -9,7 +9,7 @@ export function FacilitatorHero() {
       transition={{ duration: 0.5 }}
       className="flex flex-col md:flex-row md:items-start md:gap-10"
     >
-      {/* Portrait — small on mobile (stacked above), 160px square on desktop (right of headline) */}
+      {/* Portrait */}
       <div className="order-1 md:order-2 md:flex-shrink-0 mb-6 md:mb-0 md:mt-[2.4rem]">
         <div className="overflow-hidden rounded-2xl border border-border shadow-sm w-24 h-24 md:w-40 md:h-40">
           <img
@@ -26,20 +26,24 @@ export function FacilitatorHero() {
         </p>
       </div>
 
-      {/* Headline column — keeps the existing left primary border */}
+      {/* Headline */}
       <div className="order-2 md:order-1 md:flex-1 border-l-4 border-primary pl-6">
         <p className="mb-3 text-xs uppercase tracking-[0.18em] text-muted-foreground md:text-sm md:tracking-[0.2em]">
-          Brand Operator & AI Strategist
+          Builder · Brand Operator · AI Practitioner
         </p>
         <h1 className="text-4xl font-semibold leading-tight tracking-tight text-foreground md:text-5xl lg:text-6xl">
           Adam Anderson
           <br />
           doesn't write your brand.
           <br />
-          He installs the system that does.
+          <span className="text-gradient-brand">He installs the system that does.</span>
         </h1>
         <p className="mt-4 max-w-2xl text-base text-muted-foreground md:mt-5 md:text-lg">
-          Adam's take: most personal brands fail not because of bad content — but because there's no system underneath. He's spent years building the framework that fixes that, then compressed it into a single afternoon because that's all the people he works with have. He doesn't write your content. He installs the operating system that does — locked to your voice, grounded in your actual expertise, ready to publish by Monday and run itself every quarter after.
+          He's not a coach. Not a consultant who disappears after the deck.
+          He's an operator who builds the infrastructure, hands you the keys,
+          and runs the same system himself. He compressed what used to be a
+          90-day agency engagement into three hours — because the founders
+          he works with can't afford to wait 90 days, and neither can you.
         </p>
       </div>
     </motion.section>

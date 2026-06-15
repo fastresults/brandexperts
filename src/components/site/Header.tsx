@@ -19,8 +19,8 @@ import {
 const nav = [
   { to: "/", label: "home" },
   { to: "/schedule", label: "schedule" },
-  { to: "/register", label: "register" },
-  { to: "/facilitator", label: "about" },
+  { to: "/register", label: "join" },
+  { to: "/facilitator", label: "who" },
   { to: "/contact", label: "contact" },
 ] as const;
 
@@ -34,15 +34,14 @@ export function SiteHeader() {
     staleTime: 60_000,
   });
   const isFreeCohort = settings?.home_variant === "selection";
-  const ctaFull = isFreeCohort ? "Apply — free cohort" : `Claim your seat — from $${PRICING.founders.price}`;
-  const ctaShort = isFreeCohort ? "Apply" : "Claim";
+  const ctaFull = isFreeCohort ? "Apply — free cohort" : `Lock in your seat — from $${PRICING.founders.price}`;
+  const ctaShort = isFreeCohort ? "Apply" : "Join";
 
   const close = () => setOpen(false);
 
-
   return (
     <header
-      className="sticky top-0 z-50 backdrop-blur-xl backdrop-saturate-150"
+      className="sticky top-0 z-50 backdrop-blur-2xl backdrop-saturate-200"
       style={{
         backgroundColor: "var(--header-bg)",
         borderBottom: "1px solid var(--header-border)",
@@ -51,7 +50,7 @@ export function SiteHeader() {
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-2 md:px-6">
         <Link
           to="/"
-          className="flex items-center font-semibold tracking-tight"
+          className="flex items-center font-semibold tracking-tight transition-opacity hover:opacity-80"
           aria-label="Atlanta Startup Workshop"
         >
           <StartupLabsLogo className="h-9 w-auto md:h-12 text-foreground" />
@@ -64,14 +63,20 @@ export function SiteHeader() {
               key={n.to}
               to={n.to}
               activeOptions={{ exact: true }}
-              activeProps={{ className: "text-foreground" }}
-              className="transition-colors hover:text-foreground"
+              activeProps={{
+                className:
+                  "text-foreground relative after:absolute after:inset-x-0 after:-bottom-[18px] after:h-0.5 after:rounded-full after:bg-hero-gradient",
+              }}
+              className="relative transition-colors hover:text-foreground"
             >
               {n.label}
             </Link>
           ))}
           {isAdmin && (
-            <Link to="/admin" className="transition-colors hover:text-foreground">
+            <Link
+              to="/admin"
+              className="relative transition-colors hover:text-foreground"
+            >
               admin
             </Link>
           )}
@@ -81,24 +86,30 @@ export function SiteHeader() {
         <div className="hidden items-center gap-3 lg:flex">
           {isAuthenticated ? (
             <>
-              <Link to="/dashboard" className="text-sm text-muted-foreground hover:text-foreground">
+              <Link
+                to="/dashboard"
+                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
                 dashboard
               </Link>
               <button
                 onClick={() => signOut()}
-                className="text-sm text-muted-foreground hover:text-foreground"
+                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
               >
                 sign out
               </button>
             </>
           ) : (
-            <Link to="/login" className="text-sm text-muted-foreground hover:text-foreground">
+            <Link
+              to="/login"
+              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
               sign in
             </Link>
           )}
           <Link
             to="/register"
-            className="rounded-full bg-hero-gradient px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
+            className="rounded-full bg-hero-gradient px-4 py-2 text-sm font-medium text-white transition-all duration-200 hover:opacity-90 hover:scale-[1.03] hover:glow-brand"
           >
             {ctaFull}
           </Link>
@@ -108,7 +119,7 @@ export function SiteHeader() {
         <div className="flex items-center gap-2 lg:hidden">
           <Link
             to="/register"
-            className="rounded-full bg-hero-gradient px-3.5 py-2 text-sm font-medium text-white"
+            className="rounded-full bg-hero-gradient px-3.5 py-2 text-sm font-medium text-white transition-all hover:opacity-90 hover:scale-[1.03]"
           >
             {ctaShort}
           </Link>
@@ -116,12 +127,16 @@ export function SiteHeader() {
             <SheetTrigger asChild>
               <button
                 aria-label="Open menu"
-                className="inline-flex size-11 items-center justify-center rounded-full border border-white/15 text-foreground"
+                className="inline-flex size-11 items-center justify-center rounded-full border border-white/15 text-foreground transition-all hover:border-white/30 hover:bg-white/5"
               >
                 <Menu className="size-5" />
               </button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[82vw] max-w-sm border-white/10 bg-background p-0">
+            <SheetContent
+              side="right"
+              className="w-[82vw] max-w-sm border-white/10 bg-background p-0"
+              style={{ backdropFilter: "blur(24px) saturate(1.8)" }}
+            >
               <div className="flex h-full flex-col">
                 <div className="flex items-center gap-3 border-b border-white/5 px-6 py-5">
                   <StartupLabsLogo className="h-9 w-auto text-foreground" />
@@ -138,8 +153,11 @@ export function SiteHeader() {
                       to={n.to}
                       onClick={close}
                       activeOptions={{ exact: true }}
-                      activeProps={{ className: "text-foreground bg-white/5" }}
-                      className="rounded-xl px-4 py-3 text-base capitalize text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground"
+                      activeProps={{
+                        className:
+                          "text-foreground bg-white/[0.07] border-l-2 border-brand-magenta pl-[14px]",
+                      }}
+                      className="rounded-xl px-4 py-3 text-base capitalize text-muted-foreground transition-all hover:bg-white/5 hover:text-foreground"
                     >
                       {n.label}
                     </Link>
@@ -148,7 +166,7 @@ export function SiteHeader() {
                     <Link
                       to="/admin"
                       onClick={close}
-                      className="rounded-xl px-4 py-3 text-base text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground"
+                      className="rounded-xl px-4 py-3 text-base text-muted-foreground transition-all hover:bg-white/5 hover:text-foreground"
                     >
                       admin
                     </Link>
@@ -159,7 +177,7 @@ export function SiteHeader() {
                   <Link
                     to="/register"
                     onClick={close}
-                    className="flex w-full items-center justify-center rounded-full bg-hero-gradient px-5 py-3 text-base font-medium text-white"
+                    className="flex w-full items-center justify-center rounded-full bg-hero-gradient px-5 py-3 text-base font-medium text-white transition-all hover:opacity-90 hover:glow-brand"
                   >
                     {ctaFull}
                   </Link>
@@ -168,7 +186,7 @@ export function SiteHeader() {
                       <Link
                         to="/dashboard"
                         onClick={close}
-                        className="flex w-full items-center justify-center rounded-full border border-white/15 px-5 py-3 text-sm text-muted-foreground"
+                        className="flex w-full items-center justify-center rounded-full border border-white/15 px-5 py-3 text-sm text-muted-foreground transition-colors hover:border-white/30 hover:text-foreground"
                       >
                         dashboard
                       </Link>
@@ -177,7 +195,7 @@ export function SiteHeader() {
                           close();
                           signOut();
                         }}
-                        className="flex w-full items-center justify-center rounded-full border border-white/15 px-5 py-3 text-sm text-muted-foreground"
+                        className="flex w-full items-center justify-center rounded-full border border-white/15 px-5 py-3 text-sm text-muted-foreground transition-colors hover:border-white/30 hover:text-foreground"
                       >
                         sign out
                       </button>
@@ -186,7 +204,7 @@ export function SiteHeader() {
                     <Link
                       to="/login"
                       onClick={close}
-                      className="flex w-full items-center justify-center rounded-full border border-white/15 px-5 py-3 text-sm text-muted-foreground"
+                      className="flex w-full items-center justify-center rounded-full border border-white/15 px-5 py-3 text-sm text-muted-foreground transition-colors hover:border-white/30 hover:text-foreground"
                     >
                       sign in
                     </Link>
