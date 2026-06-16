@@ -66,7 +66,7 @@ function SchedulePage() {
             Walk in unknown. <span className="text-gradient-brand">Walk out the name.</span>
           </h1>
           <p className="mt-4 max-w-2xl text-base text-muted-foreground md:mt-5 md:text-lg">
-            Six blocks. Three hours. Every block ships finished work — no homework, no waiting. You leave at 4:00 PM with 15 assets live, a system running in 30 minutes a week, and a public presence that finally matches your level.
+            Six blocks. Three hours. Every block ships finished work — no homework, no waiting. You leave at 4:00 PM with 15 assets live and a Brand OS installed in your voice. The system keeps generating on-brand content every month after. 30 minutes a week. No team.
           </p>
 
           {/* Stat ribbon */}
@@ -74,7 +74,7 @@ function SchedulePage() {
             {[
               { stat: "3 hrs", label: "total time in the room" },
               { stat: "6 blocks", label: "foundation → running system" },
-              { stat: "15 assets", label: "done before you leave" },
+              { stat: "15 assets", label: "live before you leave — OS runs every month after" },
             ].map((s) => (
               <div
                 key={s.label}

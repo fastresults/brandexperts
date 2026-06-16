@@ -191,7 +191,7 @@ function RegisterDefault() {
             <span className="text-gradient-brand">Walk out known.</span>
           </h1>
           <p className="mt-4 max-w-2xl text-base text-muted-foreground md:mt-5 md:text-lg">
-            One afternoon. 15 assets — a locked Brand Blueprint, a published Op-Ed, a keynote opener, two weeks of scheduled posts, and a 30-minute weekly cadence already on your calendar. The public presence you've been building toward, installed before you leave.
+            One afternoon. 15 assets live — a locked Brand Blueprint, a published Op-Ed, a keynote opener, two weeks of scheduled posts. Plus a Brand OS installed in your voice that keeps generating on-brand content every month after. 30 minutes a week. No team. The system runs.
           </p>
           <div className="mt-5 flex flex-col gap-2 text-sm text-muted-foreground sm:flex-row sm:flex-wrap sm:gap-4 md:mt-6">
             <span className="inline-flex items-center gap-2">
@@ -245,7 +245,7 @@ function RegisterDefault() {
               <span className="text-gradient-brand">
                 {formatPriceCents(selectedCohort.foundersPriceCents)}
               </span>
-              . All 15 assets included. Nothing extra to buy.
+              . 15 assets live day one. The Brand OS runs every month after.
             </h2>
 
             {availability && !cohortSoldOut && (() => {

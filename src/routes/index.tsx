@@ -167,9 +167,9 @@ function Hero({ heroBgUrl }: { heroBgUrl: string | null }) {
         >
           Three hours at the IGNITE Center, Norcross GA.{" "}
           <span className="font-medium text-white">
-            Walk out with 15 finished assets, the system that keeps you visible,
+            Walk out with 15 live assets and a Brand OS installed in your voice —
           </span>{" "}
-          and a public presence that finally matches your actual level.
+          the system keeps generating on-brand content every month after. 30 minutes a week. No team. No retainer. Just the system running.
         </p>
         <p
           className="mt-4 max-w-2xl text-sm text-white/85 animate-fade-up md:text-base"
@@ -394,16 +394,16 @@ function WhatYouLeaveWith() {
     <section className="border-y border-white/5 py-12 md:py-20">
       <div className="mx-auto max-w-6xl px-6">
         <h2 className="mb-2 text-xs uppercase tracking-[0.18em] text-muted-foreground md:text-sm md:tracking-[0.2em]">
-          15 assets. 1 system. 0 homework.
+          15 assets live day one. A Brand OS that keeps generating every month after.
         </h2>
         <p className="mb-3 max-w-3xl text-3xl font-semibold tracking-tight md:text-4xl">
-          A PR firm charges $15K and takes 90 days to build half of these.{" "}
+          A PR firm charges $15K, takes 90 days, then bills you monthly to keep it alive.{" "}
           <span className="text-gradient-brand">
-            You build all 15 — in your voice — in one afternoon. And you leave running them.
+            You build all 15 in one afternoon and leave with the OS that keeps generating in your voice. No retainer. No dependency. Just the system.
           </span>
         </p>
         <p className="mb-10 max-w-2xl text-base text-muted-foreground md:text-lg">
-          Three modules. Five assets each. One idea becomes an article, a newsletter, a keynote opener, a carousel, and two weeks of scheduled posts — so the whole category sees the same authoritative voice, everywhere, at once.
+          Three modules. Five assets each. The first 15 ship before you leave — article, newsletter, keynote opener, carousel, two weeks of posts, live. Then the Brand OS takes over: one session a month, 30 minutes, one idea becomes five assets across five channels. The same authoritative voice, everywhere, every month — without a team.
         </p>
         <div className="grid gap-4 md:grid-cols-3">
           {WALKOUT_PHASES.map((p) => (

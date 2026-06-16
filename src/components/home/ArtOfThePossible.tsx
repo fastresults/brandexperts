@@ -141,7 +141,7 @@ export function ArtOfThePossible() {
           <span className="font-medium text-foreground">
             You walk in with your business, your idea, your expertise. We build the Brand OS that makes you the known name in that space.
           </span>{" "}
-          Same process every time — so you leave with 15 finished assets and the system that keeps you visible starting Monday.
+          Same process every time — 15 live assets before you leave, and a Brand OS that keeps generating in your voice every month after. Not a one-time output. A running system.
         </p>
         <p className="mt-3 max-w-2xl text-xs text-muted-foreground/80 md:text-sm">
           Income ranges are realistic year-one numbers for a solo operator running the full seven-stage plan. Your results depend on your hours, pricing, and retention.

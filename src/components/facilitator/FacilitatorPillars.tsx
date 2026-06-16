@@ -14,13 +14,13 @@ const PILLARS: { icon: LucideIcon; title: string; desc: string }[] = [
   },
   {
     icon: Zap,
-    title: "You leave with 15 assets. Not a plan to make them.",
-    desc: "Nothing in the room is a concept. Every prompt, preset, and workflow ships as finished work before you leave — because a plan you'll execute 'next week' is a plan you'll never execute.",
+    title: "15 live day one. The OS keeps making more.",
+    desc: "Nothing in the room is a concept. Every prompt, preset, and workflow ships as finished work before you leave — then keeps running. The Brand OS generates on-brand content every month after. 30 minutes a week. No team required.",
   },
   {
     icon: Shuffle,
-    title: "One idea. Five channels. Thirty minutes a week.",
-    desc: "The repurposing system most creators never actually build because they don't have a team. Adam replaces the team with a system you own — live, in the room, locked to your voice.",
+    title: "One idea. Five channels. Thirty minutes a month.",
+    desc: "The repurposing OS most creators never build because they don't have a team. Adam replaces the team with a system you own — installed live, in the room, locked to your voice, running every month after. One session. One idea. Five assets. On-brand every time.",
   },
   {
     icon: Globe,
