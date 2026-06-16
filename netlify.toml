@@ -12,8 +12,12 @@
   publish = "dist/client"
 
 [build.environment]
-  NODE_VERSION  = "20"
-  NITRO_PRESET  = "netlify"
+  NODE_VERSION           = "22"
+  NITRO_PRESET           = "netlify"
+  # Forces Netlify Functions runtime to Node 22 (native WebSocket).
+  # Without this the SSR function runs on nodejs20.x and Supabase Realtime
+  # throws "Node.js 20 detected without native WebSocket support" on every request.
+  AWS_LAMBDA_JS_RUNTIME  = "nodejs22.x"
 
 [functions]
   directory    = "dist/server"
