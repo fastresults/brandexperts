@@ -20,6 +20,12 @@ dist-ssr
 .wrangler/
 .dev.vars
 
+# Lovable IDE state (not source code — do not commit)
+.lovable/
+
+# Netlify CLI local cache (not deployment config — root netlify.toml is authoritative)
+.netlify/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
