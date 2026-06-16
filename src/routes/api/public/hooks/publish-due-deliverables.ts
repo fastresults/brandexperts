@@ -4,7 +4,22 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 export const Route = createFileRoute("/api/public/hooks/publish-due-deliverables")({
   server: {
     handlers: {
-      POST: async () => {
+      POST: async ({ request }) => {
+        // Authenticate caller using the Supabase service role key (pg_cron / admin caller).
+        const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+        const authHeader = request.headers.get("authorization") ?? "";
+        const apikeyHeader = request.headers.get("apikey") ?? "";
+        const provided = authHeader.toLowerCase().startsWith("bearer ")
+          ? authHeader.slice(7).trim()
+          : apikeyHeader.trim();
+
+        if (!serviceKey || !provided || provided !== serviceKey) {
+          return new Response(JSON.stringify({ error: "Unauthorized" }), {
+            status: 401,
+            headers: { "Content-Type": "application/json" },
+          });
+        }
+
         const nowIso = new Date().toISOString();
 
         const { data: due, error } = await supabaseAdmin
