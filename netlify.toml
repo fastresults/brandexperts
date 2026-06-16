@@ -19,6 +19,10 @@
   directory    = "dist/server"
   node_bundler = "none"
 
+# Raise timeout to handle cold-start module loading on first request
+[functions.server]
+  timeout = 30
+
 [[redirects]]
   from   = "/*"
   to     = "/.netlify/functions/server"
