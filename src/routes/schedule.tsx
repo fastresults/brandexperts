@@ -63,10 +63,10 @@ function SchedulePage() {
             {EVENT.dateLabel} · {EVENT.timeLabel}
           </p>
           <h1 className="text-4xl font-semibold leading-tight tracking-tight md:text-5xl lg:text-6xl">
-            Profile in. <span className="text-gradient-brand">Publishing system out.</span>
+            Walk in unknown. <span className="text-gradient-brand">Walk out the name.</span>
           </h1>
           <p className="mt-4 max-w-2xl text-base text-muted-foreground md:mt-5 md:text-lg">
-            Six blocks. Three hours. Every block ships finished work the next one builds on — no homework, no week-long wait between insight and post. You walk out at 4:00 PM with 15 publish-ready assets and a 30-minute weekly cadence that's already on your calendar.
+            Six blocks. Three hours. Every block ships finished work — no homework, no waiting. You leave at 4:00 PM with 15 assets live, a system running in 30 minutes a week, and a public presence that finally matches your level.
           </p>
 
           {/* Stat ribbon */}
@@ -258,17 +258,17 @@ function SchedulePage() {
           {/* Footer CTA tile */}
           <div className="mt-16 rounded-2xl border border-white/10 bg-card p-6 text-center md:p-10">
             <h3 className="text-2xl font-semibold tracking-tight md:text-3xl">
-              One afternoon. {EVENT.totalSeats} seats. No second chances on this cohort.
+              One afternoon. {EVENT.totalSeats} seats. The category goes to whoever shows up first.
             </h3>
             <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
-              Walk in at 1:00 PM with scattered ideas and a stale bio. Walk out at 4:00 PM running the same system everyone else in your category will spend the next quarter trying to figure out.
+              Walk in at 1:00 PM with expertise nobody outside your circle knows about. Walk out at 4:00 PM as the public figure your category has been waiting for. The seat is there. Take it.
             </p>
             <div className="mt-6 flex justify-center">
               <Link
                 to="/register"
                 className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-base font-medium text-primary-foreground transition-all hover:opacity-90 hover:scale-[1.03] hover:glow-primary sm:w-auto"
               >
-                Lock in your seat <ArrowRight className="size-4" />
+                Claim your seat <ArrowRight className="size-4" />
               </Link>
             </div>
           </div>

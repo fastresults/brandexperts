@@ -12,17 +12,17 @@ import { FacilitatorCTA } from "@/components/facilitator/FacilitatorCTA";
 export const Route = createFileRoute("/facilitator")({
   head: () => ({
     meta: [
-      { title: "Adam Anderson — Who runs the room at the Brand OS Intensive" },
+      { title: "Adam Anderson — The Brand Operator Who Makes Founders Into Public Figures" },
       {
         name: "description",
         content:
-          "Builder. Brand operator. AI practitioner. Adam Anderson compressed a 90-day agency process into one 3-hour afternoon — and runs the same system himself.",
+          "Brand operator. AI builder. Public figure maker. Adam Anderson has made 50+ founders the name in their category — and he does it in one afternoon.",
       },
-      { property: "og:title", content: "Adam Anderson — Who runs the room at the Brand OS Intensive" },
+      { property: "og:title", content: "Adam Anderson — The Brand Operator Who Makes Founders Into Public Figures" },
       {
         property: "og:description",
         content:
-          "He didn't learn this in a classroom. He built 5 AI-native SaaS products, ran brand systems for 50+ founders, and produced 5 international summits — then compressed it all into a single afternoon.",
+          "He's taken 50+ founders and operators from respected-in-their-circle to publicly known in their category. He compressed what agencies charge $15K and 90 days for into a single afternoon.",
       },
       { property: "og:url", content: "https://brandexperts.org/facilitator" },
     ],

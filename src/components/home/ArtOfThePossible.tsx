@@ -137,11 +137,11 @@ export function ArtOfThePossible() {
           </span>
         </p>
         <p className="mt-4 max-w-2xl text-muted-foreground md:text-lg">
-          Yours doesn't have to be on this list.{" "}
+          Yours doesn't have to look like any of these.{" "}
           <span className="font-medium text-foreground">
-            You walk in with your idea. We build the brand system around it.
+            You walk in with your business, your idea, your expertise. We build the Brand OS that makes you the known name in that space.
           </span>{" "}
-          Same process every time — so you leave with 15 finished assets and a 90-day plan you can run starting Monday.
+          Same process every time — so you leave with 15 finished assets and the system that keeps you visible starting Monday.
         </p>
         <p className="mt-3 max-w-2xl text-xs text-muted-foreground/80 md:text-sm">
           Income ranges are realistic year-one numbers for a solo operator running the full seven-stage plan. Your results depend on your hours, pricing, and retention.
@@ -189,7 +189,7 @@ export function ArtOfThePossible() {
               to="/register"
               className="inline-flex items-center gap-2 rounded-full bg-hero-gradient px-5 py-2.5 text-sm font-semibold text-white transition-all hover:scale-[1.02] hover:glow-brand"
             >
-              Lock in your seat — {EVENT.capacity} spots <ArrowRight className="size-4" />
+              Claim your seat — {EVENT.capacity} spots <ArrowRight className="size-4" />
             </Link>
           </div>
         </div>

@@ -29,21 +29,20 @@ export function FacilitatorHero() {
       {/* Headline */}
       <div className="order-2 md:order-1 md:flex-1 border-l-4 border-primary pl-6">
         <p className="mb-3 text-xs uppercase tracking-[0.18em] text-muted-foreground md:text-sm md:tracking-[0.2em]">
-          Builder · Brand Operator · AI Practitioner
+          Brand Operator · AI Builder · Public Figure Maker
         </p>
         <h1 className="text-4xl font-semibold leading-tight tracking-tight text-foreground md:text-5xl lg:text-6xl">
-          Adam Anderson
+          Adam Anderson has made
           <br />
-          doesn't write your brand.
+          50 founders the name
           <br />
-          <span className="text-gradient-brand">He installs the system that does.</span>
+          <span className="text-gradient-brand">in their category. You're next.</span>
         </h1>
         <p className="mt-4 max-w-2xl text-base text-muted-foreground md:mt-5 md:text-lg">
-          He's not a coach. Not a consultant who disappears after the deck.
-          He's an operator who builds the infrastructure, hands you the keys,
-          and runs the same system himself. He compressed what used to be a
-          90-day agency engagement into three hours — because the founders
-          he works with can't afford to wait 90 days, and neither can you.
+          He's not a coach. Not a ghostwriter. Not a consultant who disappears after the deck.
+          He's the operator who built the system that turns founders and executives from
+          respected-in-their-circle to publicly known in their category — in one afternoon.
+          He's installed it 50+ times. He runs it himself. Now he installs it for you.
         </p>
       </div>
     </motion.section>

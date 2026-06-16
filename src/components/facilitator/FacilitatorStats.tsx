@@ -4,7 +4,7 @@ const STATS = [
   { n: "18 yrs", l: "Running OPEN Interactive" },
   { n: "4", l: "Fortune 500 experience centers built" },
   { n: "5", l: "Caribbean Investment Summits produced" },
-  { n: "5", l: "AI-native SaaS products shipped" },
+  { n: "50+", l: "Founders made into the name in their category" },
 ];
 
 export function FacilitatorStats() {

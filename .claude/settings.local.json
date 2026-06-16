@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(NITRO_PRESET=netlify npm run build)",
+      "Bash(rm -rf dist .output)",
+      "Bash(npm run *)",
+      "Bash(ls dist/server/*.*)",
+      "Bash(cat dist/client/_redirects)",
+      "Bash(ls dist/client/*.html)",
+      "WebSearch",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(python3 -)",
+      "Bash(cat .netlify/netlify.toml)",
+      "Bash(cat .netlify/state.json)",
+      "Bash(git rm *)",
+      "Bash(rm -rf dist .output .netlify/v1)",
+      "Bash(netlify sites:list)",
+      "Bash(netlify api *)",
+      "Bash(wait)",
+      "Read(//tmp/**)",
+      "Bash(python3 -c ' *)",
+      "Bash(git show *)",
+      "Bash(find .github -type f)",
+      "Bash(curl -s -o /tmp/home.html -w \"%{http_code}\\\\n\" https://evovemybrand.netlify.app/)",
+      "Bash(TOKEN=$\\(cat ~/.netlify/config.json 2>/dev/null | python3 -c \"import json,sys;d=json.load\\(sys.stdin\\);print\\(list\\(d['users'].values\\(\\)\\)[0]['auth']['token']\\)\"\\) *)"
+    ]
+  }
+}

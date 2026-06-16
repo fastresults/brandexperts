@@ -13,7 +13,7 @@ import { getHeroBackgroundList } from "@/lib/media.functions";
 
 export const FACILITATOR_NAME = "Adam Anderson";
 export const FACILITATOR_TITLE =
-  "Brand Operator · AI Builder · 50+ brand systems installed for founders and operators who refused to sound like everyone else.";
+  "Brand Operator · AI Builder · He's made 50+ founders the public figure their category was waiting for.";
 
 export const Route = createFileRoute("/")({
   loader: async ({ context }) => {
@@ -29,17 +29,17 @@ export const Route = createFileRoute("/")({
   },
   head: ({ loaderData }) => ({
     meta: [
-      { title: "The Brand OS Intensive — Build a Personal Branding Operating System in one afternoon." },
+      { title: "The Brand OS Intensive — You're Already the Expert. This Afternoon Makes You the Name." },
       {
         name: "description",
         content:
-          "Three hours at the IGNITE Center in Norcross, GA. Walk in with a scattered brand. Walk out with 15 finished assets and a publishing system that runs itself — 30 minutes a week, in your voice, for the next 90 days and every quarter after.",
+          "Three hours at the IGNITE Center in Norcross, GA. Walk in respected. Walk out known. 15 finished assets and a publishing system that keeps you visible — 30 minutes a week, for the next 90 days and every quarter after.",
       },
-      { property: "og:title", content: "The Brand OS Intensive — Build a Personal Branding Operating System in one afternoon." },
+      { property: "og:title", content: "The Brand OS Intensive — You're Already the Expert. This Afternoon Makes You the Name." },
       {
         property: "og:description",
         content:
-          "IGNITE Center, Norcross, GA · 1:00–4:00 PM ET. One afternoon to build the system that makes everything you publish sound undeniably like you — not like AI wrote it for a LinkedIn influencer.",
+          "IGNITE Center, Norcross, GA · 1:00–4:00 PM ET. One afternoon to become the public figure your category has been waiting for.",
       },
     ],
     links: loaderData?.heroBgUrl
@@ -88,13 +88,13 @@ function NotACourseBanner() {
             </span>
             <div>
               <p className="text-[11px] md:text-xs uppercase tracking-[0.18em] font-semibold text-gradient-brand">
-                Not a template. Not a 90-day challenge. Not homework.
+                Not a course. Not a challenge. Not another thing to finish later.
               </p>
               <h2 className="mt-2 text-xl font-semibold text-white/75 leading-tight md:text-xl">
-                Three hours. One room. You build the system — in your voice — instead of getting handed someone else's.
+                Three hours. Everything ships before you walk out the door. Nothing assigned. Nothing pending. Done.
               </h2>
               <p className="mt-2 text-sm text-white/55 leading-relaxed md:text-sm">
-                ChatGPT gives you generic output that sounds like everyone else's ChatGPT output. A 90-day calendar collapses the moment life happens. The Brand OS is different: 15 assets leave the room already in your voice, and a 30-minute weekly ritual keeps the engine running — quarter after quarter, no rebuilding. <span className="text-white/40">(Scheduler, newsletter, and AI subscriptions aren't covered by the workshop fee.)</span>
+                Courses give you frameworks. Challenges give you plans that collapse under real life. This afternoon gives you the actual assets — 15 of them, built in your voice, in the room. You leave as a public figure with a running system. Not a plan to become one. <span className="text-white/40">(Scheduler, newsletter, and AI subscriptions aren't covered by the workshop fee.)</span>
               </p>
             </div>
           </div>
@@ -149,33 +149,33 @@ function Hero({ heroBgUrl }: { heroBgUrl: string | null }) {
           className="mb-5 text-xs uppercase tracking-[0.18em] text-white/80 animate-fade-up md:mb-6 md:text-sm md:tracking-[0.2em]"
           style={{ animationDelay: "0.05s" }}
         >
-          Stop sounding like everyone else. Start publishing in your actual voice.
+          Stop being the best-kept secret in your category.
         </p>
         <h1
           className="max-w-3xl text-4xl font-semibold leading-[1.06] tracking-tight text-white animate-fade-up md:text-5xl lg:text-[4.5rem]"
           style={{ animationDelay: "0.15s" }}
         >
-          AI doesn't replace the real ones.{" "}
+          You're already the expert.{" "}
           <span className="italic">
-            But it will replace anyone who sounds{" "}
-            <span className="text-gradient-brand">generic.</span>
+            This afternoon makes you{" "}
+            <span className="text-gradient-brand">the name.</span>
           </span>
         </h1>
         <p
           className="mt-5 max-w-2xl text-base text-white/90 animate-fade-up md:mt-6 md:text-lg"
           style={{ animationDelay: "0.25s" }}
         >
-          One afternoon. IGNITE Center, Norcross GA.{" "}
+          Three hours at the IGNITE Center, Norcross GA.{" "}
           <span className="font-medium text-white">
-            Walk out with 15 finished assets and a publishing system that runs itself —
+            Walk out with 15 finished assets, the system that keeps you visible,
           </span>{" "}
-          30 minutes a week, for the next 90 days and every quarter after.
+          and a public presence that finally matches your actual level.
         </p>
         <p
           className="mt-4 max-w-2xl text-sm text-white/85 animate-fade-up md:text-base"
           style={{ animationDelay: "0.32s" }}
         >
-          No ghostwriter. No content team. Just an OS built around your voice.
+          No ghostwriter. No content team. Just the system — installed, in your voice, before you leave.
         </p>
 
         <div
@@ -186,7 +186,7 @@ function Hero({ heroBgUrl }: { heroBgUrl: string | null }) {
             to="/register"
             className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-base font-medium text-primary-foreground transition-all duration-200 hover:opacity-90 hover:scale-[1.03] hover:glow-primary sm:w-auto"
           >
-            Lock in your seat <ArrowRight className="size-4" />
+            Claim your seat <ArrowRight className="size-4" />
           </Link>
           <Link
             to="/schedule"
@@ -262,29 +262,27 @@ function FacilitatorSection() {
             </h2>
             <p className="text-2xl font-semibold tracking-tight md:text-3xl lg:text-4xl">
               {FACILITATOR_NAME} —{" "}
-              <span className="text-gradient-brand">the builder who designed the framework, then compressed it into a single afternoon.</span>
+              <span className="text-gradient-brand">made 50+ founders the name in their category. Now he does it in one afternoon.</span>
             </p>
             <p className="mt-3 text-sm uppercase tracking-[0.15em] text-muted-foreground">
               {FACILITATOR_TITLE}
             </p>
             <p className="mt-5 text-muted-foreground">
-              Adam isn't a consultant who hands you a deck and disappears. He's an operator
-              who builds the infrastructure and hands you the keys. He's shipped five AI-native
-              products using the same toolchain he installs in this room — and he's compressed
-              what used to take a 90-day agency engagement into a single afternoon, because
-              the founders he works with don't have 90 days.
+              Adam isn't here to teach you personal branding. He's here to install it. He's taken
+              50+ founders and operators from respected-in-their-circle to publicly known in their
+              category — and he's compressed what agencies charge $15K and 90 days for into a single
+              afternoon. Because if you had 90 days, you wouldn't need the intensive.
             </p>
             <p className="mt-3 text-muted-foreground">
-              His take: most brands fail not because of bad content, but because there's no
-              system underneath it. So he built one. When he installs your Brand OS,
-              it's the same model he runs on himself — not theory, not templates,
-              not someone else's voice pattern dressed up as yours.
+              His take: you already have the credibility to be the authority in your space. You just
+              never built the infrastructure to be seen as one. So he built the system. He runs it
+              himself. And on this afternoon, he hands you the keys.
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
-              <TagChip>50+ brand systems installed</TagChip>
+              <TagChip>50+ founders made into the name in their category</TagChip>
               <TagChip>5 AI-native SaaS products shipped</TagChip>
               <TagChip>5 international summits produced</TagChip>
-              <TagChip>What took 90 days → compressed to 3 hours</TagChip>
+              <TagChip>$15K agency work → compressed to one afternoon</TagChip>
             </div>
           </div>
         </div>
@@ -303,21 +301,21 @@ function TagChip({ children }: { children: React.ReactNode }) {
 
 function WalkInWalkOut() {
   const walkIn = [
-    "A bio written for a version of you that doesn't exist anymore",
-    "A LinkedIn About that could belong to literally anyone in your category",
-    "Ideas rotting in voice memos and never-sent DMs",
-    "A 'post more' plan that survived about two weeks",
-    "ChatGPT output that sounds exactly like everyone else's ChatGPT output",
+    "A LinkedIn profile that doesn't reflect your actual level",
+    "Expertise that belongs on stages and in press — still stuck in your head",
+    "A 'post more consistently' plan you've restarted three times",
+    "A reputation that's miles ahead of your online presence",
+    "Ideas good enough to be category-defining — published nowhere",
   ];
   return (
     <section className="py-12 md:py-20">
       <div className="mx-auto max-w-6xl px-6">
         <h2 className="mb-2 text-xs uppercase tracking-[0.18em] text-muted-foreground md:text-sm md:tracking-[0.2em]">
-          Three hours. real change.
+          Where you start. Where you end up.
         </h2>
         <p className="mb-8 max-w-3xl text-2xl font-semibold leading-tight tracking-tight md:mb-10 md:text-4xl">
-          <span className="text-gradient-brand">1:00 PM to 4:00 PM.</span>{" "}
-          Your brand stops being a someday project and becomes infrastructure you actually run.
+          <span className="text-gradient-brand">1:00 PM, you walk in.</span>{" "}
+          4:00 PM, you walk out as the public-facing authority your category has been waiting for. That's the only thing that changes today.
         </p>
         <div className="grid gap-5 md:grid-cols-[1fr_1.4fr] md:gap-6">
           <div className="rounded-3xl border border-white/10 bg-card/50 p-6 md:p-8">
@@ -325,7 +323,7 @@ function WalkInWalkOut() {
               1:00 PM
             </div>
             <div className="text-2xl font-semibold tracking-tight text-foreground/80">
-              What you show up with
+              What walks in with you
             </div>
             <ul className="mt-6 space-y-3">
               {walkIn.map((i) => (
@@ -399,13 +397,13 @@ function WhatYouLeaveWith() {
           15 assets. 1 system. 0 homework.
         </h2>
         <p className="mb-3 max-w-3xl text-3xl font-semibold tracking-tight md:text-4xl">
-          Each of these normally costs a specialist to build.{" "}
+          A PR firm charges $15K and takes 90 days to build half of these.{" "}
           <span className="text-gradient-brand">
-            Yours leave the room already in your voice — the same afternoon you build them.
+            You build all 15 — in your voice — in one afternoon. And you leave running them.
           </span>
         </p>
         <p className="mb-10 max-w-2xl text-base text-muted-foreground md:text-lg">
-          Three modules. Five assets each. One idea becomes an article, a newsletter, a keynote opener, a carousel, and two weeks of scheduled posts — the same thought running in ten places at once.
+          Three modules. Five assets each. One idea becomes an article, a newsletter, a keynote opener, a carousel, and two weeks of scheduled posts — so the whole category sees the same authoritative voice, everywhere, at once.
         </p>
         <div className="grid gap-4 md:grid-cols-3">
           {WALKOUT_PHASES.map((p) => (
@@ -563,17 +561,17 @@ function BottomCTA() {
           <div className="pointer-events-none absolute -bottom-16 -right-16 size-64 rounded-full bg-brand-violet/30 blur-3xl" />
           <div className="relative max-w-3xl text-white">
             <h2 className="text-3xl font-semibold leading-tight tracking-tight md:text-4xl lg:text-5xl">
-              {seatsWord(EVENT.totalSeats)} seats left. One afternoon to build the system that makes everything you publish sound like you — not like everyone else's AI.
+              {seatsWord(EVENT.totalSeats)} seats. One afternoon. The public figure chapter starts right here.
             </h2>
             <p className="mt-4 text-base text-white/90 md:mt-5 md:text-lg">
-              The feed is flooded with AI content that sounds identical. The ones breaking through have a named, specific point of view — published faster and more consistently than everyone else. This is the afternoon you get the system. Bring your bio, your ideas, your voice. Leave with 15 assets and an OS that runs itself.
+              Your competitors are showing up in searches, on stages, in podcasts, in every feed your buyers scroll. You have the expertise to be that name. You just need the system. This is the afternoon you build it. Don't leave this seat for someone else.
             </p>
             <div className="mt-7 md:mt-8">
               <Link
                 to="/register"
                 className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-base font-semibold text-neutral-900 shadow-lg transition-all duration-200 hover:opacity-95 hover:scale-[1.025] hover:shadow-xl hover:text-neutral-900 sm:w-auto"
               >
-                Lock in your seat — {EVENT.shortLabel} <ArrowRight className="size-4" />
+                Claim your seat — {EVENT.shortLabel} <ArrowRight className="size-4" />
               </Link>
             </div>
           </div>
@@ -598,7 +596,7 @@ const WALKOUT_PHASES: WalkoutPhase[] = [
     n: 1,
     label: "Module 1 · Foundation installed",
     title: "Foundation installed — locked, in your voice",
-    intro: "By the first break, your positioning is locked and the captured voice profile is the firewall — the model writes as you at scale instead of flattening you into another ChatGPT-shaped executive.",
+    intro: "By the first break, you have a locked positioning statement, a voice profile that keeps every AI-assisted draft unmistakably yours, and three bios ready to paste everywhere. The 'who is this person' question gets answered — definitively.",
     runAtHome: "Paste the new About into LinkedIn before Block 3 begins.",
     items: [
       { name: "Brand Blueprint", desc: "Positioning, three content pillars, audience, and proof points — the locked anchor every future asset, deck, and email inherits from." },
@@ -612,7 +610,7 @@ const WALKOUT_PHASES: WalkoutPhase[] = [
     n: 2,
     label: "Module 2 · Authority assets published",
     title: "Authority assets — published, not promised",
-    intro: "By the second hour, three publish-ready pieces are sitting in your folder — every one of them written from your voice profile, none of them billed by a ghostwriter, all of them traceable to your actual expertise.",
+    intro: "By hour two, you have a thought leadership article, a POV post, a framework carousel, a keynote opener, and a newsletter issue — done, publish-ready, traceable to your actual expertise. Not billed by a ghostwriter. Not outsourced to a template. Yours.",
     runAtHome: "Publish the POV post today — before you leave Block 6.",
     items: [
       { name: "Op-Ed / Thought leadership article", desc: "800–1,200 words on your #1 pillar — the kind editors and conference programmers actually open, not the kind they delete on sight." },
@@ -626,7 +624,7 @@ const WALKOUT_PHASES: WalkoutPhase[] = [
     n: 3,
     label: "Module 3 · The system running without you",
     title: "The Brand Operating System — running without you",
-    intro: "By 4:00 PM, the next 90 days are on auto-publish and the cadence to keep it producing fits inside one weekly coffee — the operational equivalent of replacing a $150K-a-year comms coordinator with a 30-minute ritual you actually keep.",
+    intro: "By 4:00 PM, the next 90 days are already on auto-publish. The system that keeps you visible, quotable, and bookable runs in 30 minutes a week — so the public figure thing isn't a phase. It's a permanent upgrade.",
     runAtHome: "Run the 30-min weekly cadence: review · capture · approve.",
     items: [
       { name: "30-Day Authority Sprint", desc: "Day-by-day sequence around pillar #1, ready to execute starting tomorrow — no week-long draft-review-revise loop standing between you and the news cycle." },

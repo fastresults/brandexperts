@@ -1,0 +1,4 @@
+# DO NOT add a catch-all SPA fallback here (/* /index.html 200).
+# This is an SSR app built with Nitro. A catch-all redirect here will
+# prevent Nitro from writing its own SSR function redirect at build time,
+# causing every route to 404. Redirects are managed in the root netlify.toml.

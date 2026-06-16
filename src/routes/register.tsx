@@ -187,11 +187,11 @@ function RegisterDefault() {
             Quarterly cohorts · IGNITE Center · Norcross, GA
           </p>
           <h1 className="text-4xl font-semibold leading-tight tracking-tight md:text-5xl lg:text-6xl">
-            Walk in scattered.{" "}
-            <span className="text-gradient-brand">Walk out with a brand system that actually runs.</span>
+            Walk in respected.{" "}
+            <span className="text-gradient-brand">Walk out known.</span>
           </h1>
           <p className="mt-4 max-w-2xl text-base text-muted-foreground md:mt-5 md:text-lg">
-            Three hours. A locked Brand Blueprint, a published Op-Ed, a newsletter issue, a keynote opener, two weeks of scheduled posts, and a 30-minute weekly cadence already on your calendar — installed in the room, in your voice, before you leave.
+            One afternoon. 15 assets — a locked Brand Blueprint, a published Op-Ed, a keynote opener, two weeks of scheduled posts, and a 30-minute weekly cadence already on your calendar. The public presence you've been building toward, installed before you leave.
           </p>
           <div className="mt-5 flex flex-col gap-2 text-sm text-muted-foreground sm:flex-row sm:flex-wrap sm:gap-4 md:mt-6">
             <span className="inline-flex items-center gap-2">
@@ -302,7 +302,7 @@ function RegisterDefault() {
         <div className="mx-auto max-w-2xl px-6">
           <div className="mb-6 text-center">
             <h2 className="text-2xl font-semibold tracking-tight md:text-4xl">
-              Lock in your spot
+              Claim your spot
             </h2>
             <p className="mt-2 text-muted-foreground">
               Tell us what you're building so the room — and the voice profile we build inside it — is actually tuned to you. Not a generic founder archetype.

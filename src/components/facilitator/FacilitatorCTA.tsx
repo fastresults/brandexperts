@@ -22,16 +22,16 @@ export function FacilitatorCTA() {
       />
       <div className="relative">
         <h2 className="text-2xl font-semibold tracking-tight text-white md:text-3xl">
-          Ready to stop winging it?
+          You've built the credibility. Now build the reach.
         </h2>
         <p className="mt-3 text-base text-white/85 md:mt-4 md:text-lg mb-6">
-          Three hours at the IGNITE Center, Norcross GA. Small cohort — full attention. Nothing assigned that doesn't ship before you leave.
+          Three hours at the IGNITE Center, Norcross GA. Small cohort — Adam's full attention on your brand. Nothing assigned. Everything shipped before you leave.
         </p>
         <Link
           to="/register"
           className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-base font-semibold text-neutral-900 transition-all hover:opacity-95 hover:scale-[1.02]"
         >
-          Lock in your seat <ArrowRight className="size-4" />
+          Claim your seat <ArrowRight className="size-4" />
         </Link>
       </div>
     </motion.section>

@@ -3,22 +3,13 @@
 # Nitro emits dist/client (static), dist/server (SSR fn), and dist/nitro.json.
 # Netlify's build image auto-detects dist/nitro.json and wires up the SSR
 # function + redirects — publish dir must be the `dist` root, not dist/client.
+# DO NOT add manual [[redirects]] or [functions] blocks — Netlify handles them
+# automatically when it detects dist/nitro.json.
 
 [build]
   command = "npm run build"
-  publish = "dist/client"
+  publish = "dist"
 
 [build.environment]
   NODE_VERSION  = "20"
   NITRO_PRESET  = "netlify"
-
-[functions]
-  directory = "dist/server"
-  node_bundler = "none"
-
-# Nitro's server.mjs exports config = { path: "/*", nodeBundler: "none", includedFiles: ["**"] }
-# which Netlify Functions v2 uses to route all non-static requests through the SSR handler.
-[[redirects]]
-  from   = "/*"
-  to     = "/.netlify/functions/server"
-  status = 200
