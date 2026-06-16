@@ -5,6 +5,8 @@
 Live at: https://brandexperts.org
 GitHub: https://github.com/fastresults/brandexperts
 
+**Development:** Claude Code only. Lovable is no longer used. Do not make changes that assume Lovable conventions or sandbox behavior.
+
 ---
 
 ## Stack
