@@ -1,15 +1,25 @@
 # ─── Netlify deployment config for EvoveMyBrand (TanStack Start / Nitro 3 SSR) ───
 # Build: `npm run build` (vite.config.ts enables nitro({ preset: "netlify" }))
 # Nitro emits dist/client (static), dist/server (SSR fn), and dist/nitro.json.
-# Netlify's build image auto-detects dist/nitro.json and wires up the SSR
-# function + redirects — publish dir must be the `dist` root, not dist/client.
-# DO NOT add manual [[redirects]] or [functions] blocks — Netlify handles them
-# automatically when it detects dist/nitro.json.
+#
+# *** DO NOT REMOVE [functions] OR [[redirects]] BLOCKS BELOW ***
+# Netlify does NOT auto-detect dist/nitro.json for SSR function wiring on this
+# plan/setup. The [functions] dir and [[redirects]] fallback are REQUIRED.
+# Removing them causes a 404 on every route. This has been tested and confirmed.
 
 [build]
   command = "npm run build"
-  publish = "dist"
+  publish = "dist/client"
 
 [build.environment]
   NODE_VERSION  = "20"
   NITRO_PRESET  = "netlify"
+
+[functions]
+  directory    = "dist/server"
+  node_bundler = "none"
+
+[[redirects]]
+  from   = "/*"
+  to     = "/.netlify/functions/server"
+  status = 200
