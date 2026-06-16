@@ -32,7 +32,7 @@ export const transcribeAudio = createServerFn({ method: "POST" })
       return {
         text: "",
         error:
-          "Voice input is not configured. Connect the ElevenLabs integration in Lovable Cloud.",
+          "Voice input is not configured. Set the ELEVENLABS_API_KEY environment variable.",
       };
     }
 
