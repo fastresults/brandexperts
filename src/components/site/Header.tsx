@@ -4,7 +4,7 @@ import { Menu } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useAuth } from "@/hooks/use-auth";
-import { StartupLabsLogo } from "@/components/brand/StartupLabsLogo";
+import brandexpertsLogoUrl from "@/assets/brandexperts-header.svg";
 import { getPublicSiteSettings } from "@/lib/site-settings.functions";
 import { PRICING } from "@/lib/value-grid";
 import {
@@ -53,7 +53,7 @@ export function SiteHeader() {
           className="flex items-center font-semibold tracking-tight transition-opacity hover:opacity-80"
           aria-label="Atlanta Startup Workshop"
         >
-          <StartupLabsLogo className="h-9 w-auto md:h-12 text-foreground" />
+          <img src={brandexpertsLogoUrl} alt="BrandExperts" className="h-9 w-auto md:h-12" />
         </Link>
 
         {/* Desktop nav */}
@@ -139,7 +139,7 @@ export function SiteHeader() {
             >
               <div className="flex h-full flex-col">
                 <div className="flex items-center gap-3 border-b border-white/5 px-6 py-5">
-                  <StartupLabsLogo className="h-9 w-auto text-foreground" />
+                  <img src={brandexpertsLogoUrl} alt="BrandExperts" className="h-9 w-auto" />
                 </div>
                 <SheetTitle className="sr-only">Navigation</SheetTitle>
                 <SheetDescription className="sr-only">
