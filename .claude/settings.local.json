@@ -24,7 +24,9 @@
       "Bash(git show *)",
       "Bash(find .github -type f)",
       "Bash(curl -s -o /tmp/home.html -w \"%{http_code}\\\\n\" https://evovemybrand.netlify.app/)",
-      "Bash(TOKEN=$\\(cat ~/.netlify/config.json 2>/dev/null | python3 -c \"import json,sys;d=json.load\\(sys.stdin\\);print\\(list\\(d['users'].values\\(\\)\\)[0]['auth']['token']\\)\"\\) *)"
+      "Bash(TOKEN=$\\(cat ~/.netlify/config.json 2>/dev/null | python3 -c \"import json,sys;d=json.load\\(sys.stdin\\);print\\(list\\(d['users'].values\\(\\)\\)[0]['auth']['token']\\)\"\\) *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" https://evovemybrand.netlify.app/)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" https://brandexperts.org/)"
     ]
   }
 }
