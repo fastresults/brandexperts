@@ -84,8 +84,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:site", content: "@brandexperts" },
       { name: "twitter:title", content: "The Brand OS Intensive" },
       { name: "twitter:description", content: "Three hours at the IGNITE Center in Norcross, GA. Walk in respected. Walk out known." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/sD8Fqs0vpzVCXZYukIg4npj165v2/social-images/social-1780276208697-socialcover.webp" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/sD8Fqs0vpzVCXZYukIg4npj165v2/social-images/social-1780276208697-socialcover.webp" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/sD8Fqs0vpzVCXZYukIg4npj165v2/social-images/social-1781656393003-Screenshot_2026-06-16_at_8.32.52_PM.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/sD8Fqs0vpzVCXZYukIg4npj165v2/social-images/social-1781656393003-Screenshot_2026-06-16_at_8.32.52_PM.webp" },
     ],
     links: [
       {
